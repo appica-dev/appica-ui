@@ -1,0 +1,5 @@
+export { default as Pagination } from './pagination.svelte'
+export { default as PaginationList } from './pagination-list.svelte'
+export { default as PaginationItem } from './pagination-item.svelte'
+export { default as PaginationLink } from './pagination-link.svelte'
+export { default as PaginationEllipsis } from './pagination-ellipsis.svelte'

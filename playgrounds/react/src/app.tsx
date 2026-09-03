@@ -1,4 +1,7 @@
-import { Badge, Button, Input, Switch, Tabs, TabsContent, TabsList, TabsTrigger, useTheme } from '@appica/ui-react'
+import { Button, Sparkline, SparklineChart, SparklineLabel, SparklineValue, useTheme } from '@appica/ui-react'
+
+const DATA = [4, 8, 6, 10, 7, 12]
+const LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 export function App() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -22,27 +25,24 @@ export function App() {
         </Button>
       </header>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-foreground-emphasis text-lg font-semibold">Sandbox</h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button>Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Badge>Badge</Badge>
-          <Switch defaultChecked />
-        </div>
-        <Input placeholder="Type something…" className="max-w-xs" />
-        <Tabs defaultValue="one" className="max-w-md">
-          <TabsList>
-            <TabsTrigger value="one">One</TabsTrigger>
-            <TabsTrigger value="two">Two</TabsTrigger>
-            <TabsTrigger value="three">Three</TabsTrigger>
-          </TabsList>
-          <TabsContent value="one">First panel</TabsContent>
-          <TabsContent value="two">Second panel</TabsContent>
-          <TabsContent value="three">Third panel</TabsContent>
-        </Tabs>
+      <section className="flex flex-col gap-8">
+        <h2 className="text-foreground-emphasis text-lg font-semibold">Sparkline</h2>
+
+        <Sparkline data={DATA} labels={LABELS} className="max-w-xs">
+          <div className="flex items-baseline justify-between">
+            <SparklineLabel />
+            <SparklineValue />
+          </div>
+          <SparklineChart variant="area" tooltip aria-label="Weekly revenue" />
+        </Sparkline>
+
+        <Sparkline data={DATA} className="max-w-xs">
+          <SparklineChart variant="column" height={64} aria-label="Weekly columns" />
+        </Sparkline>
+
+        <Sparkline data={DATA} className="max-w-xs">
+          <SparklineChart variant="line" aria-label="Weekly line" />
+        </Sparkline>
       </section>
     </main>
   )

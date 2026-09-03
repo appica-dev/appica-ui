@@ -9,16 +9,19 @@
   "scripts": {
     "dev": "pnpm --filter @appica/ui-react dev",
     "playground": "pnpm --filter playground-react dev",
+    "playground:svelte": "pnpm --filter playground-svelte dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean",
     "pack:react": "pnpm --filter @appica/ui-react build && pnpm --filter @appica/ui-react exec pnpm pack",
+    "pack:svelte": "pnpm --filter @appica/ui-svelte build && pnpm --filter @appica/ui-svelte exec pnpm pack",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "sync-exports:check": "pnpm --filter @appica/ui-react exec node scripts/sync-exports.mjs --check",
-    "release": "pnpm --filter @appica/ui-react publish"
+    "sync-exports:check": "pnpm --filter @appica/ui-react exec node scripts/sync-exports.mjs --check && pnpm --filter @appica/ui-svelte exec node scripts/sync-exports.mjs --check",
+    "release": "pnpm --filter @appica/ui-react publish",
+    "release:svelte": "pnpm --filter @appica/ui-svelte publish"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -26,6 +29,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.9.0",
     "prettier": "^3.9.6",
+    "prettier-plugin-svelte": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.66.0"

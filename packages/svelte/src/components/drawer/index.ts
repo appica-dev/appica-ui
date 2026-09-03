@@ -1,0 +1,17 @@
+import DrawerRoot from './drawer.svelte'
+import { createHandle } from '../../internal/overlay-handle.svelte'
+
+export const Drawer = Object.assign(DrawerRoot, { createHandle })
+export { default as DrawerProvider } from './drawer-provider.svelte'
+export { default as DrawerIndent } from './drawer-indent.svelte'
+export { default as DrawerIndentBackground } from './drawer-indent-background.svelte'
+export { default as DrawerTrigger } from './drawer-trigger.svelte'
+export { default as DrawerContent } from './drawer-content.svelte'
+export { default as DrawerHeader } from './drawer-header.svelte'
+export { default as DrawerTitle } from './drawer-title.svelte'
+export { default as DrawerDescription } from './drawer-description.svelte'
+export { default as DrawerBody } from './drawer-body.svelte'
+export { default as DrawerFooter } from './drawer-footer.svelte'
+export { default as DrawerClose } from './drawer-close.svelte'
+export type { OverlayHandle as DrawerHandle } from '../../internal/overlay-handle.svelte'
+export type { DrawerSide } from './drawer-context'

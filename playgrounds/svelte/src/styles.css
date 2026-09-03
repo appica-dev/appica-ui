@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import '../../../packages/svelte/styles.css';
+
+@source '../../../packages/svelte/src';

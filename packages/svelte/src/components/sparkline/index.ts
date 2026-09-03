@@ -1,0 +1,5 @@
+export { default as Sparkline } from './sparkline.svelte'
+export { default as SparklineChart } from './sparkline-chart.svelte'
+export { default as SparklineValue } from './sparkline-value.svelte'
+export { default as SparklineLabel } from './sparkline-label.svelte'
+export type { SparklinePoint } from './sparkline-context'

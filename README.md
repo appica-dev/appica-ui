@@ -6,9 +6,10 @@ This monorepo contains framework-specific packages living under `packages/`. Eac
 
 ## Packages
 
-|                                                               | Package            | Version                                                                                                 | Links                                                                                                                       |
-| ------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| <img src=".github/assets/react.svg" width="35" alt="React" /> | `@appica/ui-react` | [![npm](https://img.shields.io/npm/v/@appica/ui-react)](https://www.npmjs.com/package/@appica/ui-react) | [Docs](https://appica.dev/ui/docs/react/installation) · [Changelog](packages/react/CHANGELOG.md) · [Source](packages/react) |
+|                                                               | Package             | Version                                                                                                  | Links                                                                                                                        |
+| ------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| <img src=".github/assets/react.svg" width="35" alt="React" /> | `@appica/ui-react`  | [![npm](https://img.shields.io/npm/v/@appica/ui-react)](https://www.npmjs.com/package/@appica/ui-react)   | [Docs](https://appica.dev/ui/docs/react/installation) · [Changelog](packages/react/CHANGELOG.md) · [Source](packages/react)  |
+| <img src=".github/assets/svelte.svg" width="35" alt="Svelte" /> | `@appica/ui-svelte` | [![npm](https://img.shields.io/npm/v/@appica/ui-svelte)](https://www.npmjs.com/package/@appica/ui-svelte) | [Docs](https://appica.dev/ui/docs/svelte/installation) · [Source](packages/svelte)                                           |
 
 ## Documentation
 

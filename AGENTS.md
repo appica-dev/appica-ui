@@ -5,6 +5,7 @@ workspace so far (`pnpm-workspace.yaml`), with more integrations (html, vue, …
 to land as sibling packages:
 
 - **`packages/react`** - the `@appica/ui-react` component library (React 19 + Base UI `@base-ui/react` + Motion + Tailwind v4). Conventions: [packages/react/AGENTS.md](packages/react/AGENTS.md).
+- **`packages/svelte`** - the `@appica/ui-svelte` component library (Svelte 5 runes + Native HTML / bits-ui later + Tailwind v4, shared design tokens with `@appica/ui-react`). Conventions: [packages/svelte/AGENTS.md](packages/svelte/AGENTS.md). Port status: [packages/svelte/COMPONENT-STATUS.md](packages/svelte/COMPONENT-STATUS.md).
 
 **Always read the scoped guide for the area you're working in** before writing code there.
 
@@ -18,6 +19,7 @@ changing a component, rebuild + repack so the site can pick it up:
 
 ```
 pnpm pack:react   # build + pack → packages/react/appica-ui-react-<version>.tgz
+pnpm pack:svelte  # build + pack → packages/svelte/appica-ui-svelte-<version>.tgz
 ```
 
 then reinstall in appica-dev (`pnpm install --force` there if the version didn't change).
@@ -25,7 +27,9 @@ then reinstall in appica-dev (`pnpm install --force` there if the version didn't
 ## Common commands
 
 - `pnpm --filter @appica/ui-react test | build | typecheck`
+- `pnpm --filter @appica/ui-svelte test | build | typecheck`
 - `pnpm pack:react` - build + pack the tarball consumed by appica-dev
+- `pnpm pack:svelte` - build + pack `@appica/ui-svelte`
 
 ## Writing style
 

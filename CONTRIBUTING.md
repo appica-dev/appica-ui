@@ -10,7 +10,7 @@ Appica UI is developed in-house, and we're not accepting feature pull requests a
 
 ### Prerequisites
 
-- Node.js >= 20
+- Node.js >= 22
 - [pnpm](https://pnpm.io) >= 9 (`npm install -g pnpm`)
 
 ### Setup and common commands
@@ -26,11 +26,20 @@ pnpm format         # format the codebase with Prettier
 pnpm dev            # watch-rebuild the React package
 ```
 
-To target a single package, use a filter from the repo root, e.g. `pnpm --filter @appica/ui-react test`. (`dev` is a long-running watcher, so it always targets one package - point it elsewhere with a filter as more packages land.)
+To target a single package, use a filter from the repo root:
+
+```sh
+pnpm --filter @appica/ui-react test
+pnpm --filter @appica/ui-svelte test
+```
+
+(`dev` is a long-running watcher, so it always targets one package - point it elsewhere with a filter as more packages land.)
 
 ## Testing your change visually
 
-Run the playground - a small Vite app wired directly to the library source:
+Each package has a small Vite playground wired directly to the library source.
+
+### React
 
 ```sh
 pnpm playground
@@ -38,8 +47,21 @@ pnpm playground
 
 It serves at `localhost:5173` with hot reload: edit anything under `packages/react/src` and the browser updates instantly (no build step needed). Use `playgrounds/react/src/app.tsx` as your scratch page - drop in the component you're fixing and reproduce the issue there. Import components from the package root (`import { Button } from '@appica/ui-react'`); subpath imports aren't wired up in the playground.
 
+### Svelte
+
+```sh
+pnpm playground:svelte
+```
+
+Same idea for `@appica/ui-svelte`: edit under `packages/svelte/src` and the browser updates instantly. Use `playgrounds/svelte/src/app.svelte` as the scratch page. Import from the package root (`import { Button } from '@appica/ui-svelte'`).
+
 ### Repo layout
 
-Framework packages live under `packages/` and are published to npm independently. `packages/react` is the `@appica/ui-react` component library (React 19 + [Base UI](https://base-ui.com) + [Motion](https://motion.dev) + Tailwind CSS v4).
+Framework packages live under `packages/` and are published to npm independently.
 
-Component conventions (folder layout, exports wiring, testing expectations) are documented in [packages/react/AGENTS.md](packages/react/AGENTS.md). Note that `src/index.ts` and the package.json `exports` map are generated - run `pnpm --filter @appica/ui-react sync-exports` instead of editing them by hand.
+- `packages/react` is the `@appica/ui-react` component library (React 19 + [Base UI](https://base-ui.com) + [Motion](https://motion.dev) + Tailwind CSS v4). Conventions: [packages/react/AGENTS.md](packages/react/AGENTS.md).
+- `packages/svelte` is the `@appica/ui-svelte` component library (Svelte 5 runes + [bits-ui](https://bits-ui.com) for headless overlays + Tailwind CSS v4, sharing design tokens with React). Conventions: [packages/svelte/AGENTS.md](packages/svelte/AGENTS.md). Port status: [packages/svelte/COMPONENT-STATUS.md](packages/svelte/COMPONENT-STATUS.md).
+
+`src/index.ts` and the package.json `exports` map are generated in both packages - run `pnpm --filter @appica/ui-react sync-exports` or `pnpm --filter @appica/ui-svelte sync-exports` instead of editing them by hand.
+
+Pack a tarball for the docs site with `pnpm pack:react` or `pnpm pack:svelte`. Publish with `pnpm release` (React) or `pnpm release:svelte`.
