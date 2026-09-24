@@ -7,6 +7,32 @@ version alongside the package.
 
 The library follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.0 - 2026-09-24
+
+Base UI 1.8 compatibility fixes, 2 new Background Pattern textures and a redrawn grid, a border-only Gradient Glow, and custom Copy Button icons.
+
+### Added
+
+- **[Background Pattern rings and checkerboard](https://appica.dev/ui/components/react/background-pattern)** - Staggered rings drawn at a fixed stroke at any `cellSize`, and a checkerboard whose `cellSize` sets one square.
+- **[Border-only Gradient Glow](https://appica.dev/ui/components/react/gradient-glow)** - `glow={false}` drops the blurred aura. With `border` it leaves a gradient stroke that keeps `revealOn`, `speed` and `pressScale`.
+- **[Custom Copy Button icon](https://appica.dev/ui/components/react/copy-button)** - The `icon` prop swaps the resting glyph, for a copy-link control for example. The drawn check and the status announcement stay built in.
+- **[Snapping free drag on Carousel](https://appica.dev/ui/components/react/carousel)** - `dragFree="snap"` glides like a free drag, then settles on the nearest snap point.
+
+### Improved
+
+- **[Background Pattern grid](https://appica.dev/ui/components/react/background-pattern)** - Redrawn with a dot at every intersection, set off from the 1px lines, and the stroke holds at any `cellSize`.
+- **[Card solid frame](https://appica.dev/ui/components/react/card)** - A translucent `background-muted` band under a stronger blur, keeping `background-subtle` in dark mode.
+- **Dependencies** - Base UI 1.8, Embla Carousel 9.0.0-rc03, Motion 13.4 and React 19.3, with TypeScript 7 and Vitest 5 across the workspace. Through Base UI 1.8, read-only Select, Combobox and Autocomplete open for browsing, and start-aligned menus scale in from their corner.
+- **Agent rules** - The packaged rules and the README point at the per-integration index, `https://appica.dev/ui/react/llms.txt`.
+
+### Removed
+
+- **Background Pattern dashed grid** - The `dashed-grid` variant is gone. Use `grid`, which now marks every intersection.
+
+### Fixed
+
+- **[Menu items under Base UI 1.8](https://appica.dev/ui/components/react/dropdown-menu)** - Dropdown Menu, Context Menu and Menubar items keep their padding, radius and rounded highlight. Base UI 1.8 stopped writing the `aria-orientation` the item styles relied on ([#11](https://github.com/appica-dev/appica-ui/issues/11)).
+
 ## 1.1.0 - 2026-08-11
 
 8 new components including a full color system, a prebuilt stylesheet for projects without Tailwind, and an API reference generated from the library types.

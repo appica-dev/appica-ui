@@ -7,6 +7,7 @@ import { PatternLayer, patternSpotlight, type BackgroundPatternVariant } from '.
 
 interface BackgroundPatternInteractiveProps {
   variant: BackgroundPatternVariant
+  cell: number
   persistent?: boolean
   track?: 'self' | 'window'
 }
@@ -18,6 +19,7 @@ const FADE_DURATION = 1200
 
 function BackgroundPatternInteractive({
   variant,
+  cell,
   persistent: persistentProp = false,
   track = 'self',
 }: BackgroundPatternInteractiveProps) {
@@ -85,7 +87,7 @@ function BackgroundPatternInteractive({
       )}
       style={{ WebkitMaskImage: SPOTLIGHT, maskImage: SPOTLIGHT }}
     >
-      <PatternLayer variant={variant} className={patternSpotlight(variant)} />
+      <PatternLayer variant={variant} cell={cell} className={patternSpotlight(variant)} />
     </div>
   )
 }

@@ -110,7 +110,7 @@ See the [installation guide](https://appica.dev/ui/docs/react/installation) for 
 
 If you are a coding agent reading this from `node_modules`, the rules for writing Appica UI code correctly are in [`agent-rules.md`](./agent-rules.md), next to this file. Read it before writing any component or CSS. The two mistakes it prevents are the expensive ones: a missing `@source` directive renders every component unstyled, and hue-based utilities (`bg-gray-100`) bypass the token system entirely.
 
-Every documentation page is served as clean markdown at `<url>.md` - fetch `https://appica.dev/ui/components/react/button.md`, not the HTML page. The full index, with an instruction block, is at [`https://appica.dev/llms.txt`](https://appica.dev/llms.txt).
+Every documentation page is served as clean markdown at `<url>.md` - fetch `https://appica.dev/ui/components/react/button.md`, not the HTML page. The full index, with an instruction block, is at [`https://appica.dev/ui/react/llms.txt`](https://appica.dev/ui/react/llms.txt).
 
 If you are a human setting up a project: paste those rules into your own `AGENTS.md` so your agent loads them every session. See [Set up your coding agent](https://appica.dev/ui/docs/react/agents) for a copy-paste block.
 

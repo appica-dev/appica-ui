@@ -93,8 +93,8 @@ interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onS
    * @default 'trimSnaps'
    */
   containScroll?: false | 'trimSnaps' | 'keepSnaps'
-  /** Release snap points; glide to a momentum stop. */
-  dragFree?: boolean
+  /** Release snap points and glide to a momentum stop. `'snap'` glides, then settles on the nearest snap point. */
+  dragFree?: boolean | 'snap'
   /** Index of the slide to start on. */
   startSnap?: number
   /**
@@ -103,7 +103,7 @@ interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onS
    */
   active?: boolean
   /**
-   * Whether pointer dragging is enabled (Embla's `watchDrag`).
+   * Whether pointer dragging is enabled.
    * @default true
    */
   draggable?: boolean
@@ -294,8 +294,10 @@ function Carousel({
       emblaApi.internalEngine().scrollBody.useDuration(0)
     }
     emblaApi.on('pointerup', snapToTargetInstantly)
+    emblaApi.on('scroll', snapToTargetInstantly)
     return () => {
       emblaApi.off('pointerup', snapToTargetInstantly)
+      emblaApi.off('scroll', snapToTargetInstantly)
     }
   }, [emblaApi, reducedMotion])
 
@@ -451,6 +453,26 @@ function Carousel({
       }
     }
 
+    let cleanupWheel: (() => void) | undefined
+    if (emblaApi.plugins().wheelGestures && (autoplayPlugin || autoScrollPlugin)) {
+      const viewport = emblaApi.rootNode()
+      const vertical = emblaApi.internalEngine().options.axis === 'y'
+      const onWheel = (event: WheelEvent) => {
+        const along = Math.abs(vertical ? event.deltaY : event.deltaX)
+        const across = Math.abs(vertical ? event.deltaX : event.deltaY)
+        if (along <= across) return
+        if (autoplayPlugin?.isPlaying()) {
+          autoplayPlugin.stop()
+          scheduleResume(() => emblaApi.plugins().autoplay?.play())
+        } else if (autoScrollPlugin?.isPlaying()) {
+          autoScrollPlugin.stop()
+          scheduleResume(() => emblaApi.plugins().autoScroll?.play())
+        }
+      }
+      viewport.addEventListener('wheel', onWheel, { passive: true })
+      cleanupWheel = () => viewport.removeEventListener('wheel', onWheel)
+    }
+
     return () => {
       emblaApi.off('reinit', handleReInit)
       emblaApi.off('select', handleSelect)
@@ -459,6 +481,7 @@ function Carousel({
       emblaApi.off('slideschanged', syncFull)
       cleanupAutoplay?.()
       cleanupAutoScroll?.()
+      cleanupWheel?.()
       clearResumeTimer()
     }
   }, [emblaApi, autoplayEnabled, autoScrollEnabled, resumeAfterMs])

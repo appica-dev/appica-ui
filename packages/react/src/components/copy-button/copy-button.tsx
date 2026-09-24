@@ -69,6 +69,8 @@ interface CopyButtonProps extends Omit<ButtonProps, 'value' | 'onCopy'> {
   onCopy?: (value: string) => void
   /** Called if reading the value or writing to the clipboard fails. */
   onCopyError?: (error: unknown) => void
+  /** Icon shown at rest, cross-faded to the drawn check after a copy. Defaults to a built-in copy glyph. */
+  icon?: React.ReactNode
 }
 
 function CopyButton({
@@ -78,6 +80,7 @@ function CopyButton({
   copiedLabel = 'Copied',
   onCopy,
   onCopyError,
+  icon,
   onClick,
   variant = 'ghost',
   size = 'icon-sm',
@@ -120,16 +123,19 @@ function CopyButton({
       {...props}
     >
       <span data-icon={children != null ? 'start' : undefined} className="grid place-items-center *:[grid-area:1/1]">
-        <svg
-          {...ICON_SVG_PROPS}
+        <span
           className={cn(
-            'transition-[opacity,scale] delay-150 duration-150 ease-out group-data-copied/copy:delay-0',
+            'grid place-items-center transition-[opacity,scale] delay-150 duration-150 ease-out group-data-copied/copy:delay-0',
             'group-data-copied/copy:scale-50 group-data-copied/copy:opacity-0',
             'motion-reduce:transition-none',
           )}
         >
-          <path d="M4.012 16.737c-.307-.175-.562-.427-.739-.732S3.001 15.353 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1M7 9.667c0-.707.281-1.386.781-1.886S8.96 7 9.667 7h8.666c.35 0 .697.069 1.021.203s.618.33.865.578.444.542.578.865A2.67 2.67 0 0 1 21 9.667v8.666a2.67 2.67 0 0 1-.781 1.886 2.67 2.67 0 0 1-1.886.781H9.667a2.67 2.67 0 0 1-1.021-.203c-.324-.134-.618-.331-.865-.578s-.444-.542-.578-.865S7 18.683 7 18.333V9.667z" />
-        </svg>
+          {icon ?? (
+            <svg {...ICON_SVG_PROPS}>
+              <path d="M4.012 16.737c-.307-.175-.562-.427-.739-.732S3.001 15.353 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1M7 9.667c0-.707.281-1.386.781-1.886S8.96 7 9.667 7h8.666c.35 0 .697.069 1.021.203s.618.33.865.578.444.542.578.865A2.67 2.67 0 0 1 21 9.667v8.666a2.67 2.67 0 0 1-.781 1.886 2.67 2.67 0 0 1-1.886.781H9.667a2.67 2.67 0 0 1-1.021-.203c-.324-.134-.618-.331-.865-.578s-.444-.542-.578-.865S7 18.683 7 18.333V9.667z" />
+            </svg>
+          )}
+        </span>
         <svg {...ICON_SVG_PROPS}>
           <path
             d={CHECK_PATH}

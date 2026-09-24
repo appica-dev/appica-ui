@@ -31,6 +31,11 @@ interface GradientGlowProps extends React.ComponentProps<'div'> {
    */
   blur?: GradientGlowBlur
   /**
+   * Paint the blurred aura behind the content. Set `false` with `border` for a gradient stroke alone.
+   * @default true
+   */
+  glow?: boolean
+  /**
    * Add a 1px stroke that follows the same animated gradient.
    * @default false
    */
@@ -81,6 +86,7 @@ function GradientGlow({
   to = '#FFD69B',
   angle = 95,
   blur = 'lg',
+  glow = true,
   border = false,
   borderWidth = 1,
   speed = 4,
@@ -140,16 +146,18 @@ function GradientGlow({
       style={{ '--gradient-glow-duration': `${speed}s`, ...style } as React.CSSProperties}
       {...props}
     >
-      <span
-        aria-hidden
-        data-slot="gradient-glow-aura"
-        className={cn(
-          'motion-safe:animate-gradient-glow-aura pointer-events-none absolute inset-0 -z-10 rounded-[inherit] opacity-(--gradient-glow-opacity)',
-          BLUR_CLASS[blur],
-          layerClasses,
-        )}
-        style={{ background: gradient }}
-      />
+      {glow ? (
+        <span
+          aria-hidden
+          data-slot="gradient-glow-aura"
+          className={cn(
+            'motion-safe:animate-gradient-glow-aura pointer-events-none absolute inset-0 -z-10 rounded-[inherit] opacity-(--gradient-glow-opacity)',
+            BLUR_CLASS[blur],
+            layerClasses,
+          )}
+          style={{ background: gradient }}
+        />
+      ) : null}
       {children}
       {border ? (
         <span

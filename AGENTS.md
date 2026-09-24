@@ -1,7 +1,7 @@
 # Appica UI monorepo - agent guide
 
 A pnpm-workspace monorepo housing the public `@appica/ui-*` packages. One
-workspace so far (`pnpm-workspace.yaml`), with more integrations (html, vue, …)
+workspace so far (`pnpm-workspace.yaml`), with more integrations (vue, svelte)
 to land as sibling packages:
 
 - **`packages/react`** - the `@appica/ui-react` component library (React 19 + Base UI `@base-ui/react` + Motion + Tailwind v4). Conventions: [packages/react/AGENTS.md](packages/react/AGENTS.md).

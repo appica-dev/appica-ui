@@ -17,7 +17,7 @@ interface BackgroundPatternProps extends React.ComponentProps<'div'> {
    * @default false
    */
   spotlight?: boolean | number | string | SpotlightConfig
-  /** Cell size in px; overrides the per-variant default (dots 14, grid/dashed-grid 28, hexagons 40). */
+  /** Cell size in px; overrides the per-variant default (dots 14, grid 28, hexagons 40, rings 48; checkerboard 16, per square). */
   cellSize?: number
   /**
    * Where the spotlight reads pointer movement. `'self'` tracks over this element; `'window'` tracks anywhere - for a
@@ -47,8 +47,9 @@ function BackgroundPattern({
   ...props
 }: BackgroundPatternProps) {
   const spot = resolveSpotlight(spotlight)
+  const cell = cellSize ?? patternCell(variant)
   const cssVars = {
-    '--pattern-cell': `${cellSize ?? patternCell(variant)}px`,
+    '--pattern-cell': `${cell}px`,
     ...(spot?.size != null && {
       '--spotlight-size': typeof spot.size === 'number' ? `${spot.size}px` : spot.size,
     }),
@@ -64,8 +65,14 @@ function BackgroundPattern({
       style={{ ...cssVars, ...style }}
       {...props}
     >
-      <PatternLayer variant={variant} className={cn('-z-10 text-(--pattern-color)', patternTint(variant))} />
-      {spot ? <BackgroundPatternInteractive variant={variant} persistent={spot.persistent} track={track} /> : null}
+      <PatternLayer
+        variant={variant}
+        cell={cell}
+        className={cn('-z-10 text-(--pattern-color)', patternTint(variant))}
+      />
+      {spot ? (
+        <BackgroundPatternInteractive variant={variant} cell={cell} persistent={spot.persistent} track={track} />
+      ) : null}
       {children}
     </div>
   )

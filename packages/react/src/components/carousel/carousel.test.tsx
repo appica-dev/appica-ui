@@ -547,6 +547,30 @@ describe('useCarousel + lifecycle', () => {
     expect(subscribed).toEqual(expect.arrayContaining(['reinit', 'select', 'scroll', 'slidesinview', 'slideschanged']))
   })
 
+  it('pauses autoplay on an on-axis wheel when wheel gestures are on', () => {
+    const viewport = document.createElement('div')
+    const autoplay = {
+      options: { delay: 4000 },
+      isPlaying: vi.fn(() => true),
+      play: vi.fn(),
+      stop: vi.fn(),
+      reset: vi.fn(),
+    }
+    stubApi.plugins.mockReturnValue({ wheelGestures: {}, autoplay })
+    stubApi.rootNode.mockReturnValue(viewport)
+    stubApi.internalEngine.mockReturnValue({ options: { axis: 'x' } })
+    try {
+      render(<Basic autoplay wheelGestures />)
+      viewport.dispatchEvent(new WheelEvent('wheel', { deltaX: 2, deltaY: 40 }))
+      expect(autoplay.stop).not.toHaveBeenCalled()
+      viewport.dispatchEvent(new WheelEvent('wheel', { deltaX: 40, deltaY: 2 }))
+      expect(autoplay.stop).toHaveBeenCalledTimes(1)
+    } finally {
+      stubApi.rootNode.mockReset()
+      stubApi.internalEngine.mockReset()
+    }
+  })
+
   it('does not re-run the sync effect when re-rendered with a new-but-equal autoplay object', () => {
     const { rerender } = render(<Basic autoplay={{ delay: 3000 }} />)
     const initialOnCalls = stubApi.on.mock.calls.length

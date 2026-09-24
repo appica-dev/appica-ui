@@ -4,8 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "incremental": false,
-    "exactOptionalPropertyTypes": false,
-    "ignoreDeprecations": "6.0"
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.tsx", "**/*.test.ts"]

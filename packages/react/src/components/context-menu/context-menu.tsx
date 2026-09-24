@@ -119,6 +119,7 @@ function ContextMenuItem({ className, ...props }: ContextMenuItemProps) {
   return (
     <BaseContextMenu.Item
       data-slot="context-menu-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, className)}
       {...props}
     />
@@ -132,6 +133,7 @@ function ContextMenuLinkItem({ className, ...props }: ContextMenuLinkItemProps) 
   return (
     <BaseContextMenu.LinkItem
       data-slot="context-menu-link-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, className)}
       {...props}
     />
@@ -188,6 +190,7 @@ function ContextMenuRadioItem({ className, children, ...props }: ContextMenuRadi
   return (
     <BaseContextMenu.RadioItem
       data-slot="context-menu-radio-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       {...props}
     >
@@ -210,6 +213,7 @@ function ContextMenuCheckboxItem({ className, children, ...props }: ContextMenuC
   return (
     <BaseContextMenu.CheckboxItem
       data-slot="context-menu-checkbox-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       {...props}
     >
@@ -239,6 +243,7 @@ function ContextMenuSubTrigger({ className, children, ...props }: ContextMenuSub
     <BaseContextMenu.SubmenuTrigger className="group/submenu-trigger outline-hidden" {...props}>
       <span
         data-slot="context-menu-sub-trigger"
+        data-orientation="vertical"
         className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       >
         <span className={cn('flex flex-1 items-center', ITEM_TEXT[size])}>{children}</span>

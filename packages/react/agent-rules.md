@@ -8,7 +8,7 @@
   never tell a reader to modify the library.
 
   Two consumers read this text, and neither should ever restate it:
-    - the docs site, which inlines it into https://appica.dev/llms.txt and into
+    - the docs site, which inlines it into https://appica.dev/ui/react/llms.txt and into
       the "Set up your coding agent" page (it reads this file out of
       node_modules at build time);
     - README.md's "For AI agents" section, which links here.
@@ -37,5 +37,5 @@
 - For a link styled as a button, put `buttonVariants(...)` on the `<a>` - never `<Button render={<a/>}>`.
 - Put `className` overrides on the wrapper component, not on the JSX passed to `render`.
 - Do not hand-roll a component that exists in the library. Check the component list first:
-  https://appica.dev/llms.txt
+  https://appica.dev/ui/react/llms.txt
 - Every documentation page is served as clean markdown at `<url>.md` - fetch that, not the HTML.

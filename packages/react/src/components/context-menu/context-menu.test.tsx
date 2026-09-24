@@ -86,6 +86,34 @@ describe('ContextMenu', () => {
     expect(item.className).toContain('text-base')
   })
 
+  it('marks every item kind with data-orientation="vertical"', async () => {
+    const user = setupUser()
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger data-testid="trigger">Right click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Item</ContextMenuItem>
+          <ContextMenuLinkItem href="https://example.com">Link</ContextMenuLinkItem>
+          <ContextMenuCheckboxItem>Check</ContextMenuCheckboxItem>
+          <ContextMenuRadioGroup value="a">
+            <ContextMenuRadioItem value="a">Radio</ContextMenuRadioItem>
+          </ContextMenuRadioGroup>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>More</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextMenuItem>Nested</ContextMenuItem>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    await user.pointer({ keys: '[MouseRight]', target: screen.getByTestId('trigger') })
+    await screen.findByRole('menuitem', { name: 'Item' })
+    const items = document.querySelectorAll('[data-slot$="-item"], [data-slot="context-menu-sub-trigger"]')
+    expect(items).toHaveLength(5)
+    items.forEach((item) => expect(item).toHaveAttribute('data-orientation', 'vertical'))
+  })
+
   it('renders the popup with size-driven radius', async () => {
     const user = setupUser()
     render(<BasicMenu size="sm" />)

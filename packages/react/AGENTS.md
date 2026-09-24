@@ -5,8 +5,8 @@ This package is a React component library built on three foundations: React 19+,
 ## Stack pin
 
 - React `^19.0.0` - use modern patterns (ref-as-prop, no `forwardRef`, `useId`, `useTransition`, etc.).
-- `@base-ui/react` `^1.6.0` - **NOT** `@base-ui-components/react` (that was the pre-GA name; switched 2026-05-06).
-- Tailwind v4, TypeScript 6 (`ignoreDeprecations: "6.0"` is required in `tsconfig.json`).
+- `@base-ui/react` `^1.8.0` - **NOT** `@base-ui-components/react` (that was the pre-GA name; switched 2026-05-06).
+- Tailwind v4, TypeScript 7 for `tsc` (the `@typescript/native` alias). `typescript` itself resolves to TypeScript 6 (`@typescript/typescript6`), because typescript-eslint and the `scripts/` import its JS API, which TypeScript 7 doesn't ship.
 - Test stack: vitest jsdom + @testing-library/react + user-event + vitest-axe. `globals: false` - `cleanup()` is wired manually in [src/test/setup.ts](src/test/setup.ts).
 
 ## Workflow when building or editing a component
@@ -249,4 +249,5 @@ Terse rules distilled from past fixes; the linked file is the canonical example.
 - **Links are not Buttons:** for a link styled as a button, put `buttonVariants(...)` on the `<a>` - never `<Button render={<a/>}>`. `nativeButton={false}` is only for rendering Button as a non-button element (div/span).
 - **Theme tokens (Tailwind v4):** `:root` custom props referenced _only_ by generated utilities can get purged - use spacing literals or `@theme static`. `@theme inline` inlines the raw token, so reference `var(--primary)` (not `var(--color-primary)`) unless a `--color-*` alias is defined in [styles.css](styles.css).
 - **Grayscale palette is user-facing "Base color"** (not "Neutral", to avoid the Tailwind `neutral` clash); the internal type stays `NeutralColor`.
+- **Menu items carry their own `data-orientation="vertical"`** ([src/components/dropdown-menu/dropdown-menu.tsx](src/components/dropdown-menu/dropdown-menu.tsx), [src/components/context-menu/context-menu.tsx](src/components/context-menu/context-menu.tsx)): `navigationLinkVariants` sizes them off it. Never style menu items off Base UI's `aria-orientation` - `role="menu"` is implicitly vertical, and 1.8 stopped writing the attribute there. The `in-aria-[orientation=vertical]` rules stay for consumers who wrap `navigationLinkVariants` rows in their own `aria-orientation="vertical"` container.
 - **Card radius scales proportionally, not by subtraction:** `--card-radius` is the content wrapper's corner and the only knob a consumer sets. The frame (`×4/3`) and inset media (`×3/4`) multiply off it. Subtracting the padding instead leaves inset media on a hairline corner at the default radius and collapses it entirely below that.
