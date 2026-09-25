@@ -29,7 +29,7 @@ type CardFrame = 'none' | 'solid' | 'glass'
 
 const frameVariants: Record<CardFrame, string> = {
   none: 'rounded-(--card-radius)',
-  solid: cn(FRAME_RADIUS, 'bg-background-subtle p-2 backdrop-blur-md'),
+  solid: cn(FRAME_RADIUS, 'bg-background-muted/60 p-2 backdrop-blur-xl dark:bg-background-subtle'),
   glass: cn(FRAME_RADIUS, 'border border-white/15 bg-white/10 p-2 backdrop-blur-sm'),
 }
 

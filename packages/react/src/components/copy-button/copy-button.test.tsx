@@ -39,6 +39,19 @@ describe('CopyButton', () => {
     expect(screen.getAllByText('Copied').length).toBeGreaterThanOrEqual(1)
   })
 
+  it('renders a custom resting icon in place of the copy glyph and still swaps to the check', async () => {
+    const { user } = setup()
+    render(<CopyButton value="hello" icon={<svg data-testid="link-icon" />} />)
+    const button = screen.getByRole('button', { name: 'Copy' })
+    expect(screen.getByTestId('link-icon')).toBeInTheDocument()
+    expect(button.querySelectorAll('svg')).toHaveLength(2)
+
+    await user.click(button)
+
+    await waitFor(() => expect(button).toHaveAttribute('data-copied'))
+    expect(screen.getByTestId('link-icon')).toBeInTheDocument()
+  })
+
   it('copies the string value on click', async () => {
     const { user, writeText } = setup()
     const onCopy = vi.fn()

@@ -33,6 +33,12 @@ describe('GradientGlow', () => {
     expect(ring).toHaveAttribute('aria-hidden')
   })
 
+  it('drops the aura but keeps the border ring when glow is off', () => {
+    const { container } = render(<GradientGlow glow={false} border />)
+    expect(container.querySelector('[data-slot="gradient-glow-aura"]')).toBeNull()
+    expect(container.querySelector('[data-slot="gradient-glow-border"]')).not.toBeNull()
+  })
+
   it('maps the blur prop to a Tailwind utility', () => {
     const { container } = render(<GradientGlow blur="2xl" />)
     const aura = container.querySelector('[data-slot="gradient-glow-aura"]')!

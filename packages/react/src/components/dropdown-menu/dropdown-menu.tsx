@@ -119,6 +119,7 @@ function DropdownMenuItem({ className, ...props }: DropdownMenuItemProps) {
   return (
     <BaseMenu.Item
       data-slot="dropdown-menu-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, className)}
       {...props}
     />
@@ -132,6 +133,7 @@ function DropdownMenuLinkItem({ className, ...props }: DropdownMenuLinkItemProps
   return (
     <BaseMenu.LinkItem
       data-slot="dropdown-menu-link-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, className)}
       {...props}
     />
@@ -188,6 +190,7 @@ function DropdownMenuRadioItem({ className, children, ...props }: DropdownMenuRa
   return (
     <BaseMenu.RadioItem
       data-slot="dropdown-menu-radio-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       {...props}
     >
@@ -210,6 +213,7 @@ function DropdownMenuCheckboxItem({ className, children, ...props }: DropdownMen
   return (
     <BaseMenu.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
+      data-orientation="vertical"
       className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       {...props}
     >
@@ -239,6 +243,7 @@ function DropdownMenuSubTrigger({ className, children, ...props }: DropdownMenuS
     <BaseMenu.SubmenuTrigger className="group/submenu-trigger outline-hidden" {...props}>
       <span
         data-slot="dropdown-menu-sub-trigger"
+        data-orientation="vertical"
         className={cn(navigationLinkVariants({ variant: 'pill', size }), ITEM_BASE, 'justify-between', className)}
       >
         <span className={cn('flex flex-1 items-center', ITEM_TEXT[size])}>{children}</span>

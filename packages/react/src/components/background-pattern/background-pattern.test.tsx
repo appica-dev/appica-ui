@@ -80,6 +80,41 @@ describe('BackgroundPattern', () => {
     expect(root).not.toHaveClass('bg-background-subtle')
   })
 
+  it.each([
+    ['dots', 14],
+    ['grid', 28],
+    ['hexagons', 40],
+    ['rings', 48],
+    ['checkerboard', 16],
+  ] as const)('paints one masked %s layer at its default cell size', (variant, cell) => {
+    const { container } = render(<BackgroundPattern variant={variant} />)
+    const root = container.querySelector('[data-slot="background-pattern"]') as HTMLElement
+    const layers = container.querySelectorAll<HTMLElement>('[data-slot="background-pattern-layer"]')
+    expect(root.style.getPropertyValue('--pattern-cell')).toBe(`${cell}px`)
+    expect(layers).toHaveLength(1)
+    expect(layers[0]!.style.getPropertyValue('mask-image')).not.toBe('')
+  })
+
+  it('draws the grid and rings tiles at the resolved cell size', () => {
+    const tile = (variant: 'grid' | 'rings', cellSize?: number) => {
+      const { container, unmount } = render(<BackgroundPattern variant={variant} cellSize={cellSize} />)
+      const mask = container
+        .querySelector<HTMLElement>('[data-slot="background-pattern-layer"]')!
+        .style.getPropertyValue('mask-image')
+      unmount()
+      return decodeURIComponent(mask)
+    }
+    expect(tile('grid')).toContain("width='28' height='28'")
+    expect(tile('grid', 40)).toContain("width='40' height='40'")
+    expect(tile('rings', 32)).toContain("width='32' height='32'")
+  })
+
+  it('tiles the checkerboard two cells wide so cellSize sets one square', () => {
+    const { container } = render(<BackgroundPattern variant="checkerboard" />)
+    const layer = container.querySelector<HTMLElement>('[data-slot="background-pattern-layer"]')!
+    expect(layer.style.getPropertyValue('mask-size')).toContain('calc(var(--pattern-cell) * 2)')
+  })
+
   it('forwards cellSize as a CSS variable', () => {
     const { container } = render(<BackgroundPattern cellSize={20} />)
     const root = container.querySelector('[data-slot="background-pattern"]') as HTMLElement

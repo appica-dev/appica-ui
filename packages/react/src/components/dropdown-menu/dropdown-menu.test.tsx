@@ -86,6 +86,34 @@ describe('DropdownMenu', () => {
     expect(item.className).toContain('text-base')
   })
 
+  it('marks every item kind with data-orientation="vertical"', async () => {
+    const user = setupUser()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Item</DropdownMenuItem>
+          <DropdownMenuLinkItem href="https://example.com">Link</DropdownMenuLinkItem>
+          <DropdownMenuCheckboxItem>Check</DropdownMenuCheckboxItem>
+          <DropdownMenuRadioGroup value="a">
+            <DropdownMenuRadioItem value="a">Radio</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Nested</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await screen.findByRole('menuitem', { name: 'Item' })
+    const items = document.querySelectorAll('[data-slot$="-item"], [data-slot="dropdown-menu-sub-trigger"]')
+    expect(items).toHaveLength(5)
+    items.forEach((item) => expect(item).toHaveAttribute('data-orientation', 'vertical'))
+  })
+
   it('renders the popup with size-driven radius', async () => {
     const user = setupUser()
     render(<BasicMenu size="sm" />)

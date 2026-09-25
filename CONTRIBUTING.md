@@ -10,8 +10,8 @@ Appica UI is developed in-house, and we're not accepting feature pull requests a
 
 ### Prerequisites
 
-- Node.js >= 22
-- [pnpm](https://pnpm.io) >= 9 (`npm install -g pnpm`)
+- Node.js `^22.22.2 || ^24.15.0 || >=26`
+- [pnpm](https://pnpm.io) >= 11 (`npm install -g pnpm`); the exact version is pinned in `packageManager`
 
 ### Setup and common commands
 

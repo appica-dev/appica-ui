@@ -6,3 +6,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@testing-library/jest-dom@7.0.1'
   - '@appica/icons-svelte@1.0.0'
+engineStrict: true
