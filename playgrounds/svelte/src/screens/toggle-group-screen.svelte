@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { AlignCenter, AlignLeft, AlignRight, Bold, Italic, Underline } from '@appica/icons-svelte'
   import { DirectionProvider, Switch, Toggle, ToggleGroup, buttonVariants } from '@appica/ui-svelte'
 
   const SWATCHES = [
@@ -17,43 +18,22 @@
 </script>
 
 {#snippet alignLeft()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M15 12H3" />
-    <path d="M17 18H3" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignLeft />
 {/snippet}
 {#snippet alignCenter()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M17 12H7" />
-    <path d="M19 18H5" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignCenter />
 {/snippet}
 {#snippet alignRight()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M21 12H9" />
-    <path d="M21 18H7" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignRight />
 {/snippet}
 {#snippet boldIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 12h9a4 4 0 0 1 0 8H6V4h8a4 4 0 0 1 0 8" />
-  </svg>
+  <Bold />
 {/snippet}
 {#snippet italicIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M19 4h-9" />
-    <path d="M14 20H5" />
-    <path d="m15 4-6 16" />
-  </svg>
+  <Italic />
 {/snippet}
 {#snippet underlineIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 4v6a6 6 0 0 0 12 0V4" />
-    <path d="M4 20h16" />
-  </svg>
+  <Underline />
 {/snippet}
 
 <section class="flex flex-col gap-8">

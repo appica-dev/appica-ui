@@ -1,5 +1,17 @@
 <script lang="ts">
   import {
+    Clipboard,
+    Copy,
+    Download,
+    Folder,
+    Link,
+    Pencil,
+    Photo,
+    Scissors,
+    Star,
+    Trash,
+  } from '@appica/icons-svelte'
+  import {
     ContextMenu,
     ContextMenuCheckboxItem,
     ContextMenuContent,
@@ -26,182 +38,43 @@
 </script>
 
 {#snippet copyIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-  </svg>
+  <Copy data-icon="start" />
 {/snippet}
 
 {#snippet scissorsIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <circle cx="6" cy="6" r="3"></circle>
-    <path d="M8.12 8.12 12 12"></path>
-    <path d="M20 4 8.12 15.88"></path>
-    <circle cx="6" cy="18" r="3"></circle>
-    <path d="M14.8 14.8 20 20"></path>
-  </svg>
+  <Scissors data-icon="start" />
 {/snippet}
 
 {#snippet clipboardIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
-    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-  </svg>
+  <Clipboard data-icon="start" />
 {/snippet}
 
 {#snippet trashIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M3 6h18"></path>
-    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-  </svg>
+  <Trash data-icon="start" />
 {/snippet}
 
 {#snippet photoIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="size-8"
-  >
-    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
-    <circle cx="9" cy="9" r="2"></circle>
-    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-  </svg>
+  <Photo class="size-8" />
 {/snippet}
 
 {#snippet downloadIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-    <polyline points="7 10 12 15 17 10"></polyline>
-    <line x1="12" x2="12" y1="15" y2="3"></line>
-  </svg>
+  <Download data-icon="start" />
 {/snippet}
 
 {#snippet pencilIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path
-      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-    ></path>
-    <path d="m15 5 4 4"></path>
-  </svg>
+  <Pencil data-icon="start" />
 {/snippet}
 
 {#snippet linkIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-  </svg>
+  <Link data-icon="start" />
 {/snippet}
 
 {#snippet folderIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path
-      d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-    ></path>
-  </svg>
+  <Folder data-icon="start" />
 {/snippet}
 
 {#snippet starIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-    ></polygon>
-  </svg>
+  <Star data-icon="start" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

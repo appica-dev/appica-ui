@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Adjustments, Check, InfoCircle } from '@appica/icons-svelte'
   import {
     DirectionProvider,
     Field,
@@ -40,61 +41,15 @@
 </script>
 
 {#snippet adjustmentsIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon="start"
-    aria-hidden="true"
-  >
-    <path d="M10 5H3"></path>
-    <path d="M21 5h-7"></path>
-    <path d="M14 12H3"></path>
-    <path d="M21 12h-3"></path>
-    <path d="M12 19H3"></path>
-    <path d="M21 19h-5"></path>
-    <circle cx="12" cy="5" r="2"></circle>
-    <circle cx="16" cy="12" r="2"></circle>
-    <circle cx="14" cy="19" r="2"></circle>
-  </svg>
+  <Adjustments data-icon="start" />
 {/snippet}
 
 {#snippet infoIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="12" r="10"></circle>
-    <path d="M12 16v-4"></path>
-    <path d="M12 8h.01"></path>
-  </svg>
+  <InfoCircle />
 {/snippet}
 
 {#snippet checkIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon="end"
-    class="text-primary ms-auto"
-    aria-hidden="true"
-  >
-    <path d="M20 6 9 17l-5-5"></path>
-  </svg>
+  <Check data-icon="end" class="text-primary ms-auto" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

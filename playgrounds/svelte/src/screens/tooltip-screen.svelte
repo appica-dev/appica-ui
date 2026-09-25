@@ -1,5 +1,14 @@
 <script lang="ts">
   import {
+    Bold,
+    Bookmark,
+    Heart,
+    Italic,
+    Link,
+    Strikethrough,
+    Underline,
+  } from '@appica/icons-svelte'
+  import {
     DirectionProvider,
     Kbd,
     Switch,
@@ -27,65 +36,25 @@
 </script>
 
 {#snippet heartIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
-  </svg>
+  <Heart />
 {/snippet}
 
 {#snippet bookmarkIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-  </svg>
+  <Bookmark />
 {/snippet}
 
 {#snippet formatIcon(kind: (typeof ACTIONS)[number]['kind'])}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    {#if kind === 'bold'}
-      <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-      <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-    {:else if kind === 'italic'}
-      <line x1="19" x2="10" y1="4" y2="4"></line>
-      <line x1="14" x2="5" y1="20" y2="20"></line>
-      <line x1="15" x2="9" y1="4" y2="20"></line>
-    {:else if kind === 'underline'}
-      <path d="M6 4v6a6 6 0 0 0 12 0V4"></path>
-      <line x1="4" x2="20" y1="20" y2="20"></line>
-    {:else if kind === 'strikethrough'}
-      <path d="M16 4H9a3 3 0 0 0-2.83 4"></path>
-      <path d="M14 12a4 4 0 0 1 0 8H6"></path>
-      <line x1="4" x2="20" y1="12" y2="12"></line>
-    {:else if kind === 'link'}
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-    {/if}
-  </svg>
+  {#if kind === 'bold'}
+    <Bold />
+  {:else if kind === 'italic'}
+    <Italic />
+  {:else if kind === 'underline'}
+    <Underline />
+  {:else if kind === 'strikethrough'}
+    <Strikethrough />
+  {:else if kind === 'link'}
+    <Link />
+  {/if}
 {/snippet}
 
 <section class="flex flex-col gap-8">

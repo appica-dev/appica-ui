@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { At, Search } from '@appica/icons-svelte'
   import { DirectionProvider, Input, Switch } from '@appica/ui-svelte'
 
   const variants = ['outline', 'soft'] as const
@@ -9,24 +10,11 @@
 </script>
 
 {#snippet searchIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="size-4"
-  >
-    <circle cx="11" cy="11" r="8" />
-    <path d="m21 21-4.3-4.3" />
-  </svg>
+  <Search class="size-4" />
 {/snippet}
 
 {#snippet atIcon()}
-  <span class="text-foreground-muted text-sm">@</span>
+  <At />
 {/snippet}
 
 <section class="flex flex-col gap-8">

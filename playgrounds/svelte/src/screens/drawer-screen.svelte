@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Music, Pencil } from '@appica/icons-svelte'
   import {
     DirectionProvider,
     Drawer,
@@ -72,37 +73,11 @@
 </script>
 
 {#snippet musicIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M9 18V5l12-2v13"></path>
-    <circle cx="6" cy="18" r="3"></circle>
-    <circle cx="18" cy="16" r="3"></circle>
-  </svg>
+  <Music />
 {/snippet}
 
 {#snippet pencilIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon="start"
-    aria-hidden="true"
-  >
-    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
-    <path d="m15 5 4 4"></path>
-  </svg>
+  <Pencil data-icon="start" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

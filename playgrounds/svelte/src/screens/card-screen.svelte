@@ -1,5 +1,14 @@
 <script lang="ts">
   import {
+    Bookmark,
+    BookmarkFilled,
+    FolderPlus,
+    Heart,
+    HeartFilled,
+    Plus,
+    ShoppingCartPlus,
+  } from '@appica/icons-svelte'
+  import {
     Avatar,
     AvatarBadge,
     AvatarFallback,
@@ -51,103 +60,31 @@
 </script>
 
 {#snippet bookmark()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="in-data-pressed:hidden"
-    aria-hidden="true"
-  >
-    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-  </svg>
+  <Bookmark class="in-data-pressed:hidden" />
 {/snippet}
 
 {#snippet bookmarkFilled()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="hidden in-data-pressed:block" aria-hidden="true">
-    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-  </svg>
+  <BookmarkFilled class="hidden in-data-pressed:block" />
 {/snippet}
 
 {#snippet heart()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="in-data-pressed:hidden"
-    aria-hidden="true"
-  >
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
-  </svg>
+  <Heart class="in-data-pressed:hidden" />
 {/snippet}
 
 {#snippet heartFilled()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="hidden in-data-pressed:block" aria-hidden="true">
-    <path
-      d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
-    ></path>
-  </svg>
+  <HeartFilled class="hidden in-data-pressed:block" />
 {/snippet}
 
 {#snippet shoppingCartPlus()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon="start"
-    aria-hidden="true"
-  >
-    <circle cx="8" cy="21" r="1"></circle>
-    <circle cx="19" cy="21" r="1"></circle>
-    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
-    <path d="M16 6h6"></path>
-    <path d="M19 3v6"></path>
-  </svg>
+  <ShoppingCartPlus data-icon="start" />
 {/snippet}
 
 {#snippet folderPlus()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 10v6"></path>
-    <path d="M9 13h6"></path>
-    <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>
-  </svg>
+  <FolderPlus />
 {/snippet}
 
 {#snippet plus()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon="start"
-    aria-hidden="true"
-  >
-    <path d="M5 12h14"></path>
-    <path d="M12 5v14"></path>
-  </svg>
+  <Plus data-icon="start" />
 {/snippet}
 
 {#snippet appicaMark()}

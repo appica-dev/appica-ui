@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { Refresh, UserFilled } from '@appica/icons-svelte'
   import {
     Avatar,
     AvatarBadge,
@@ -48,11 +49,7 @@
 </script>
 
 {#snippet userIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path
-      d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"
-    ></path>
-  </svg>
+  <UserFilled />
 {/snippet}
 
 {#snippet groupRow()}
@@ -190,22 +187,7 @@
         </AvatarFallback>
       </Avatar>
       <Button variant="outline" size="sm" onclick={reload} disabled={!src}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.85"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-          data-icon="start"
-        >
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
-          <path d="M21 3v5h-5"></path>
-          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
-          <path d="M8 16H3v5"></path>
-        </svg>
+        <Refresh data-icon="start" />
         Reload
       </Button>
     </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Activity, ChartBar, LayoutGrid, List, Settings } from '@appica/icons-svelte'
   import {
     Badge,
     Button,
@@ -24,97 +25,23 @@
 </script>
 
 {#snippet layoutGridIcon(icon?: 'start')}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon={icon}
-  >
-    <rect width="7" height="7" x="3" y="3" rx="1"></rect>
-    <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-    <rect width="7" height="7" x="14" y="14" rx="1"></rect>
-    <rect width="7" height="7" x="3" y="14" rx="1"></rect>
-  </svg>
+  <LayoutGrid data-icon={icon} />
 {/snippet}
 
 {#snippet activityIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path
-      d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"
-    ></path>
-  </svg>
+  <Activity data-icon="start" />
 {/snippet}
 
 {#snippet settingsIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path
-      d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-    ></path>
-    <circle cx="12" cy="12" r="3"></circle>
-  </svg>
+  <Settings data-icon="start" />
 {/snippet}
 
 {#snippet listIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 12h.01"></path>
-    <path d="M3 18h.01"></path>
-    <path d="M3 6h.01"></path>
-    <path d="M8 12h13"></path>
-    <path d="M8 18h13"></path>
-    <path d="M8 6h13"></path>
-  </svg>
+  <List />
 {/snippet}
 
 {#snippet chartBarIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
-    <path d="M7 16h8"></path>
-    <path d="M7 11h12"></path>
-    <path d="M7 6h3"></path>
-  </svg>
+  <ChartBar />
 {/snippet}
 
 <section class="flex flex-col gap-8">

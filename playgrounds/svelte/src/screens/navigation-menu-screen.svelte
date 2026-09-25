@@ -1,5 +1,16 @@
 <script lang="ts">
   import {
+    Bolt,
+    Book,
+    ChartBar,
+    Code,
+    Cube,
+    Folder,
+    LayoutDashboard,
+    Lifebuoy,
+    Users,
+  } from '@appica/icons-svelte'
+  import {
     DirectionProvider,
     NavigationMenu,
     NavigationMenuContent,
@@ -101,58 +112,25 @@
 </script>
 
 {#snippet namedIcon(name: string, icon?: 'start')}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon={icon}
-  >
-    {#if name === 'analytics'}
-      <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-      <path d="M7 17v-4"></path>
-      <path d="M12 17v-8"></path>
-      <path d="M17 17v-2"></path>
-    {:else if name === 'cube'}
-      <path
-        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
-      ></path>
-      <path d="m3.3 7 8.7 5 8.7-5"></path>
-      <path d="M12 22V12"></path>
-    {:else if name === 'bolt'}
-      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path>
-    {:else if name === 'code'}
-      <path d="m16 18 6-6-6-6"></path>
-      <path d="m8 6-6 6 6 6"></path>
-    {:else if name === 'book'}
-      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"></path>
-    {:else if name === 'lifebuoy'}
-      <circle cx="12" cy="12" r="10"></circle>
-      <circle cx="12" cy="12" r="4"></circle>
-      <path d="m4.9 4.9 4.2 4.2"></path>
-      <path d="m14.9 14.9 4.2 4.2"></path>
-      <path d="m14.9 9.1 4.2-4.2"></path>
-      <path d="m9.1 14.9-4.2 4.2"></path>
-    {:else if name === 'layout'}
-      <rect width="7" height="9" x="3" y="3" rx="1"></rect>
-      <rect width="7" height="5" x="14" y="3" rx="1"></rect>
-      <rect width="7" height="9" x="14" y="12" rx="1"></rect>
-      <rect width="7" height="5" x="3" y="16" rx="1"></rect>
-    {:else if name === 'folder'}
-      <path
-        d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-      ></path>
-    {:else if name === 'users'}
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-      <circle cx="9" cy="7" r="4"></circle>
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-    {/if}
-  </svg>
+  {#if name === 'analytics'}
+    <ChartBar data-icon={icon} />
+  {:else if name === 'cube'}
+    <Cube data-icon={icon} />
+  {:else if name === 'bolt'}
+    <Bolt data-icon={icon} />
+  {:else if name === 'code'}
+    <Code data-icon={icon} />
+  {:else if name === 'book'}
+    <Book data-icon={icon} />
+  {:else if name === 'lifebuoy'}
+    <Lifebuoy data-icon={icon} />
+  {:else if name === 'layout'}
+    <LayoutDashboard data-icon={icon} />
+  {:else if name === 'folder'}
+    <Folder data-icon={icon} />
+  {:else if name === 'users'}
+    <Users data-icon={icon} />
+  {/if}
 {/snippet}
 
 <section class="flex flex-col gap-8">

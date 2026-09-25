@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Check, CircleCheck, Plus, StarFilled } from '@appica/icons-svelte'
   import { Button, Chip, ChipGroup, DirectionProvider, Switch, type ChipGroupHandle } from '@appica/ui-svelte'
 
   const variants = ['soft', 'outline', 'primary', 'secondary', 'destructive'] as const
@@ -19,59 +20,19 @@
 </script>
 
 {#snippet plusIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M5 12h14" />
-    <path d="M12 5v14" />
-  </svg>
+  <Plus data-icon="start" />
 {/snippet}
 
 {#snippet checkIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
+  <Check data-icon="start" />
 {/snippet}
 
 {#snippet circleCheckIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="m9 12 2 2 4-4" />
-  </svg>
+  <CircleCheck data-icon="start" />
 {/snippet}
 
 {#snippet starIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-icon="end">
-    <path d="M12 2.5 9.64 8.13l-6.14.54 4.66 4.04-1.4 5.98L12 15.77l5.24 3.02-1.4-5.98 4.66-4.04-6.14-.54L12 2.5z" />
-  </svg>
+  <StarFilled data-icon="end" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

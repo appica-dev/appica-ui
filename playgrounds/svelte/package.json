@@ -7,6 +7,7 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
+    "@appica/icons-svelte": "^1.0.0",
     "@internationalized/date": "^3.8.1",
     "@tanstack/svelte-table": "^9.2.4"
   },

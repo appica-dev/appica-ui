@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from '@appica/icons-svelte'
   import {
     DirectionProvider,
     Pagination,
@@ -26,69 +27,19 @@
 </script>
 
 {#snippet chevronLeft()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m15 18-6-6 6-6"></path>
-  </svg>
+  <ChevronLeft class="rtl:rotate-180" />
 {/snippet}
 
 {#snippet chevronRight()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m9 18 6-6-6-6"></path>
-  </svg>
+  <ChevronRight class="rtl:rotate-180" />
 {/snippet}
 
 {#snippet chevronsLeft()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m11 17-5-5 5-5"></path>
-    <path d="m18 17-5-5 5-5"></path>
-  </svg>
+  <ChevronsLeft class="rtl:rotate-180" />
 {/snippet}
 
 {#snippet chevronsRight()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m6 17 5-5-5-5"></path>
-    <path d="m13 17 5-5-5-5"></path>
-  </svg>
+  <ChevronsRight class="rtl:rotate-180" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

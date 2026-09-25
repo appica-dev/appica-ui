@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Bookmark, Search } from '@appica/icons-svelte'
   import {
     Button,
     DirectionProvider,
@@ -26,35 +27,11 @@
 </script>
 
 {#snippet searchIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <circle cx="11" cy="11" r="8"></circle>
-    <path d="m21 21-4.3-4.3"></path>
-  </svg>
+  <Search data-icon="start" />
 {/snippet}
 
 {#snippet bookmarkIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-  </svg>
+  <Bookmark />
 {/snippet}
 
 {#snippet shortcutList()}

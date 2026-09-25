@@ -287,6 +287,9 @@ importers:
 
   playgrounds/svelte:
     dependencies:
+      '@appica/icons-svelte':
+        specifier: ^1.0.0
+        version: 1.0.0(svelte@5.57.0(@typescript-eslint/types@8.66.0))
       '@internationalized/date':
         specifier: ^3.8.1
         version: 3.12.3
@@ -324,6 +327,12 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@appica/icons-svelte@1.0.0':
+    resolution: {integrity: sha512-YvhrtNMXHnH2a3yn15DXyrDBpte+f1saYeFIAJ7s5JBx9xuWw9hsJweS5sCg862J+6Z9AB0X6UtmQxik9sXqBQ==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      svelte: ^5.0.0
 
   '@asamuzakjp/css-color@6.0.7':
     resolution: {integrity: sha512-vC/bk1Lz7Tn/EfU9/apOTBk80/8dyGyWMowPoV1tJ52muDGsDqt2HPT2klrFUiY60MQmQv9q8yIht15JnBgDGw==}
@@ -2699,6 +2708,10 @@ snapshots:
   '@adobe/css-tools@4.5.0': {}
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@appica/icons-svelte@1.0.0(svelte@5.57.0(@typescript-eslint/types@8.66.0))':
+    dependencies:
+      svelte: 5.57.0(@typescript-eslint/types@8.66.0)
 
   '@asamuzakjp/css-color@6.0.7':
     dependencies:

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from '@appica/icons-svelte'
   import {
     Button,
     Carousel,
@@ -107,65 +108,19 @@
 </script>
 
 {#snippet chevronLeft()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m15 18-6-6 6-6"></path>
-  </svg>
+  <ChevronLeft class="rtl:rotate-180" />
 {/snippet}
 
 {#snippet chevronRight()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="rtl:rotate-180"
-  >
-    <path d="m9 18 6-6-6-6"></path>
-  </svg>
+  <ChevronRight class="rtl:rotate-180" />
 {/snippet}
 
 {#snippet chevronUp()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m18 15-6-6-6 6"></path>
-  </svg>
+  <ChevronUp />
 {/snippet}
 
 {#snippet chevronDown()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m6 9 6 6 6-6"></path>
-  </svg>
+  <ChevronDown />
 {/snippet}
 
 {#snippet roundArrows(position: CarouselNavPosition = 'inside')}

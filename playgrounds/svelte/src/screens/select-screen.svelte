@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { CreditCard } from '@appica/icons-svelte'
   import {
     Avatar,
     AvatarFallback,
@@ -56,20 +57,7 @@
 </script>
 
 {#snippet cardIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <rect width="20" height="14" x="2" y="5" rx="2" />
-    <path d="M2 10h20" />
-  </svg>
+  <CreditCard data-icon="start" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

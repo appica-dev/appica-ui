@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Bell, CircleCheck, CircleX } from '@appica/icons-svelte'
   import { Button, Spinner, Thumbnail, useToastManager, type ToastPosition } from '@appica/ui-svelte'
 
   type Props = {
@@ -126,33 +127,19 @@
 
 {#snippet bellIcon()}
   <Thumbnail variant="icon-soft" size="sm">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-      <path
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"
-      />
-    </svg>
+    <Bell />
   </Thumbnail>
 {/snippet}
 
 {#snippet successThumb()}
   <Thumbnail variant="icon-success" size="sm">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
-      <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"></path>
-    </svg>
+    <CircleCheck />
   </Thumbnail>
 {/snippet}
 
 {#snippet errorThumb()}
   <Thumbnail variant="icon-error" size="sm">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
-      <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m15 9-6 6"></path>
-      <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m9 9 6 6"></path>
-    </svg>
+    <CircleX />
   </Thumbnail>
 {/snippet}
 

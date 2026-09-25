@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Bell, ChevronDown, ChevronUp, CreditCard } from '@appica/icons-svelte'
   import {
     Accordion,
     AccordionContent,
@@ -44,65 +45,19 @@
 </script>
 
 {#snippet bellIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.85"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-  </svg>
+  <Bell />
 {/snippet}
 
 {#snippet creditCardIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.85"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-    <line x1="2" x2="22" y1="10" y2="10"></line>
-  </svg>
+  <CreditCard />
 {/snippet}
 
 {#snippet chevronUp()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m18 15-6-6-6 6"></path>
-  </svg>
+  <ChevronUp />
 {/snippet}
 
 {#snippet chevronDown()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m6 9 6 6 6-6"></path>
-  </svg>
+  <ChevronDown />
 {/snippet}
 
 {#snippet defaultFaq()}

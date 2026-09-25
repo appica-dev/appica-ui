@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Bell, BellOff, Bold, Italic, Underline } from '@appica/icons-svelte'
   import { DirectionProvider, Switch, Toggle, buttonVariants } from '@appica/ui-svelte'
 
   let enabled = $state(true)
@@ -6,36 +7,19 @@
 </script>
 
 {#snippet boldIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 12h9a4 4 0 0 1 0 8H6V4h8a4 4 0 0 1 0 8" />
-  </svg>
+  <Bold />
 {/snippet}
 {#snippet italicIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M19 4h-9" />
-    <path d="M14 20H5" />
-    <path d="m15 4-6 16" />
-  </svg>
+  <Italic />
 {/snippet}
 {#snippet underlineIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 4v6a6 6 0 0 0 12 0V4" />
-    <path d="M4 20h16" />
-  </svg>
+  <Underline />
 {/snippet}
 {#snippet bellIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-  </svg>
+  <Bell />
 {/snippet}
 {#snippet bellOffIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    <path d="M18.7 14A17 17 0 0 0 18 8" />
-    <path d="M6.3 6.3A6 6 0 0 0 6 8c0 7-3 9-3 9h14" />
-    <path d="m2 2 20 20" />
-  </svg>
+  <BellOff />
 {/snippet}
 
 <section class="flex flex-col gap-8">

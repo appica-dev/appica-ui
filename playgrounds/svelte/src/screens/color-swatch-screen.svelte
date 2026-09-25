@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Check } from '@appica/icons-svelte'
   import {
     ColorArea,
     ColorPicker,
@@ -108,9 +109,7 @@
   <div class="flex flex-col gap-2">
     <p class="text-foreground-muted text-sm">Overlay</p>
     <ColorSwatch color="#22c55e">
-      <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.5" aria-hidden="true">
-        <path d="M4 8.5l2.5 2.5 5.5-5.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
+      <Check size={16} stroke="white" />
     </ColorSwatch>
   </div>
 

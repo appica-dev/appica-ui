@@ -1,5 +1,32 @@
 <script lang="ts">
   import {
+    ArrowUpRight,
+    Bell,
+    Book,
+    ChevronDown,
+    Copy,
+    CreditCard,
+    GitBranch,
+    Heart,
+    IdBadge,
+    LayoutColumns,
+    LayoutDashboard,
+    Link,
+    Logout,
+    Mail,
+    MapPin,
+    Message,
+    MessageCircle,
+    Moon,
+    Pencil,
+    Settings,
+    ShoppingBag,
+    Trash,
+    User,
+    UserCircle,
+    UserPlus,
+  } from '@appica/icons-svelte'
+  import {
     Avatar,
     AvatarFallback,
     Badge,
@@ -83,235 +110,104 @@
   const shown = $derived(COLUMNS.filter((column) => visible[column.key]))
 </script>
 
-{#snippet strokeIcon(icon: 'start' | 'end', extraClass: string | undefined, content: import('svelte').Snippet)}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon={icon}
-    class={extraClass}
-    aria-hidden="true"
-  >
-    {@render content()}
-  </svg>
-{/snippet}
-
-{#snippet userCirclePaths()}
-  <circle cx="12" cy="8" r="4"></circle>
-  <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-{/snippet}
 {#snippet userCircle()}
-  {@render strokeIcon('start', undefined, userCirclePaths)}
+  <UserCircle data-icon="start" />
 {/snippet}
 
-{#snippet shoppingBagPaths()}
-  <path d="M6 7h12l1 13H5L6 7Z"></path>
-  <path d="M9 7V6a3 3 0 0 1 6 0v1"></path>
-{/snippet}
 {#snippet shoppingBag()}
-  {@render strokeIcon('start', undefined, shoppingBagPaths)}
+  <ShoppingBag data-icon="start" />
 {/snippet}
 
-{#snippet heartPaths()}
-  <path
-    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
-  ></path>
-{/snippet}
 {#snippet heart()}
-  {@render strokeIcon('start', undefined, heartPaths)}
+  <Heart data-icon="start" />
 {/snippet}
 
-{#snippet messagePaths()}
-  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
-{/snippet}
 {#snippet message()}
-  {@render strokeIcon('start', undefined, messagePaths)}
+  <Message data-icon="start" />
 {/snippet}
 
-{#snippet layoutDashboardPaths()}
-  <rect width="7" height="9" x="3" y="3" rx="1"></rect>
-  <rect width="7" height="5" x="14" y="3" rx="1"></rect>
-  <rect width="7" height="9" x="14" y="12" rx="1"></rect>
-  <rect width="7" height="5" x="3" y="16" rx="1"></rect>
-{/snippet}
 {#snippet layoutDashboard()}
-  {@render strokeIcon('start', undefined, layoutDashboardPaths)}
+  <LayoutDashboard data-icon="start" />
 {/snippet}
 
-{#snippet settingsPaths()}
-  <path
-    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-  ></path>
-  <circle cx="12" cy="12" r="3"></circle>
-{/snippet}
 {#snippet settings()}
-  {@render strokeIcon('start', undefined, settingsPaths)}
+  <Settings data-icon="start" />
 {/snippet}
 
-{#snippet bellPaths()}
-  <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
-  <path
-    d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"
-  ></path>
-{/snippet}
 {#snippet bell()}
-  {@render strokeIcon('start', undefined, bellPaths)}
+  <Bell data-icon="start" />
 {/snippet}
 
-{#snippet moonPaths()}
-  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-  <path d="M19 3v4"></path>
-  <path d="M21 5h-4"></path>
-{/snippet}
 {#snippet moon()}
-  {@render strokeIcon('start', undefined, moonPaths)}
+  <Moon data-icon="start" />
 {/snippet}
 
-{#snippet logoutPaths()}
-  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-  <polyline points="16 17 21 12 16 7"></polyline>
-  <line x1="21" x2="9" y1="12" y2="12"></line>
-{/snippet}
 {#snippet logout()}
-  {@render strokeIcon('start', undefined, logoutPaths)}
+  <Logout data-icon="start" />
 {/snippet}
 
-{#snippet idBadgePaths()}
-  <path d="M16 10h2"></path>
-  <path d="M16 14h2"></path>
-  <path d="M6.17 15a3 3 0 0 1 5.66 0"></path>
-  <circle cx="9" cy="11" r="2"></circle>
-  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-{/snippet}
 {#snippet idBadge()}
-  {@render strokeIcon('start', undefined, idBadgePaths)}
+  <IdBadge data-icon="start" />
 {/snippet}
 
-{#snippet creditCardPaths()}
-  <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-  <line x1="2" x2="22" y1="10" y2="10"></line>
-{/snippet}
 {#snippet creditCard()}
-  {@render strokeIcon('start', undefined, creditCardPaths)}
+  <CreditCard data-icon="start" />
 {/snippet}
 
-{#snippet mapPinPaths()}
-  <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
-  <circle cx="12" cy="10" r="3"></circle>
-{/snippet}
 {#snippet mapPin()}
-  {@render strokeIcon('start', undefined, mapPinPaths)}
+  <MapPin data-icon="start" />
 {/snippet}
 
-{#snippet chevronDownPaths()}
-  <path d="m6 9 6 6 6-6"></path>
-{/snippet}
 {#snippet chevronDown()}
-  {@render strokeIcon('end', CHEVRON_CLASS, chevronDownPaths)}
+  <ChevronDown data-icon="end" class={CHEVRON_CLASS} />
 {/snippet}
 
-{#snippet userPaths()}
-  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-  <circle cx="12" cy="7" r="4"></circle>
-{/snippet}
 {#snippet user()}
-  {@render strokeIcon('start', undefined, userPaths)}
+  <User data-icon="start" />
 {/snippet}
 
-{#snippet copyPaths()}
-  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-{/snippet}
 {#snippet copy()}
-  {@render strokeIcon('start', undefined, copyPaths)}
+  <Copy data-icon="start" />
 {/snippet}
 
-{#snippet pencilPaths()}
-  <path
-    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-  ></path>
-{/snippet}
 {#snippet pencil()}
-  {@render strokeIcon('start', undefined, pencilPaths)}
+  <Pencil data-icon="start" />
 {/snippet}
 
-{#snippet trashPaths()}
-  <path d="M3 6h18"></path>
-  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-{/snippet}
 {#snippet trash()}
-  {@render strokeIcon('start', undefined, trashPaths)}
+  <Trash data-icon="start" />
 {/snippet}
 
-{#snippet layoutColumnsPaths()}
-  <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-  <path d="M9 3v18"></path>
-{/snippet}
 {#snippet layoutColumns()}
-  {@render strokeIcon('start', undefined, layoutColumnsPaths)}
+  <LayoutColumns data-icon="start" />
 {/snippet}
 
-{#snippet userPlusPaths()}
-  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-  <circle cx="9" cy="7" r="4"></circle>
-  <line x1="19" x2="19" y1="8" y2="14"></line>
-  <line x1="22" x2="16" y1="11" y2="11"></line>
-{/snippet}
 {#snippet userPlus()}
-  {@render strokeIcon('start', undefined, userPlusPaths)}
+  <UserPlus data-icon="start" />
 {/snippet}
 
-{#snippet mailPaths()}
-  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-{/snippet}
 {#snippet mail()}
-  {@render strokeIcon('start', undefined, mailPaths)}
+  <Mail data-icon="start" />
 {/snippet}
 
-{#snippet messageCirclePaths()}
-  <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
-{/snippet}
 {#snippet messageCircle()}
-  {@render strokeIcon('start', undefined, messageCirclePaths)}
+  <MessageCircle data-icon="start" />
 {/snippet}
 
-{#snippet linkPaths()}
-  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-{/snippet}
 {#snippet link()}
-  {@render strokeIcon('start', undefined, linkPaths)}
+  <Link data-icon="start" />
 {/snippet}
 
-{#snippet bookPaths()}
-  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
-{/snippet}
 {#snippet book()}
-  {@render strokeIcon('start', undefined, bookPaths)}
+  <Book data-icon="start" />
 {/snippet}
 
-{#snippet gitBranchPaths()}
-  <line x1="6" x2="6" y1="3" y2="15"></line>
-  <circle cx="18" cy="6" r="3"></circle>
-  <circle cx="6" cy="18" r="3"></circle>
-  <path d="M18 9a9 9 0 0 1-9 9"></path>
-{/snippet}
 {#snippet gitBranch()}
-  {@render strokeIcon('start', undefined, gitBranchPaths)}
+  <GitBranch data-icon="start" />
 {/snippet}
 
-{#snippet arrowUpRightPaths()}
-  <path d="M7 7h10v10"></path>
-  <path d="M7 17 17 7"></path>
-{/snippet}
 {#snippet arrowUpRight()}
-  {@render strokeIcon('end', 'ms-auto', arrowUpRightPaths)}
+  <ArrowUpRight data-icon="end" class="ms-auto" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

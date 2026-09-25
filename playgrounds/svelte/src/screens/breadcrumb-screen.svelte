@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { FileText, Folder, Home, LayoutGrid } from '@appica/icons-svelte'
   import {
     Breadcrumb,
     BreadcrumbEllipsis,
@@ -23,76 +24,19 @@
 </script>
 
 {#snippet homeIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
-    <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-  </svg>
+  <Home data-icon="start" />
 {/snippet}
 
 {#snippet folderIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path
-      d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-    ></path>
-  </svg>
+  <Folder data-icon="start" />
 {/snippet}
 
 {#snippet fileTextIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-    <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-    <path d="M10 9H8"></path>
-    <path d="M16 13H8"></path>
-    <path d="M16 17H8"></path>
-  </svg>
+  <FileText data-icon="start" />
 {/snippet}
 
 {#snippet componentsIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    data-icon="start"
-  >
-    <rect width="8" height="8" x="3" y="3" rx="2"></rect>
-    <path d="M7 11v4a2 2 0 0 0 2 2h4"></path>
-    <rect width="8" height="8" x="13" y="13" rx="2"></rect>
-  </svg>
+  <LayoutGrid data-icon="start" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

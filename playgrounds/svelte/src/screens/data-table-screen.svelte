@@ -1,5 +1,22 @@
 <script lang="ts">
   import {
+    BoltFilled,
+    BriefcaseFilled,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsUpDown,
+    ChevronUp,
+    Copy,
+    DotsVertical,
+    DropletFilled,
+    Eye,
+    LayoutColumns,
+    Pencil,
+    Search,
+    Trash,
+  } from '@appica/icons-svelte'
+  import {
     Badge,
     Button,
     Checkbox,
@@ -378,154 +395,70 @@
     'hover:text-foreground-intense focus-visible:outline-ring rounded-3xs -mx-1 inline-flex cursor-pointer items-center gap-1 px-1 outline-offset-2 focus-visible:outline-2 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:stroke-[1.85]'
 </script>
 
-{#snippet strokeIcon(icon: 'start' | 'end' | undefined, extraClass: string | undefined, content: import('svelte').Snippet)}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    data-icon={icon}
-    class={extraClass}
-    aria-hidden="true"
-  >
-    {@render content()}
-  </svg>
-{/snippet}
-
-{#snippet filledIcon(content: import('svelte').Snippet)}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    {@render content()}
-  </svg>
-{/snippet}
-
-{#snippet searchPaths()}
-  <circle cx="11" cy="11" r="8"></circle>
-  <path d="m21 21-4.3-4.3"></path>
-{/snippet}
 {#snippet searchIcon()}
-  {@render strokeIcon(undefined, 'text-foreground-muted size-4', searchPaths)}
+  <Search class="text-foreground-muted size-4" />
 {/snippet}
 
-{#snippet layoutColumnsPaths()}
-  <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-  <path d="M9 3v18"></path>
-{/snippet}
 {#snippet layoutColumns()}
-  {@render strokeIcon('start', undefined, layoutColumnsPaths)}
+  <LayoutColumns data-icon="start" />
 {/snippet}
 
-{#snippet chevronDownPaths()}
-  <path d="m6 9 6 6 6-6"></path>
-{/snippet}
 {#snippet chevronDownEnd()}
-  {@render strokeIcon(
-    'end',
-    'transition-transform duration-200 ease-out group-data-popup-open/columns:rotate-180 motion-reduce:transition-none',
-    chevronDownPaths,
-  )}
+  <ChevronDown
+    data-icon="end"
+    class="transition-transform duration-200 ease-out group-data-popup-open/columns:rotate-180 motion-reduce:transition-none"
+  />
 {/snippet}
 {#snippet chevronDown()}
-  {@render strokeIcon(undefined, undefined, chevronDownPaths)}
+  <ChevronDown />
 {/snippet}
 
-{#snippet chevronUpPaths()}
-  <path d="m18 15-6-6-6 6"></path>
-{/snippet}
 {#snippet chevronUp()}
-  {@render strokeIcon(undefined, undefined, chevronUpPaths)}
+  <ChevronUp />
 {/snippet}
 
-{#snippet chevronsUpDownPaths()}
-  <path d="m7 15 5 5 5-5"></path>
-  <path d="m7 9 5-5 5 5"></path>
-{/snippet}
 {#snippet chevronsUpDown()}
-  {@render strokeIcon(undefined, 'text-foreground-muted', chevronsUpDownPaths)}
+  <ChevronsUpDown class="text-foreground-muted" />
 {/snippet}
 
-{#snippet chevronLeftPaths()}
-  <path d="m15 18-6-6 6-6"></path>
-{/snippet}
 {#snippet chevronLeft()}
-  {@render strokeIcon('start', '-ms-1', chevronLeftPaths)}
+  <ChevronLeft data-icon="start" class="-ms-1" />
 {/snippet}
 
-{#snippet chevronRightPaths()}
-  <path d="m9 18 6-6-6-6"></path>
-{/snippet}
 {#snippet chevronRight()}
-  {@render strokeIcon('end', '-me-1', chevronRightPaths)}
+  <ChevronRight data-icon="end" class="-me-1" />
 {/snippet}
 
-{#snippet dotsVerticalPaths()}
-  <circle cx="12" cy="12" r="1"></circle>
-  <circle cx="12" cy="5" r="1"></circle>
-  <circle cx="12" cy="19" r="1"></circle>
-{/snippet}
 {#snippet dotsVertical()}
-  {@render strokeIcon(undefined, undefined, dotsVerticalPaths)}
+  <DotsVertical />
 {/snippet}
 
-{#snippet eyePaths()}
-  <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-  <circle cx="12" cy="12" r="3"></circle>
-{/snippet}
 {#snippet eye()}
-  {@render strokeIcon('start', undefined, eyePaths)}
+  <Eye data-icon="start" />
 {/snippet}
 
-{#snippet copyPaths()}
-  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-{/snippet}
 {#snippet copy()}
-  {@render strokeIcon('start', undefined, copyPaths)}
+  <Copy data-icon="start" />
 {/snippet}
 
-{#snippet pencilPaths()}
-  <path
-    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-  ></path>
-{/snippet}
 {#snippet pencil()}
-  {@render strokeIcon('start', undefined, pencilPaths)}
+  <Pencil data-icon="start" />
 {/snippet}
 
-{#snippet trashPaths()}
-  <path d="M3 6h18"></path>
-  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-{/snippet}
 {#snippet trash()}
-  {@render strokeIcon('start', undefined, trashPaths)}
+  <Trash data-icon="start" />
 {/snippet}
 
-{#snippet briefcasePaths()}
-  <path
-    d="M20 7h-4V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v3h20V9c0-1.1-.9-2-2-2M10 5h4v2h-4zm12 7H2v7c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2z"
-  ></path>
-{/snippet}
 {#snippet briefcaseFilled()}
-  {@render filledIcon(briefcasePaths)}
+  <BriefcaseFilled />
 {/snippet}
 
-{#snippet boltPaths()}
-  <path d="M13 2 4.09 13.24a.5.5 0 0 0 .4.76H11l-2 8 10.91-11.24a.5.5 0 0 0-.4-.76H13z"></path>
-{/snippet}
 {#snippet boltFilled()}
-  {@render filledIcon(boltPaths)}
+  <BoltFilled />
 {/snippet}
 
-{#snippet dropletPaths()}
-  <path
-    d="M12 2.1c.4.5 4.8 6.1 4.8 10.4A4.8 4.8 0 0 1 12 17.3 4.8 4.8 0 0 1 7.2 12.5C7.2 8.2 11.6 2.6 12 2.1m0 17.2A6.8 6.8 0 0 0 18.8 12.5C18.8 7.1 13.4.9 12 .4 10.6.9 5.2 7.1 5.2 12.5A6.8 6.8 0 0 0 12 19.3m.2-12.2v9.4c2.3-.3 4-2.1 4-4.7 0-1.7-1.3-4.2-4-4.7"
-  ></path>
-{/snippet}
 {#snippet dropletFilled()}
-  {@render filledIcon(dropletPaths)}
+  <DropletFilled />
 {/snippet}
 
 {#snippet selectAllHeader(headerTable: typeof table)}

@@ -1,5 +1,20 @@
 <script lang="ts">
   import {
+    AlignCenter,
+    AlignLeft,
+    AlignRight,
+    ArrowBackUp,
+    ArrowForwardUp,
+    Bold,
+    Copy,
+    Download,
+    Filter,
+    Heading,
+    Italic,
+    Scissors,
+    Underline,
+  } from '@appica/icons-svelte'
+  import {
     DirectionProvider,
     Select,
     SelectContent,
@@ -24,98 +39,44 @@
   const fonts = ['Geist', 'Inter', 'Figtree', 'Urbanist']
 </script>
 
-{#snippet searchIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="start">
-    <circle cx="11" cy="11" r="8" />
-    <path d="m21 21-4.3-4.3" />
-  </svg>
-{/snippet}
 {#snippet filterIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="start">
-    <path d="M3 6h18" />
-    <path d="M7 12h10" />
-    <path d="M10 18h4" />
-  </svg>
+  <Filter data-icon="start" />
 {/snippet}
 {#snippet downloadIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="start">
-    <path d="M12 15V3" />
-    <path d="m7 10 5 5 5-5" />
-    <path d="M5 21h14" />
-  </svg>
+  <Download data-icon="start" />
 {/snippet}
 {#snippet undoIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M3 7v6h6" />
-    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 3L3 13" />
-  </svg>
+  <ArrowBackUp />
 {/snippet}
 {#snippet redoIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M21 7v6h-6" />
-    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3L21 13" />
-  </svg>
+  <ArrowForwardUp />
 {/snippet}
 {#snippet typeIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-icon="start">
-    <path d="M4 7V4h16v3" />
-    <path d="M9 20h6" />
-    <path d="M12 4v16" />
-  </svg>
+  <Heading data-icon="start" />
 {/snippet}
 {#snippet alignLeft()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M15 12H3" />
-    <path d="M17 18H3" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignLeft />
 {/snippet}
 {#snippet alignCenter()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M17 12H7" />
-    <path d="M19 18H5" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignCenter />
 {/snippet}
 {#snippet alignRight()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M21 12H9" />
-    <path d="M21 18H7" />
-    <path d="M21 6H3" />
-  </svg>
+  <AlignRight />
 {/snippet}
 {#snippet boldIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 12h9a4 4 0 0 1 0 8H6V4h8a4 4 0 0 1 0 8" />
-  </svg>
+  <Bold />
 {/snippet}
 {#snippet italicIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M19 4h-9" />
-    <path d="M14 20H5" />
-    <path d="m15 4-6 16" />
-  </svg>
+  <Italic />
 {/snippet}
 {#snippet underlineIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M6 4v6a6 6 0 0 0 12 0V4" />
-    <path d="M4 20h16" />
-  </svg>
+  <Underline />
 {/snippet}
 {#snippet copyIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect width="14" height="14" x="8" y="8" rx="2" />
-    <path d="M4 16V4a2 2 0 0 1 2-2h10" />
-  </svg>
+  <Copy />
 {/snippet}
 {#snippet scissorsIcon()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <circle cx="6" cy="6" r="3" />
-    <circle cx="6" cy="18" r="3" />
-    <path d="M20 4 8.12 15.88" />
-    <path d="M14.47 14.48 20 20" />
-    <path d="M8.12 8.12 12 12" />
-  </svg>
+  <Scissors />
 {/snippet}
 
 <section class="flex flex-col gap-8">

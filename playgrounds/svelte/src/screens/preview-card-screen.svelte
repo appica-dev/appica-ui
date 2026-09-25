@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { StarFilled } from '@appica/icons-svelte'
   import {
     Avatar,
     AvatarFallback,
@@ -24,17 +25,7 @@
 </script>
 
 {#snippet starIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    class="text-warning-emphasis size-4"
-    aria-hidden="true"
-  >
-    <path
-      d="M12 2.25l2.66 6.36 6.91.63-5.24 4.55 1.56 6.76L12 17.27l-6.89 3.28 1.56-6.76-5.24-4.55 6.91-.63L12 2.25z"
-    ></path>
-  </svg>
+  <StarFilled class="text-warning-emphasis size-4" />
 {/snippet}
 
 <section class="flex flex-col gap-8">

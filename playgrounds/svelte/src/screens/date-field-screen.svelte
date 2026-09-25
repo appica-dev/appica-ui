@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Calendar } from '@appica/icons-svelte'
   import { CalendarDate, CalendarDateTime, getLocalTimeZone, toCalendarDate, type DateValue } from '@internationalized/date'
   import { DateField, DirectionProvider, Field, FieldError, FieldLabel, Switch } from '@appica/ui-svelte'
 
@@ -73,10 +74,7 @@
     <p class="text-foreground-muted text-sm">With an icon</p>
     <DateField class="max-w-50" defaultValue={june23}>
       {#snippet start()}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-          <rect width="18" height="18" x="3" y="4" rx="2" />
-          <path d="M16 2v4M8 2v4M3 10h18" />
-        </svg>
+        <Calendar />
       {/snippet}
     </DateField>
   </div>

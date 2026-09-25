@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { ChevronRight, File, Folder, FolderOpen, Maximize, Minimize } from '@appica/icons-svelte'
   import {
     Button,
     Collapsible,
@@ -43,110 +44,27 @@
 </script>
 
 {#snippet chevronRight(extraClass: string)}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class={['rtl:-scale-x-100', extraClass]}
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
+  <ChevronRight class={['rtl:-scale-x-100', extraClass]} />
 {/snippet}
 
 {#snippet folderIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.75"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="text-foreground-muted size-4 shrink-0 group-data-panel-open:hidden"
-  >
-    <path
-      d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-    />
-  </svg>
+  <Folder class="text-foreground-muted size-4 shrink-0 group-data-panel-open:hidden" />
 {/snippet}
 
 {#snippet folderOpenIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.75"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="text-foreground-muted hidden size-4 shrink-0 group-data-panel-open:block"
-  >
-    <path
-      d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"
-    />
-  </svg>
+  <FolderOpen class="text-foreground-muted hidden size-4 shrink-0 group-data-panel-open:block" />
 {/snippet}
 
 {#snippet fileIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="size-4 shrink-0"
-  >
-    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-    <path d="M14 2v6h6" />
-  </svg>
+  <File class="size-4 shrink-0" />
 {/snippet}
 
 {#snippet maximizeIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="group-data-open:hidden"
-  >
-    <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-    <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-    <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-    <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-  </svg>
+  <Maximize class="group-data-open:hidden" />
 {/snippet}
 
 {#snippet minimizeIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-    class="hidden group-data-open:block"
-  >
-    <path d="M8 3v3a2 2 0 0 1-2 2H3" />
-    <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
-    <path d="M3 16h3a2 2 0 0 1 2 2v3" />
-    <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
-  </svg>
+  <Minimize class="hidden group-data-open:block" />
 {/snippet}
 
 {#snippet pxSlot()}

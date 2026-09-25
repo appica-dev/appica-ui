@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Heart, HeartFilled, ThumbUp, ThumbUpFilled } from '@appica/icons-svelte'
   import {
     Button,
     DirectionProvider,
@@ -25,25 +26,16 @@
 </script>
 
 {#snippet heartEmpty()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-  </svg>
+  <Heart />
 {/snippet}
 {#snippet heartFilled()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-  </svg>
+  <HeartFilled />
 {/snippet}
 {#snippet thumbEmpty()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M7 10v12" />
-    <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />
-  </svg>
+  <ThumbUp />
 {/snippet}
 {#snippet thumbFilled()}
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M7 10v12H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Zm13.83 0H15l1-4.12A3.13 3.13 0 0 0 13 2l-3.45 6.89A2 2 0 0 1 7.76 10H7v12h10.5a2 2 0 0 0 1.92-1.44l2.33-8A2 2 0 0 0 20.83 10Z" />
-  </svg>
+  <ThumbUpFilled />
 {/snippet}
 
 <section class="flex flex-col gap-8">

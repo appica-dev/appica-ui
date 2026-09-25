@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
+  import { Accessible, Palette, Rocket, TextDirectionRtl } from '@appica/icons-svelte'
   import { DirectionProvider, Switch, Toc, TocItem, TocLink, TocList } from '@appica/ui-svelte'
 
   type Heading = {
@@ -128,77 +129,19 @@
 </script>
 
 {#snippet rocketIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="1.5"
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path
-      d="M6.73 14.092a6.355 6.355 0 0 0-3.177 6.355 6.355 6.355 0 0 0 6.355-3.178m-6.355-4.236a8.474 8.474 0 0 1 7.414 7.414 6.36 6.36 0 0 0 3.178-5.296A9.53 9.53 0 0 0 20.5 6.678 3.18 3.18 0 0 0 17.323 3.5a9.53 9.53 0 0 0-8.474 6.355 6.36 6.36 0 0 0-5.296 3.178m10.592-4.237a1.06 1.06 0 1 0 2.119 0 1.06 1.06 0 0 0-2.119 0"
-    ></path>
-  </svg>
+  <Rocket aria-hidden="true" />
 {/snippet}
 
 {#snippet paletteIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="1.5"
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path
-      d="M12 20.995a9 9 0 0 1-9-8.998A8.996 8.996 0 0 1 12 3c4.97 0 9 3.58 9 7.998 0 1.06-.474 2.077-1.318 2.827s-1.989 1.171-3.182 1.171H14a2 2 0 0 0-1 3.75 1.299 1.299 0 0 1-1 2.249M7.5 10.498a1 1 0 1 0 1.999 0 1 1 0 0 0-1.999 0m4-3a1 1 0 1 0 2 0 1 1 0 0 0-2 0m4 3a1 1 0 1 0 1.999 0 1 1 0 0 0-1.999 0"
-    ></path>
-  </svg>
+  <Palette aria-hidden="true" />
 {/snippet}
 
 {#snippet accessibleIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="1.5"
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path fill="currentColor" d="M11.5 7.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0"></path>
-    <path d="m10 16.5 2-3m0 0 2 3m-2-3v-2m0 0 3-1m-3 1-3-1M3 12a9 9 0 1 0 18.001 0A9 9 0 0 0 3 12m8.5-4.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0"
-    ></path>
-  </svg>
+  <Accessible aria-hidden="true" />
 {/snippet}
 
 {#snippet rtlIcon()}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="1.5"
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <path d="M11 9H9a3 3 0 1 1 0-6h7m-5 0v11m4-11v11M3 18h18M3 18l3-3m-3 3 3 3"></path>
-  </svg>
+  <TextDirectionRtl aria-hidden="true" />
 {/snippet}
 
 {#snippet demo(sections: Heading[], icons?: Record<string, Snippet>)}
