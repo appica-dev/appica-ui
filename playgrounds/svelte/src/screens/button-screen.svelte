@@ -57,7 +57,7 @@
     <p class="text-foreground-muted text-sm">Loading</p>
     <Button onclick={fakeSave} disabled={loading} focusableWhenDisabled>
       {#if loading}
-        <Spinner currentColor class="size-4" />
+        <Spinner currentColor variant="dots" data-icon="start" class="text-[1.125rem]" />
         Saving
       {:else}
         Save
