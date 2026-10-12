@@ -271,6 +271,7 @@ function SparklineChart({
       aria-label={ariaLabel ?? `${variant} chart`}
       className={cn('relative w-full', className)}
       style={{ height, touchAction: interactive ? 'pan-y' : undefined, ...style }}
+      data-base-ui-swipe-ignore={interactive ? 'x' : undefined}
       onPointerDown={interactive ? handlePointerDown : undefined}
       onPointerMove={interactive ? handlePointerMove : undefined}
       onPointerLeave={interactive ? () => setActiveIndex(null) : undefined}

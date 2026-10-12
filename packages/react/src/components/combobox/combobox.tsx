@@ -30,9 +30,13 @@ function useComboboxContext() {
   return ctx
 }
 
-type BaseComboboxRootProps = React.ComponentProps<typeof BaseCombobox.Root>
+type ComboboxProps<
+  Value = unknown,
+  Multiple extends boolean | undefined = false,
+  Item = Value,
+> = BaseCombobox.Root.Props<Value, Multiple, Item> & ComboboxOwnProps
 
-interface ComboboxProps extends BaseComboboxRootProps {
+interface ComboboxOwnProps {
   /**
    * Input height, popup radius, and item sizing.
    * @default 'md'
@@ -55,7 +59,7 @@ interface ComboboxProps extends BaseComboboxRootProps {
   icon?: boolean
 }
 
-function Combobox({
+function Combobox<Value, Multiple extends boolean | undefined = false, Item = Value>({
   size = 'md',
   variant = 'outline',
   clearable = false,
@@ -63,7 +67,7 @@ function Combobox({
   grid = false,
   children,
   ...rest
-}: ComboboxProps) {
+}: ComboboxProps<Value, Multiple, Item>) {
   const reducedMotion = useReducedMotion()
   const ctx = React.useMemo<ComboboxContextValue>(
     () => ({ size, variant, clearable, icon, grid, reducedMotion }),
@@ -346,7 +350,7 @@ function ComboboxContent({ className, children, ...props }: ComboboxContentProps
             'w-(--anchor-width) min-w-36',
             'max-h-(--available-height) overflow-hidden',
             'origin-(--transform-origin)',
-            'motion-safe:transition-[opacity,scale] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+            'motion-safe:ease-spring motion-safe:transition-[opacity,scale] motion-safe:duration-200',
             'data-starting-style:motion-safe:scale-90 data-starting-style:motion-safe:opacity-0',
             'data-ending-style:motion-safe:scale-95 data-ending-style:motion-safe:opacity-0 data-ending-style:motion-safe:duration-100 data-ending-style:motion-safe:ease-out',
             className,
@@ -454,7 +458,7 @@ function ComboboxItem({ className, children, ...props }: ComboboxItemProps) {
         'before:bg-background-muted before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:opacity-0',
         'active:translate-y-px active:scale-[0.98]',
         'data-highlighted:not-data-disabled:text-foreground-intense data-highlighted:not-data-disabled:before:opacity-100',
-        'motion-safe:transition motion-safe:duration-250 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+        'motion-safe:ease-spring motion-safe:transition motion-safe:duration-250',
         'motion-safe:active:duration-100 motion-safe:active:ease-in-out',
         'motion-safe:before:transition-opacity motion-safe:before:duration-200 motion-safe:before:ease-out',
         'data-disabled:opacity-disabled data-disabled:pointer-events-none',
@@ -588,6 +592,8 @@ function ClearIcon(props: IconProps) {
   )
 }
 
+const createComboboxItems = BaseCombobox.createItems
+
 export {
   Combobox,
   ComboboxInput,
@@ -603,6 +609,7 @@ export {
   ComboboxLabel,
   ComboboxCollection,
   ComboboxSeparator,
+  createComboboxItems,
 }
 export type {
   ComboboxProps,

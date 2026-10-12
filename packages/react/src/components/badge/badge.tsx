@@ -18,7 +18,7 @@ const backgroundLayer = [
 ]
 
 const badgeVariants = cva(
-  'relative isolate inline-flex shrink-0 items-center justify-center rounded-full whitespace-nowrap outline-offset-1 select-none [&_svg]:shrink-0 [a,button]:transform-gpu [a,button]:cursor-pointer [a,button]:transition [a,button]:duration-250 [a,button]:ease-[cubic-bezier(0.175,0.885,0.32,1.5)] [a,button]:not-data-popup-open:active:translate-y-px [a,button]:not-data-popup-open:active:scale-[0.97] [a,button]:not-data-popup-open:active:duration-100 [a,button]:not-data-popup-open:active:ease-in-out motion-reduce:[a,button]:transition-none',
+  'relative isolate inline-flex shrink-0 items-center justify-center rounded-full whitespace-nowrap outline-offset-1 select-none [&_svg]:shrink-0 [a,button]:transform-gpu [a,button]:cursor-pointer [a,button]:transition [a,button]:duration-250 [a,button]:ease-spring [a,button]:not-data-popup-open:active:translate-y-px [a,button]:not-data-popup-open:active:scale-[0.97] [a,button]:not-data-popup-open:active:duration-100 [a,button]:not-data-popup-open:active:ease-in-out motion-reduce:[a,button]:transition-none',
   {
     variants: {
       variant: {

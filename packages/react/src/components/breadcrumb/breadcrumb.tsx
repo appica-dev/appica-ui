@@ -80,7 +80,7 @@ function BreadcrumbLink({ className, active = false, disabled = false, render, .
           'transition duration-250 motion-reduce:transition-none',
           active
             ? 'text-foreground-intense pointer-events-none'
-            : 'hover:text-foreground-intense ease-[cubic-bezier(0.175,0.885,0.32,1.5)] active:scale-[0.97] active:duration-100 active:ease-in-out active:translate-y-px',
+            : 'hover:text-foreground-intense ease-spring active:scale-[0.97] active:duration-100 active:ease-in-out active:translate-y-px',
           disabled && 'opacity-disabled pointer-events-none',
           className,
         ),

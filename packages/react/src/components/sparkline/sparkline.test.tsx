@@ -23,6 +23,22 @@ function stubRect(el: Element, width = 100) {
 }
 
 describe('Sparkline', () => {
+  it('claims horizontal drags from a surrounding Drawer only while it is interactive', () => {
+    const chart = (container: HTMLElement) => container.querySelector('[data-slot="sparkline-svg"]')!.parentElement
+    const { container: interactive } = render(
+      <Sparkline data={DATA}>
+        <SparklineChart />
+      </Sparkline>,
+    )
+    expect(chart(interactive)).toHaveAttribute('data-base-ui-swipe-ignore', 'x')
+    const { container: still } = render(
+      <Sparkline data={DATA}>
+        <SparklineChart indicator={false} />
+      </Sparkline>,
+    )
+    expect(chart(still)).not.toHaveAttribute('data-base-ui-swipe-ignore')
+  })
+
   it('renders a line path for the line variant', () => {
     const { container } = render(
       <Sparkline data={DATA}>

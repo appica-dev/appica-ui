@@ -20,6 +20,11 @@ function inputs() {
 }
 
 describe('ColorArea', () => {
+  it('keeps a surrounding Drawer from swiping on any drag that starts on the area', () => {
+    const { container } = render(<ColorArea defaultValue="#3b82f6" />)
+    expect(container.querySelector('[data-slot="color-area"]')).toHaveAttribute('data-base-ui-swipe-ignore', '')
+  })
+
   it('exposes one range input per axis, labeled by channel', () => {
     render(<ColorArea defaultValue="hsb(0, 100%, 100%)" xChannel="saturation" yChannel="brightness" />)
     const [x, y] = inputs()

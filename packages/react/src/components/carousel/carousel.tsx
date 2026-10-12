@@ -557,6 +557,7 @@ function CarouselContent({ className, children, viewportProps, ...rest }: Carous
   const { viewportRef, orientation, autoHeight } = useCarousel()
   return (
     <div
+      data-base-ui-swipe-ignore={orientation === 'vertical' ? 'y' : 'x'}
       {...viewportProps}
       ref={viewportRef}
       data-slot="carousel-viewport"
@@ -641,7 +642,7 @@ const CAROUSEL_THUMB_OPTIONS: CarouselOptions = { slides: ':scope > [data-slot=c
 const CAROUSEL_THUMB_TRANSITION = cn(
   'transition-[opacity,translate,scale] motion-reduce:transition-none',
   'duration-[300ms,250ms,250ms]',
-  'ease-[ease-out,cubic-bezier(0.175,0.885,0.32,1.5),cubic-bezier(0.175,0.885,0.32,1.5)]',
+  'ease-[ease-out,var(--ease-spring),var(--ease-spring)]',
   'active:duration-[300ms,100ms,100ms] active:ease-[ease-out,ease-in-out,ease-in-out]',
 )
 
@@ -1262,14 +1263,6 @@ function CarouselAutoplayCircularIndicator({
  * "main + thumbnails" pattern. Wires `select` on each so navigating either
  * one drives the other. Both apis can be undefined initially (e.g. waiting on
  * `setApi`); the effect re-runs once both resolve.
- *
- * @example
- *   const [mainApi, setMainApi] = useState<CarouselApi>()
- *   const [thumbsApi, setThumbsApi] = useState<CarouselApi>()
- *   useLinkedCarousels(mainApi, thumbsApi)
- *
- *   <Carousel setApi={setMainApi}>…</Carousel>
- *   <Carousel setApi={setThumbsApi} align="start" containScroll="keepSnaps">…</Carousel>
  */
 function useLinkedCarousels(mainApi: CarouselApi | undefined, thumbsApi: CarouselApi | undefined): void {
   React.useEffect(() => {

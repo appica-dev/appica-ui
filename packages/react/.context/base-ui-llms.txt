@@ -1,6 +1,6 @@
 # Base UI llms.txt snapshot
 # Source: https://base-ui.com/llms.txt
-# Fetched: 2026-09-24
+# Fetched: 2026-10-11
 # Refresh: re-run `curl -sL https://base-ui.com/llms.txt > packages/react/.context/base-ui-llms.txt` (and bump the date) when the live API drifts from this snapshot.
 
 # Base UI
@@ -43,6 +43,7 @@ The Tailwind CSS examples are written for Tailwind CSS v4. If `package.json` use
 - [v1.6.0](https://base-ui.com/react/overview/releases/v1-6-0.md): v1.6.0 release notes. Jun 18, 2026.
 - [v1.7.0](https://base-ui.com/react/overview/releases/v1-7-0.md): v1.7.0 release notes. Aug 4, 2026.
 - [v1.8.0](https://base-ui.com/react/overview/releases/v1-8-0.md): v1.8.0 release notes. Sep 4, 2026.
+- [v1.9.0](https://base-ui.com/react/overview/releases/v1-9-0.md): v1.9.0 release notes. Oct 9, 2026.
 
 ## Handbook
 

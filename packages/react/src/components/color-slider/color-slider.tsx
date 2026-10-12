@@ -271,6 +271,7 @@ function ColorSlider({
   return (
     <div
       ref={containerRef}
+      data-base-ui-swipe-ignore=""
       {...props}
       data-slot="color-slider"
       data-orientation={orientation}

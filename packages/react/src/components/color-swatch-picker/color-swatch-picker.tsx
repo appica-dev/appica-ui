@@ -26,7 +26,7 @@ const pickerVariants = cva('relative isolate flex gap-1', {
 // The button is the outer ring's box, so the swatch has to sit inside it. At 0.8em
 // the gap either side is 0.1em, which holds at every size because both are ems.
 const itemVariants = cva(
-  'outline-ring relative flex size-[1em] shrink-0 transform-gpu cursor-pointer items-center justify-center focus-visible:outline-3 motion-safe:transition motion-safe:duration-250 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)] motion-safe:active:translate-y-px motion-safe:active:scale-90 motion-safe:active:duration-100 motion-safe:active:ease-in-out data-disabled:pointer-events-none data-disabled:cursor-default',
+  'outline-ring relative flex size-[1em] shrink-0 transform-gpu cursor-pointer items-center justify-center focus-visible:outline-3 motion-safe:transition motion-safe:duration-250 motion-safe:ease-spring motion-safe:active:translate-y-px motion-safe:active:scale-90 motion-safe:active:duration-100 motion-safe:active:ease-in-out data-disabled:pointer-events-none data-disabled:cursor-default',
   { variants: { shape: COLOR_SWATCH_SHAPES } },
 )
 

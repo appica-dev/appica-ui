@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
 import * as React from 'react'
+
+// Custom theme keys must be registered, or `ease-linear` would sit beside `ease-spring` instead of replacing it.
+const twMerge = extendTailwindMerge({ extend: { theme: { ease: ['spring'] } } })
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

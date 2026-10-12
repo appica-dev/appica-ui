@@ -7,6 +7,28 @@ version alongside the package.
 
 The library follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.0 - 2026-10-12
+
+A new Compare Slider, type-to-filter Dropdown Menus, drag controls that work inside a Drawer, and Base UI 1.9.
+
+### Added
+
+- **[Compare Slider](https://appica.dev/ui/components/react/compare-slider)** - Two layers split by a draggable divider, for before and after comparisons. Horizontal or vertical, with labels, a custom handle icon and an optional reveal on scroll.
+- **[Dropdown Menu filtering](https://appica.dev/ui/components/react/dropdown-menu#filtering)** - `DropdownMenuFilterProvider`, `DropdownMenuInput`, `DropdownMenuEmpty` and `DropdownMenuList` let readers type to narrow a menu or submenu. Base UI still marks filtering as a preview.
+- **[createComboboxItems](https://appica.dev/ui/components/react/combobox#values-by-id)** - Base UI's `Combobox.createItems`, re-exported, for a Combobox that stores IDs but shows labels.
+- **[keepMounted on Thumbnail](https://appica.dev/ui/components/react/thumbnail#nextjs-image)** - Loads the image in place instead of preloading `src`, so a Next.js `<Image>` downloads once and `loading="lazy"` stays lazy.
+- **[--ease-spring token](https://appica.dev/ui/docs/react/theming#other-token-groups)** - The library's spring curve as a theme token, with an `ease-spring` utility for your own transitions.
+
+### Improved
+
+- **Dependencies** - Base UI 1.9, Motion 14 and Embla Carousel 9.0.0-rc04. The menus gain `onItemHighlighted`, and Accordion and Collapsible triggers set the native `disabled` attribute.
+- **[Typed Combobox values](https://appica.dev/ui/components/react/combobox#values-by-id)** - `value`, `defaultValue` and `onValueChange` take their type from `items` instead of `unknown`, so `onValueChange={setValue}` needs no cast. A value of the wrong type is now a type error.
+- **actionsRef with a custom exit animation** - To unmount a popup with `actionsRef.unmount()` after your own exit animation, call `eventDetails.preventUnmountOnClose()` in `onOpenChange`. Otherwise Base UI 1.9 unmounts it before your animation ends.
+
+### Fixed
+
+- **[Drag controls inside a Drawer](https://appica.dev/ui/components/react/drawer#drags-inside-the-drawer)** - Dragging a Slider, Color Slider, Color Area, Carousel or interactive Sparkline no longer moves the Drawer around it.
+
 ## 1.2.0 - 2026-09-24
 
 Base UI 1.8 compatibility fixes, 2 new Background Pattern textures and a redrawn grid, a border-only Gradient Glow, and custom Copy Button icons.
@@ -22,7 +44,7 @@ Base UI 1.8 compatibility fixes, 2 new Background Pattern textures and a redrawn
 
 - **[Background Pattern grid](https://appica.dev/ui/components/react/background-pattern)** - Redrawn with a dot at every intersection, set off from the 1px lines, and the stroke holds at any `cellSize`.
 - **[Card solid frame](https://appica.dev/ui/components/react/card)** - A translucent `background-muted` band under a stronger blur, keeping `background-subtle` in dark mode.
-- **Dependencies** - Base UI 1.8, Embla Carousel 9.0.0-rc03, Motion 13.4 and React 19.3, with TypeScript 7 and Vitest 5 across the workspace. Through Base UI 1.8, read-only Select, Combobox and Autocomplete open for browsing, and start-aligned menus scale in from their corner.
+- **Dependencies** - Base UI 1.8, Embla Carousel 9.0.0-rc03, Motion 13.4 and React 19.3. Read-only Select, Combobox and Autocomplete now open for browsing, and start-aligned menus scale in from their corner.
 - **Agent rules** - The packaged rules and the README point at the per-integration index, `https://appica.dev/ui/react/llms.txt`.
 
 ### Removed
@@ -39,22 +61,22 @@ Base UI 1.8 compatibility fixes, 2 new Background Pattern textures and a redrawn
 
 ### Added
 
-- **[Card](https://appica.dev/ui/components/react/card)** - A server-safe layout container with `CardMedia`, `CardHeader`, `CardTitle`, `CardDescription` and `CardFooter` slots, an optional solid or glass frame, and an inset mode that floats media into a fully rounded panel. Every corner derives from a single `--card-radius`, so retuning one value keeps the nest concentric.
-- **[Color Picker](https://appica.dev/ui/components/react/color-picker)** - A swatch trigger and a popover holding an HSB area, a hue slider and a text input. It shares one color with every color component below it through context, so an area, a slider and a palette need no value wiring. `ColorPickerInput` reads any string `parseColor` accepts, not only the format it prints, and `ColorPickerEyeDropper` samples a screen pixel where the browser has an EyeDropper (rendering nothing where it does not).
+- **[Card](https://appica.dev/ui/components/react/card)** - A server-safe container with media, header and footer slots, an optional solid or glass frame, and an inset mode. Every corner derives from one `--card-radius`.
+- **[Color Picker](https://appica.dev/ui/components/react/color-picker)** - A swatch trigger and a popover with an HSB area, a hue slider and a text input. Color components inside it share one color with no wiring, and `ColorPickerEyeDropper` samples a screen pixel where the browser supports it.
 - **[Color Area, Color Slider, Color Swatch and Color Swatch Picker](https://appica.dev/ui/components/react/color-area)** - The 4 building blocks behind the picker, each usable on its own: a two-axis HSB plane, a channel slider, a single swatch, and a selectable palette.
-- **Color model** - `parseColor`, `formatColor`, `convertColor` and the channel helpers ship from `@appica/ui-react/color`. An alpha format collapses to its opaque twin at full opacity, so a solid color is written `#3b82f6` rather than `#3b82f6ff`.
-- **[Rating](https://appica.dev/ui/components/react/rating)** - A `radiogroup` of icon buttons that sweeps a fill preview across the row under the pointer and commits on click. The preview always lands on a `step` boundary, so it never promises a value the click will not deliver. Swap the built-in star through `icon={{ empty, filled }}`, and recolor the whole control with any `text-*` utility.
-- **[Border Beam](https://appica.dev/ui/components/react/border-beam)** - A comet of light that laps your content's border, painted as a conic sweep clipped to a hairline ring so it follows the wrapper's own `border-radius` exactly, from a `rounded-xl` card to a full pill, with no radius prop to keep in sync. Pure CSS, mirrored in RTL and reduced-motion aware.
-- **[Carousel thumbnails](https://appica.dev/ui/components/react/carousel)** - `CarouselThumbs` is a rail of `CarouselThumb`s that sits inside the carousel and drives it, with no second engine to wire up by hand. The rail is a carousel of its own, so a set with more shots than fit scrolls instead of squeezing, and selection is drawn as a single outline that slides between thumbnails.
-- **[frame prop on Dialog, AlertDialog and Drawer](https://appica.dev/ui/components/react/dialog)** - Wraps the popup in a translucent glass frame over the backdrop. Pass `frame={false}` for a plain solid card.
-- **[Prebuilt stylesheet](https://appica.dev/ui/docs/react/installation)** - `@import '@appica/ui-react/css'` pulls in a single self-contained `appica.css` carrying every component's styles and the full token system, for projects that do not run Tailwind. It is linkable straight from a CDN, and tokens stay overridable CSS variables so theming works the same way.
-- **[Agent rules in the package](https://appica.dev/ui/docs/react/agents)** - `@appica/ui-react/agent-rules.md` ships the rules a coding agent needs to use the library correctly, so an agent that wandered in following an import finds them without the docs site. The README links it.
+- **Color model** - `parseColor`, `formatColor`, `convertColor` and the channel helpers, from `@appica/ui-react/color`.
+- **[Rating](https://appica.dev/ui/components/react/rating)** - A star rating with a hover preview that snaps to `step`, custom icons through `icon={{ empty, filled }}`, and color from any `text-*` utility.
+- **[Border Beam](https://appica.dev/ui/components/react/border-beam)** - A beam of light that circles your content's border and follows its `border-radius`. Pure CSS, mirrored in RTL and reduced-motion aware.
+- **[Carousel thumbnails](https://appica.dev/ui/components/react/carousel)** - `CarouselThumbs` and `CarouselThumb` add a scrolling thumbnail rail that drives the carousel, with nothing extra to wire up.
+- **[frame prop on Dialog, Alert Dialog and Drawer](https://appica.dev/ui/components/react/dialog)** - Wraps the popup in a translucent glass frame over the backdrop. Pass `frame={false}` for a plain solid card.
+- **[Prebuilt stylesheet](https://appica.dev/ui/docs/react/installation)** - `@import '@appica/ui-react/css'` loads one self-contained stylesheet with every component and token, for projects without Tailwind. It also works from a CDN.
+- **[Agent rules in the package](https://appica.dev/ui/docs/react/agents)** - `@appica/ui-react/agent-rules.md` ships the rules a coding agent needs to use the library, and the README links it.
 
 ### Improved
 
-- **Prop documentation comes from the source** - All 366 props declared on our own types now carry JSDoc, so a component's comments, its IDE hover and the published API reference cannot drift apart. `Badge`, `Button`, `Alert` and `TabsList` declare `variant` and `size` explicitly, so hovering one shows the union and its default instead of an empty interface body.
+- **Prop documentation comes from the source** - All 366 props declared by the library carry JSDoc, which also generates the published API reference, so IDE hover and the docs match.
 - **[Text Animate shimmer](https://appica.dev/ui/components/react/text-animate)** - Reworked as a seamless gradient glare that sweeps the whole string as one band, rather than brightening character by character.
-- **Dependencies** - Base UI 1.7, Motion 13, Tailwind CSS 4.3 and TypeScript 6 across the workspace, and the development Node floor moves to 22. React 19 and Tailwind CSS 4 remain the only peer requirements.
+- **Dependencies** - Base UI 1.7, Motion 13 and Tailwind CSS 4.3, and the development Node floor moves to 22. React 19 and Tailwind CSS 4 remain the only peer requirements.
 
 ### Fixed
 
@@ -66,7 +88,7 @@ The first public release of the component library.
 
 ### Added
 
-- **[60+ components](https://appica.dev/ui/components/react/button)** - Built on Base UI primitives, animated with Motion and styled with Tailwind CSS v4 design tokens. Accessible by default, right-to-left ready, and quiet when the reader prefers reduced motion.
+- **[60+ components](https://appica.dev/ui/components/react/button)** - Built on Base UI, animated with Motion and styled with Tailwind CSS v4 tokens. Accessible, right-to-left ready and reduced-motion aware.
 - **[Providers and hooks](https://appica.dev/ui/docs/react/theme-provider)** - `ThemeProvider`, `DirectionProvider` and `ReducedMotionProvider`, plus `useTheme`, `useDirection`, `useMediaQuery`, `useLocalStorage`, `useDismissible` and `useReducedMotion`.
-- **[Token-based theming](https://appica.dev/ui/docs/react/theming)** - Every color, radius, font and shadow is a CSS variable, so a project retunes the library by redefining tokens rather than overriding component styles. Dark mode ships with no flash of the wrong theme.
-- **[Composition through render](https://appica.dev/ui/docs/react/composition)** - Every component takes a `render` prop, so it lends its behavior and styling to an element you supply - a `next/link`, a `<button>`, another component - rather than wrapping it in one more node.
+- **[Token-based theming](https://appica.dev/ui/docs/react/theming)** - Every color, radius, font and shadow is a CSS variable you can redefine, and dark mode loads without a flash.
+- **[Composition through render](https://appica.dev/ui/docs/react/composition)** - Every component takes a `render` prop to lend its behavior and styling to your own element (a `next/link`, a `<button>`, another component) instead of adding a wrapper.

@@ -99,7 +99,7 @@ const tabsTriggerVariants = cva(
 )
 
 const tabsTriggerInnerVariants = cva(
-  'relative isolate flex items-center data-[orientation=horizontal]:justify-center data-[orientation=vertical]:w-full data-[orientation=horizontal]:text-center data-[orientation=vertical]:text-start data-[orientation=horizontal]:whitespace-nowrap transform-gpu transition-transform duration-250 ease-[cubic-bezier(0.175,0.885,0.32,1.5)] motion-reduce:transition-none group-active/trigger:scale-[0.97] group-active/trigger:duration-100 group-active/trigger:ease-in-out group-active/trigger:translate-y-px',
+  'relative isolate flex items-center data-[orientation=horizontal]:justify-center data-[orientation=vertical]:w-full data-[orientation=horizontal]:text-center data-[orientation=vertical]:text-start data-[orientation=horizontal]:whitespace-nowrap transform-gpu transition-transform duration-250 ease-spring motion-reduce:transition-none group-active/trigger:scale-[0.97] group-active/trigger:duration-100 group-active/trigger:ease-in-out group-active/trigger:translate-y-px',
   {
     variants: {
       variant: {

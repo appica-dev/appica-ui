@@ -184,6 +184,13 @@ describe('Carousel', () => {
     expect(container.querySelector('[data-slot="carousel-content"]')?.getAttribute('data-orientation')).toBe('vertical')
   })
 
+  it('claims touch drags along its own axis from a surrounding Drawer', () => {
+    const { container: row } = render(<Basic />)
+    expect(row.querySelector('[data-slot="carousel-viewport"]')).toHaveAttribute('data-base-ui-swipe-ignore', 'x')
+    const { container: column } = render(<Basic orientation="vertical" />)
+    expect(column.querySelector('[data-slot="carousel-viewport"]')).toHaveAttribute('data-base-ui-swipe-ignore', 'y')
+  })
+
   it('forwards className on the root and other elements', () => {
     const { container } = render(
       <Carousel className="root-cls">
@@ -447,6 +454,13 @@ describe('CarouselThumbs / CarouselThumb', () => {
     expect(rail.getAttribute('data-orientation')).toBe('vertical')
     const track = rail.querySelector('[data-slot="carousel-content"]') as HTMLElement
     expect(track.getAttribute('data-orientation')).toBe('vertical')
+  })
+
+  it('claims drags along the rail axis, independent of the carousel axis', () => {
+    const { container } = render(<WithThumbs orientation="vertical" />)
+    const [main, rail] = container.querySelectorAll('[data-slot="carousel-viewport"]')
+    expect(main).toHaveAttribute('data-base-ui-swipe-ignore', 'x')
+    expect(rail).toHaveAttribute('data-base-ui-swipe-ignore', 'y')
   })
 
   it('applies the light variant to the thumbnails and the indicator', () => {

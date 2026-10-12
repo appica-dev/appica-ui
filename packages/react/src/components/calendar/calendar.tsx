@@ -182,7 +182,7 @@ interface CalendarDayButtonProps extends DayButtonProps {
 const DAY_BUTTON_BASE = cn(
   'relative isolate flex size-(--cell-size) cursor-pointer items-center justify-center',
   'font-normal whitespace-nowrap outline-offset-1 outline-ring',
-  'transform-gpu transition duration-250 ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+  'transform-gpu transition duration-250 ease-spring',
   'active:scale-[0.97] active:translate-y-px active:duration-100 active:ease-in-out',
   'motion-reduce:transition-none',
   'before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit]',

@@ -5,6 +5,11 @@ import { axe } from 'vitest-axe'
 import { Slider } from './slider'
 
 describe('Slider', () => {
+  it('keeps a surrounding Drawer from swiping on any drag that starts on the control', () => {
+    const { container } = render(<Slider thumbAriaLabel="Volume" />)
+    expect(container.querySelector('[data-slot="slider-control"]')).toHaveAttribute('data-base-ui-swipe-ignore', '')
+  })
+
   it('renders a single thumb when no value is provided', () => {
     render(<Slider thumbAriaLabel="Volume" />)
     const thumbs = screen.getAllByRole('slider')

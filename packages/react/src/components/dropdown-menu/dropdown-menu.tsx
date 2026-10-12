@@ -5,6 +5,7 @@ import { Menu as BaseMenu } from '@base-ui/react/menu'
 import { useReducedMotion } from '../../hooks/use-reduced-motion'
 import { cn } from '../../internal/utils'
 import { type FloatingContentProps, splitFloatingProps } from '../../internal/floating'
+import { inputVariants } from '../input/input-variants'
 import { navigationLinkVariants } from '../navigation/navigation-link-variants'
 
 type DropdownMenuSize = 'sm' | 'md' | 'lg'
@@ -44,6 +45,12 @@ function DropdownMenu({ size = 'md', children, ...rest }: DropdownMenuProps) {
   )
 }
 
+type DropdownMenuFilterProviderProps = React.ComponentProps<typeof BaseMenu.FilterProvider>
+
+function DropdownMenuFilterProvider(props: DropdownMenuFilterProviderProps) {
+  return <BaseMenu.FilterProvider {...props} />
+}
+
 type DropdownMenuTriggerProps = React.ComponentProps<typeof BaseMenu.Trigger>
 
 function DropdownMenuTrigger({ className, ...props }: DropdownMenuTriggerProps) {
@@ -67,12 +74,19 @@ function popupClassName(size: DropdownMenuSize, className?: string) {
     'max-h-(--available-height) w-(--anchor-width) bg-background border-border-overlay flex flex-col border shadow-2xl outline-none',
     POPUP_SIZE[size],
     'origin-(--transform-origin)',
-    'motion-safe:transition-[opacity,scale] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+    'motion-safe:transition-[opacity,scale] motion-safe:duration-200 motion-safe:ease-spring',
     'data-starting-style:motion-safe:scale-90 data-starting-style:motion-safe:opacity-0',
     'data-ending-style:motion-safe:scale-95 data-ending-style:motion-safe:opacity-0 data-ending-style:motion-safe:duration-100 data-ending-style:motion-safe:ease-out',
     className,
   )
 }
+
+const POPUP_BODY = cn(
+  'flex flex-col gap-0.5 overflow-x-hidden overflow-y-auto p-2',
+  'has-data-[slot=dropdown-menu-list]:p-0',
+  'has-data-[slot=dropdown-menu-input]:gap-2 has-data-[slot=dropdown-menu-input]:*:data-[slot=dropdown-menu-list]:pt-0',
+  'has-data-[slot=dropdown-menu-empty]:*:data-[slot=dropdown-menu-list]:p-0',
+)
 
 type DropdownMenuFloatingProps = FloatingContentProps<
   React.ComponentProps<typeof BaseMenu.Positioner>,
@@ -97,10 +111,88 @@ function DropdownMenuContent({ className, children, ...props }: DropdownMenuCont
         className={cn('isolate z-50', positioner.className as string | undefined)}
       >
         <BaseMenu.Popup data-slot="dropdown-menu-content" className={popupClassName(size, className)} {...popup}>
-          <div className="flex flex-col gap-0.5 overflow-x-hidden overflow-y-auto p-2">{children}</div>
+          <div className={POPUP_BODY}>{children}</div>
         </BaseMenu.Popup>
       </BaseMenu.Positioner>
     </BaseMenu.Portal>
+  )
+}
+
+const INPUT_RADIUS: Record<DropdownMenuSize, string> = {
+  sm: 'rounded-xs',
+  md: 'rounded-sm',
+  lg: 'rounded-md',
+}
+
+interface DropdownMenuInputProps extends Omit<React.ComponentProps<typeof BaseMenu.Input>, 'className'> {
+  /** Extra classes on the frame that holds the field, its search icon and its clear button. */
+  className?: string
+}
+
+function DropdownMenuInput({ className, ...props }: DropdownMenuInputProps) {
+  const { size } = useDropdownMenuContext()
+  return (
+    <div
+      data-slot="dropdown-menu-input"
+      className={cn(
+        inputVariants({ size }),
+        'm-2 mb-0 flex w-auto shrink-0 items-center',
+        INPUT_RADIUS[size],
+        'has-data-highlighted:ring-ring-input has-data-highlighted:border-transparent has-data-highlighted:ring-3',
+        className,
+      )}
+    >
+      <SearchIcon className="text-foreground-subtle -ms-0.5" />
+      <BaseMenu.Input
+        data-slot="dropdown-menu-input-field"
+        className="placeholder:text-foreground-subtle h-full min-w-0 flex-1 bg-transparent outline-none"
+        {...props}
+      />
+      <BaseMenu.Clear
+        data-slot="dropdown-menu-clear"
+        className="text-foreground-subtle hover:text-foreground shrink-0 cursor-pointer transition-colors duration-200 outline-none motion-reduce:transition-none"
+      >
+        <ClearIcon className="size-[1em]" />
+      </BaseMenu.Clear>
+    </div>
+  )
+}
+
+const EMPTY_SIZE: Record<DropdownMenuSize, string> = {
+  sm: 'px-2.5 py-2 text-xs',
+  md: 'px-3 py-2.5 text-sm',
+  lg: 'px-3.5 py-3 text-base',
+}
+
+type DropdownMenuEmptyProps = React.ComponentProps<typeof BaseMenu.Empty>
+
+function DropdownMenuEmpty({ className, ...props }: DropdownMenuEmptyProps) {
+  const { size } = useDropdownMenuContext()
+  return (
+    <BaseMenu.Empty
+      data-slot="dropdown-menu-empty"
+      className={cn('text-foreground-muted text-center', EMPTY_SIZE[size], className)}
+      {...props}
+    />
+  )
+}
+
+type DropdownMenuListProps = React.ComponentProps<typeof BaseMenu.List>
+
+function DropdownMenuList({ className, ...props }: DropdownMenuListProps) {
+  return (
+    <BaseMenu.List
+      data-slot="dropdown-menu-list"
+      className={cn(
+        'flex min-h-0 flex-1 flex-col gap-0.5 overflow-x-hidden overflow-y-auto p-2 outline-none',
+        '*:data-[slot=dropdown-menu-separator]:first:hidden *:data-[slot=dropdown-menu-separator]:last:hidden',
+        '*:data-[slot=dropdown-menu-separator]:has-[+[hidden]]:hidden',
+        '[&>[hidden]+[data-slot=dropdown-menu-separator]]:hidden',
+        '[&>[data-slot=dropdown-menu-separator]+[data-slot=dropdown-menu-separator]]:hidden',
+        className,
+      )}
+      {...props}
+    />
   )
 }
 
@@ -272,7 +364,7 @@ function DropdownMenuSubContent({ className, children, ...props }: DropdownMenuS
         className={cn('isolate z-50', positioner.className as string | undefined)}
       >
         <BaseMenu.Popup data-slot="dropdown-menu-sub-content" className={popupClassName(size, className)} {...popup}>
-          <div className="flex flex-col gap-0.5 overflow-x-hidden overflow-y-auto p-2">{children}</div>
+          <div className={POPUP_BODY}>{children}</div>
         </BaseMenu.Popup>
       </BaseMenu.Positioner>
     </BaseMenu.Portal>
@@ -318,10 +410,40 @@ function ChevronEndIcon(props: IconProps) {
   )
 }
 
+function SearchIcon(props: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="10" cy="10" r="7" />
+      <path d="m21 21-6-6" />
+    </svg>
+  )
+}
+
+function ClearIcon(props: IconProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="2 2 16 16" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+    </svg>
+  )
+}
+
 export {
   DropdownMenu,
+  DropdownMenuFilterProvider,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuInput,
+  DropdownMenuEmpty,
+  DropdownMenuList,
   DropdownMenuGroup,
   DropdownMenuGroupLabel,
   DropdownMenuItem,
@@ -336,8 +458,12 @@ export {
 }
 export type {
   DropdownMenuProps,
+  DropdownMenuFilterProviderProps,
   DropdownMenuTriggerProps,
   DropdownMenuContentProps,
+  DropdownMenuInputProps,
+  DropdownMenuEmptyProps,
+  DropdownMenuListProps,
   DropdownMenuGroupProps,
   DropdownMenuGroupLabelProps,
   DropdownMenuItemProps,

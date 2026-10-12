@@ -94,7 +94,7 @@ function DialogContent({
             showFrame ? 'border-white/15 bg-white/10 p-1.5 backdrop-blur-sm' : 'bg-background border-border-overlay',
             !showFrame && 'shadow-2xl',
             'isolate transform-gpu outline-none',
-            'motion-safe:transition-[opacity,scale] motion-safe:duration-250 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+            'motion-safe:ease-spring motion-safe:transition-[opacity,scale] motion-safe:duration-250',
             'data-starting-style:motion-safe:scale-95 data-starting-style:motion-safe:opacity-0',
             'data-ending-style:motion-safe:scale-95 data-ending-style:motion-safe:opacity-0 data-ending-style:motion-safe:duration-100 data-ending-style:motion-safe:ease-out',
             'data-nested-dialog-open:pointer-events-none data-nested-dialog-open:scale-95 data-nested-dialog-open:opacity-0',

@@ -19,6 +19,7 @@ const TOOLTIP_TILT_TRANSITION = {
 
 const TOOLTIP_POPUP_TRANSITION = {
   duration: 0.2,
+  // `--ease-spring` in styles.css, as numbers: Motion can't read a CSS variable.
   ease: [0.175, 0.885, 0.32, 1.5] satisfies [number, number, number, number],
 }
 
@@ -240,7 +241,7 @@ function Slider({
         className={cn(rootClasses, className)}
         {...rootProps}
       >
-        <BaseSlider.Control data-slot="slider-control" className={controlClasses}>
+        <BaseSlider.Control data-slot="slider-control" data-base-ui-swipe-ignore="" className={controlClasses}>
           <BaseSlider.Track data-slot="slider-track" className={trackClasses}>
             <BaseSlider.Indicator data-slot="slider-indicator" className={indicatorClasses} />
           </BaseSlider.Track>

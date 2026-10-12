@@ -7,10 +7,14 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuEmpty,
+  DropdownMenuFilterProvider,
   DropdownMenuGroup,
   DropdownMenuGroupLabel,
+  DropdownMenuInput,
   DropdownMenuItem,
   DropdownMenuLinkItem,
+  DropdownMenuList,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -251,5 +255,189 @@ describe('DropdownMenu', () => {
   it('has no a11y violations in closed state', async () => {
     const { container } = render(<BasicMenu />)
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('reports highlight changes through onItemHighlighted', async () => {
+    const user = setupUser()
+    const onItemHighlighted = vi.fn()
+    render(
+      <DropdownMenu onItemHighlighted={onItemHighlighted}>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await screen.findByRole('menuitem', { name: 'Profile' })
+    await user.keyboard('{ArrowDown}')
+    await waitFor(() => {
+      expect(onItemHighlighted).toHaveBeenCalledWith(
+        screen.getByRole('menuitem', { name: 'Profile' }),
+        expect.objectContaining({ reason: 'keyboard', event: expect.any(KeyboardEvent) }),
+      )
+    })
+  })
+
+  it('List: keeps content beside the list out of the menu role', async () => {
+    const user = setupUser()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <p>Signed in as Sarah</p>
+          <DropdownMenuList>
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+          </DropdownMenuList>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    const menu = await screen.findByRole('menu')
+    expect(menu).toContainElement(screen.getByRole('menuitem', { name: 'Profile' }))
+    expect(menu).not.toContainElement(screen.getByText('Signed in as Sarah'))
+  })
+})
+
+function FilterMenu({ onDuplicate, autoHighlight }: { onDuplicate?: () => void; autoHighlight?: boolean } = {}) {
+  return (
+    <DropdownMenuFilterProvider {...(autoHighlight && { autoHighlight })}>
+      <DropdownMenu>
+        <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuInput aria-label="Filter actions" placeholder="Filter actions" />
+          <DropdownMenuEmpty>No actions found.</DropdownMenuEmpty>
+          <DropdownMenuList>
+            <DropdownMenuGroup>
+              <DropdownMenuGroupLabel>File</DropdownMenuGroupLabel>
+              <DropdownMenuItem>Rename</DropdownMenuItem>
+              <DropdownMenuItem onClick={onDuplicate}>Duplicate</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup data-testid="share-group">
+              <DropdownMenuGroupLabel>Share</DropdownMenuGroupLabel>
+              <DropdownMenuItem>Copy link</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuList>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </DropdownMenuFilterProvider>
+  )
+}
+
+describe('DropdownMenu filtering', () => {
+  it('focuses the search field when opened with a click', async () => {
+    const user = setupUser()
+    render(<FilterMenu />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    const input = await screen.findByRole('searchbox', { name: 'Filter actions' })
+    await waitFor(() => expect(input).toHaveFocus())
+  })
+
+  it('narrows the items to the matches and hides groups left empty', async () => {
+    const user = setupUser()
+    render(<FilterMenu />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    await user.type(await screen.findByRole('searchbox', { name: 'Filter actions' }), 'ren')
+    await waitFor(() => {
+      expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual(['Rename'])
+    })
+    expect(screen.getByTestId('share-group')).not.toBeVisible()
+  })
+
+  it('announces the empty message once nothing matches', async () => {
+    const user = setupUser()
+    render(<FilterMenu />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    expect(screen.queryByText('No actions found.')).toBeNull()
+    await user.type(await screen.findByRole('searchbox', { name: 'Filter actions' }), 'zzz')
+    expect(await screen.findByRole('status')).toHaveTextContent('No actions found.')
+    expect(screen.queryAllByRole('menuitem')).toHaveLength(0)
+  })
+
+  it('selects a match with the keyboard while focus stays in the field', async () => {
+    const user = setupUser()
+    const onDuplicate = vi.fn()
+    render(<FilterMenu onDuplicate={onDuplicate} />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    const input = await screen.findByRole('searchbox', { name: 'Filter actions' })
+    await user.type(input, 'dup')
+    await user.keyboard('{ArrowDown}')
+    await waitFor(() => {
+      expect(screen.getByRole('menuitem', { name: 'Duplicate' })).toHaveAttribute('data-highlighted')
+    })
+    expect(input).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(onDuplicate).toHaveBeenCalledTimes(1)
+  })
+
+  it('highlights the first match as you type with autoHighlight', async () => {
+    const user = setupUser()
+    render(<FilterMenu autoHighlight />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    await user.type(await screen.findByRole('searchbox', { name: 'Filter actions' }), 'link')
+    await waitFor(() => {
+      expect(screen.getByRole('menuitem', { name: 'Copy link' })).toHaveAttribute('data-highlighted')
+    })
+  })
+
+  it('clears the query from the clear button', async () => {
+    const user = setupUser()
+    render(<FilterMenu />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    const input = await screen.findByRole('searchbox', { name: 'Filter actions' })
+    expect(document.querySelector('[data-slot="dropdown-menu-clear"]')).toBeNull()
+    await user.type(input, 'ren')
+    const clear = document.querySelector<HTMLButtonElement>('[data-slot="dropdown-menu-clear"]')
+    expect(clear).not.toBeNull()
+    await user.click(clear!)
+    expect(input).toHaveValue('')
+    await waitFor(() => expect(screen.getAllByRole('menuitem')).toHaveLength(3))
+  })
+
+  it('filters a submenu wrapped in its own provider', async () => {
+    const user = setupUser()
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Rename</DropdownMenuItem>
+          <DropdownMenuFilterProvider>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Move to</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuInput aria-label="Filter folders" />
+                <DropdownMenuList>
+                  <DropdownMenuItem>Documents</DropdownMenuItem>
+                  <DropdownMenuItem>Downloads</DropdownMenuItem>
+                  <DropdownMenuItem>Projects</DropdownMenuItem>
+                </DropdownMenuList>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuFilterProvider>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    expect(screen.queryByRole('searchbox')).toBeNull()
+    await screen.findByRole('menuitem', { name: /Move to/ })
+    await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}')
+    const input = await screen.findByRole('searchbox', { name: 'Filter folders' })
+    await waitFor(() => expect(input).toHaveFocus())
+    await user.keyboard('do')
+    await waitFor(() => {
+      expect(screen.queryByRole('menuitem', { name: 'Projects' })).toBeNull()
+    })
+    expect(screen.getByRole('menuitem', { name: 'Documents' })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'Downloads' })).toBeInTheDocument()
+  })
+
+  it('has no a11y violations while open', async () => {
+    const user = setupUser()
+    render(<FilterMenu />)
+    await user.click(screen.getByRole('button', { name: 'Actions' }))
+    await user.type(await screen.findByRole('searchbox', { name: 'Filter actions' }), 're')
+    expect(await axe(document.body)).toHaveNoViolations()
   })
 })

@@ -36,6 +36,11 @@ const thumb = () => document.querySelector('[data-slot="color-slider-thumb"]') a
 const stopCount = () => (track().style.backgroundImage.match(/rgba?\(/g) ?? []).length
 
 describe('ColorSlider', () => {
+  it('keeps a surrounding Drawer from swiping on any drag that starts on the slider', () => {
+    const { container } = renderSlider({ channel: 'hue', defaultValue: '#3b82f6' })
+    expect(container.querySelector('[data-slot="color-slider"]')).toHaveAttribute('data-base-ui-swipe-ignore', '')
+  })
+
   it('exposes the channel as a labeled range input', () => {
     renderSlider({ channel: 'hue', defaultValue: 'hsb(120, 50%, 50%)' })
     expect(slider()).toHaveAttribute('aria-label', 'Hue')

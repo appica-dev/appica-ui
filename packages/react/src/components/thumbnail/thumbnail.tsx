@@ -67,6 +67,11 @@ interface ThumbnailProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'si
   alt?: string
   /** Swap the `<img>` for another element - e.g. a Next.js `<Image>`. */
   render?: BaseImageProps['render']
+  /**
+   * Mount the image and let it load in place instead of preloading `src`. Set it for `loading="lazy"` and for image components such as Next.js `<Image>`, which otherwise download twice.
+   * @default false
+   */
+  keepMounted?: BaseImageProps['keepMounted']
   /** Fires as the image moves through its loading lifecycle. */
   onLoadingStatusChange?: BaseImageProps['onLoadingStatusChange']
   /** The icon to frame (icon variants). */
@@ -82,6 +87,7 @@ function Thumbnail({
   src,
   alt,
   render,
+  keepMounted,
   onLoadingStatusChange,
   children,
   ...props
@@ -121,6 +127,7 @@ function Thumbnail({
           src={src ?? lifted?.src}
           alt={alt ?? lifted?.alt ?? ''}
           render={render}
+          keepMounted={keepMounted}
           onLoadingStatusChange={onLoadingStatusChange}
         />
         <BaseAvatar.Fallback

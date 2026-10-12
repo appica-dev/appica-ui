@@ -13,6 +13,7 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxValue,
+  createComboboxItems,
 } from './combobox'
 
 const FRAMEWORKS = ['Next.js', 'SvelteKit', 'Nuxt.js', 'Remix', 'Astro']
@@ -159,6 +160,38 @@ describe('Combobox', () => {
     await user.click(await screen.findByRole('option', { name: 'Remix' }))
 
     expect(onValueChange).toHaveBeenCalledWith('Remix', expect.anything())
+  })
+
+  it('selects by ID from a createComboboxItems collection and shows the label', async () => {
+    const user = setupUser()
+    const onValueChange = vi.fn()
+    const people = [
+      { id: 'liam', name: 'Liam Hudson' },
+      { id: 'sarah', name: 'Sarah Jenkins' },
+    ]
+    const items = createComboboxItems(people, { getValue: (person) => person.id, getLabel: (person) => person.name })
+    render(
+      <Combobox items={items} onValueChange={onValueChange}>
+        <ComboboxInput aria-label="Assign to" />
+        <ComboboxContent>
+          <ComboboxList>
+            {(person: (typeof people)[number]) => (
+              <ComboboxItem key={person.id} value={person.id}>
+                {person.name}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>,
+    )
+
+    const input = screen.getByRole('combobox', { name: 'Assign to' })
+    await user.type(input, 'sar')
+    expect(screen.queryByRole('option', { name: 'Liam Hudson' })).toBeNull()
+    await user.click(await screen.findByRole('option', { name: 'Sarah Jenkins' }))
+
+    expect(onValueChange).toHaveBeenCalledWith('sarah', expect.anything())
+    await waitFor(() => expect(input).toHaveValue('Sarah Jenkins'))
   })
 
   it('renders the check indicator on the selected item', async () => {

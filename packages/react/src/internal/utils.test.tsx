@@ -1,7 +1,14 @@
 import * as React from 'react'
 import { render } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { composeRefs, useComposedRefs } from './utils'
+import { cn, composeRefs, useComposedRefs } from './utils'
+
+describe('cn', () => {
+  it('treats ease-spring as a timing function, so a later ease-* replaces it', () => {
+    expect(cn('ease-spring', 'ease-linear')).toBe('ease-linear')
+    expect(cn('motion-safe:ease-out', 'motion-safe:ease-spring')).toBe('motion-safe:ease-spring')
+  })
+})
 
 describe('composeRefs', () => {
   it('assigns a node to object refs and calls function refs', () => {

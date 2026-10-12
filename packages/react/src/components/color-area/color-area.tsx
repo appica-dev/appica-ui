@@ -318,6 +318,7 @@ function ColorArea({
       ref={containerRef}
       role="group"
       aria-label={ariaLabel}
+      data-base-ui-swipe-ignore=""
       {...props}
       data-slot="color-area"
       data-space={space}

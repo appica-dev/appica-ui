@@ -55,7 +55,7 @@ function PopoverContent({ className, arrow = true, children, ...props }: Popover
                 'group-data-[side=inline-start]/popup:border-e-2',
                 'group-data-[side=inline-end]/popup:border-s-2',
               ],
-              'motion-safe:origin-(--transform-origin) motion-safe:transition-[opacity,scale] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+              'motion-safe:ease-spring motion-safe:origin-(--transform-origin) motion-safe:transition-[opacity,scale] motion-safe:duration-200',
               'group-data-starting-style/popup:motion-safe:scale-90 group-data-starting-style/popup:motion-safe:opacity-0',
               'group-data-ending-style/popup:motion-safe:scale-95 group-data-ending-style/popup:motion-safe:opacity-0 group-data-ending-style/popup:motion-safe:duration-100 group-data-ending-style/popup:motion-safe:ease-out',
               className,

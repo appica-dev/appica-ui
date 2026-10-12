@@ -127,6 +127,14 @@ describe('Thumbnail', () => {
     expect(lifted.getAttribute('data-slot')).toBe('thumbnail-image')
   })
 
+  it('mounts the image on the first render with keepMounted instead of preloading it', () => {
+    const { container: preloaded } = render(<Thumbnail src="/peak.jpg" alt="Peak" />)
+    expect(preloaded.querySelector('[data-slot="thumbnail-image"]')).toBeNull()
+
+    const { container: inPlace } = render(<Thumbnail src="/peak.jpg" alt="Peak" keepMounted />)
+    expect(inPlace.querySelector('[data-slot="thumbnail-image"]')).toHaveAttribute('src', '/peak.jpg')
+  })
+
   it('swaps the underlying element via a render function', async () => {
     render(
       <Thumbnail

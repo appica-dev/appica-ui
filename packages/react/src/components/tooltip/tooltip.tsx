@@ -49,7 +49,7 @@ function TooltipContent({ className, arrow = true, children, ...props }: Tooltip
           data-slot="tooltip-content"
           className={cn(
             'bg-background-inverse text-foreground-inverse rounded-xs px-3 py-1.5 text-xs shadow-md',
-            'motion-safe:origin-(--transform-origin) motion-safe:transition-[opacity,scale] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+            'motion-safe:ease-spring motion-safe:origin-(--transform-origin) motion-safe:transition-[opacity,scale] motion-safe:duration-200',
             'data-starting-style:motion-safe:scale-90 data-starting-style:motion-safe:opacity-0',
             'data-ending-style:motion-safe:scale-95 data-ending-style:motion-safe:opacity-0 data-ending-style:motion-safe:duration-100 data-ending-style:motion-safe:ease-out',
             'data-instant:motion-safe:transition-none',

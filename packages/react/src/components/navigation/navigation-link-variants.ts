@@ -3,7 +3,7 @@ import { cn } from '../../internal/utils'
 
 const base = [
   'relative inline-flex items-center gap-1.5 transform-gpu cursor-pointer font-medium outline-none',
-  'transition duration-250 ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+  'transition duration-250 ease-spring',
   'select-none not-data-popup-open:active:scale-[0.97] not-data-popup-open:active:duration-100 not-data-popup-open:active:ease-in-out not-data-popup-open:active:translate-y-px',
   'data-disabled:opacity-disabled data-disabled:pointer-events-none',
   'group-data-disabled/submenu-trigger:opacity-disabled group-data-disabled/submenu-trigger:pointer-events-none',

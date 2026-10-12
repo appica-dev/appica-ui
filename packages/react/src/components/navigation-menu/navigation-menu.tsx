@@ -328,8 +328,8 @@ function NavigationMenuPositioner({
             morph && 'h-(--popup-height) w-(--popup-width)',
             'origin-(--transform-origin)',
             morph
-              ? 'motion-safe:[transition:opacity_300ms_cubic-bezier(0.175,0.885,0.32,1.5),scale_300ms_cubic-bezier(0.175,0.885,0.32,1.5),width_300ms_cubic-bezier(0.22,1,0.36,1),height_300ms_cubic-bezier(0.22,1,0.36,1)]'
-              : 'motion-safe:transition-[opacity,scale] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.175,0.885,0.32,1.5)]',
+              ? 'motion-safe:[transition:opacity_300ms_var(--ease-spring),scale_300ms_var(--ease-spring),width_300ms_cubic-bezier(0.22,1,0.36,1),height_300ms_cubic-bezier(0.22,1,0.36,1)]'
+              : 'motion-safe:ease-spring motion-safe:transition-[opacity,scale] motion-safe:duration-300',
             'data-starting-style:motion-safe:scale-95 data-starting-style:motion-safe:opacity-0',
             'data-ending-style:motion-safe:scale-95 data-ending-style:motion-safe:opacity-0 data-ending-style:motion-safe:duration-150 data-ending-style:motion-safe:ease-out',
             className,

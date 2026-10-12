@@ -16,10 +16,6 @@ export interface UseMediaQueryOptions {
  * Next.js, Remix, Astro): on the server and the first client render it returns
  * `defaultValue`, then the real value resolves on hydration via
  * `useSyncExternalStore`.
- *
- * @example
- * const isDesktop = useMediaQuery('(min-width: 768px)')
- * return isDesktop ? <Dialog … /> : <Drawer … />
  */
 export function useMediaQuery(query: string, { defaultValue = false }: UseMediaQueryOptions = {}): boolean {
   const subscribe = useCallback(
