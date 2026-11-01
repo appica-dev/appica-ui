@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import * as React from 'react'
+import { Field, FieldDescription, FieldLabel } from '../field/field'
 import { DatePicker, type DateRange } from './date-picker'
 
 const JUN_10 = new Date(2026, 5, 10)
@@ -163,6 +164,52 @@ describe('DatePicker', () => {
       expect(dayCells).toHaveLength(2)
     })
 
+    it('labels the two fields Start date and End date by default', () => {
+      const { container } = render(<DatePicker mode="range" defaultValue={{ from: JUN_10, to: JUN_17 }} />)
+      const fields = container.querySelectorAll('[data-slot="date-field"]')
+      expect(screen.getByRole('group', { name: 'Start date' })).toBe(fields[0])
+      expect(screen.getByRole('group', { name: 'End date' })).toBe(fields[1])
+    })
+
+    it('uses startAriaLabel and endAriaLabel when passed', () => {
+      render(<DatePicker mode="range" startAriaLabel="Check-in" endAriaLabel="Check-out" />)
+      expect(screen.getByRole('group', { name: 'Check-in' })).toBeInTheDocument()
+      expect(screen.getByRole('group', { name: 'Check-out' })).toBeInTheDocument()
+      expect(screen.queryByRole('group', { name: 'Start date' })).toBeNull()
+    })
+
+    it('labels the time fields with the same start and end labels when showTime is set', () => {
+      const { container } = render(<DatePicker mode="range" showTime />)
+      const timeFields = container.querySelectorAll('[data-slot="time-field"]')
+      expect(timeFields[0]).toHaveAttribute('aria-label', 'Start date')
+      expect(timeFields[1]).toHaveAttribute('aria-label', 'End date')
+    })
+
+    it('makes the wrapper a group labeled by the FieldLabel', () => {
+      const { container } = render(
+        <Field>
+          <FieldLabel>Trip dates</FieldLabel>
+          <DatePicker mode="range" defaultValue={{ from: JUN_10, to: JUN_17 }} />
+        </Field>,
+      )
+      const wrapper = container.querySelector('[data-slot="date-picker"]')
+      expect(screen.getByRole('group', { name: 'Trip dates' })).toBe(wrapper)
+      expect(screen.getByRole('group', { name: 'Start date' })).toBeInTheDocument()
+      expect(screen.getByRole('group', { name: 'End date' })).toBeInTheDocument()
+      expect(screen.getByText('Trip dates')).not.toHaveAttribute('for')
+    })
+
+    it('has no accessibility violations inside a Field', async () => {
+      const { container } = render(
+        <Field>
+          <FieldLabel>Trip dates</FieldLabel>
+          <DatePicker mode="range" showTime defaultValue={{ from: JUN_10, to: JUN_17 }} />
+          <FieldDescription>Check-in and check-out.</FieldDescription>
+        </Field>,
+      )
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
     it('does NOT auto-close the popover after both ends are picked', async () => {
       const user = userEvent.setup()
       render(<DatePicker mode="range" defaultMonth={JUN_10} />)
@@ -284,8 +331,31 @@ describe('DatePicker', () => {
     expect(root).toHaveAttribute('data-disabled')
   })
 
+  it('names the single-mode field from a surrounding FieldLabel', () => {
+    render(
+      <Field>
+        <FieldLabel>Departure</FieldLabel>
+        <DatePicker defaultValue={JUN_10} defaultMonth={JUN_10} />
+        <FieldDescription>Pick a weekday.</FieldDescription>
+      </Field>,
+    )
+    const group = screen.getByRole('group', { name: 'Departure' })
+    expect(group).toHaveAttribute('data-slot', 'date-field')
+    expect(group).toHaveAttribute('aria-describedby', screen.getByText('Pick a weekday.').id)
+  })
+
   it('has no accessibility violations', async () => {
     const { container } = render(<DatePicker defaultValue={JUN_10} defaultMonth={JUN_10} />)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('has no accessibility violations inside a Field', async () => {
+    const { container } = render(
+      <Field>
+        <FieldLabel>Departure</FieldLabel>
+        <DatePicker showTime defaultValue={JUN_10} defaultMonth={JUN_10} />
+      </Field>,
+    )
     expect(await axe(container)).toHaveNoViolations()
   })
 })

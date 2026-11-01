@@ -12,7 +12,7 @@ import ClassNames, { type ClassNamesOptionsType } from 'embla-carousel-class-nam
 import Fade, { type FadeOptionsType } from 'embla-carousel-fade'
 import { WheelGesturesPlugin, type WheelGesturesPluginOptions } from 'embla-carousel-wheel-gestures'
 import type { EmblaCarouselType, EmblaOptionsType, EmblaPluginType } from 'embla-carousel'
-import { cn } from '../../internal/utils'
+import { cn, useComposedRefs } from '../../internal/utils'
 import { useDirection } from '../../hooks/use-direction'
 import { useReducedMotion } from '../../hooks/use-reduced-motion'
 
@@ -67,6 +67,80 @@ function useCarousel(): CarouselContextValue {
   return ctx
 }
 
+// The root already names the carousel, so the plugin's empty values keep the
+// viewport from becoming a second landmark (its setter skips empty strings).
+const CAROUSEL_ACCESSIBILITY_VIEWPORT: CarouselAccessibilityOptions = {
+  carouselRole: '',
+  carouselAriaLabel: '',
+  carouselAriaRoleDescription: '',
+}
+
+function getShownSlides(api: CarouselApi): Set<number> {
+  const { options, scrollSnapList } = api.internalEngine()
+  if (!options.active) return new Set(api.slideNodes().keys())
+  // Fade stacks every slide in one place, and the in-view list stays empty
+  // until the engine's IntersectionObserver first reports.
+  const inView = api.plugins().fade ? [] : api.slidesInView()
+  return new Set(inView.length ? inView : (scrollSnapList.slidesBySnap[api.selectedSnap()] ?? []))
+}
+
+function useSlideVisibility(api: CarouselApi | undefined, enabled: boolean) {
+  React.useEffect(() => {
+    if (!api || !enabled) return
+    const inert = new Set<HTMLElement>()
+    const labels = new Map<HTMLElement, string>()
+
+    const release = (node: HTMLElement) => {
+      if (inert.delete(node)) node.removeAttribute('inert')
+      if (labels.has(node) && node.getAttribute('aria-label') === labels.get(node)) node.removeAttribute('aria-label')
+      labels.delete(node)
+    }
+
+    const sync = (focused: EventTarget | null) => {
+      const slides = api.slideNodes()
+      const shown = getShownSlides(api)
+      new Set([...inert, ...labels.keys()]).forEach((node) => {
+        if (!slides.includes(node)) release(node)
+      })
+      slides.forEach((node, index) => {
+        const hidden = !shown.has(index) && !(focused instanceof Node && node.contains(focused))
+        if (hidden && !inert.has(node)) {
+          node.setAttribute('inert', '')
+          inert.add(node)
+        } else if (!hidden && inert.delete(node)) {
+          node.removeAttribute('inert')
+        }
+
+        const ownLabel = node.getAttribute('aria-label')
+        if (node.hasAttribute('aria-labelledby') || (ownLabel !== null && ownLabel !== labels.get(node))) {
+          labels.delete(node)
+          return
+        }
+        const label = `${index + 1} of ${slides.length}`
+        if (ownLabel !== label) node.setAttribute('aria-label', label)
+        labels.set(node, label)
+      })
+    }
+
+    const onChange = () => sync(document.activeElement)
+    const onFocusOut = (event: FocusEvent) => sync(event.relatedTarget)
+    const viewport = api.rootNode()
+
+    onChange()
+    api.on('select', onChange)
+    api.on('reinit', onChange)
+    api.on('slidesinview', onChange)
+    viewport?.addEventListener('focusout', onFocusOut)
+    return () => {
+      api.off('select', onChange)
+      api.off('reinit', onChange)
+      api.off('slidesinview', onChange)
+      viewport?.removeEventListener('focusout', onFocusOut)
+      new Set([...inert, ...labels.keys()]).forEach(release)
+    }
+  }, [api, enabled])
+}
+
 interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onSelect' | 'onScroll' | 'children'> {
   /**
    * Scroll axis. Maps to Embla's `axis`; exposed as `data-orientation`.
@@ -111,7 +185,7 @@ interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onS
   duration?: number
   /** Escape hatch: a raw Embla options object, merged last so it wins over the flat props. */
   options?: CarouselOptions
-  /** Enable the Autoplay plugin. `resumeAfter` (ms) restarts the timer after user interaction. */
+  /** Enable the Autoplay plugin. It pauses while hovered or focused and stays off under reduced motion. `resumeAfter` (ms) restarts the timer after user interaction. */
   autoplay?: boolean | CarouselAutoplayOptions
   /** Enable continuous Auto Scroll. Mutually exclusive with `autoplay`; paused under reduced motion. */
   autoScroll?: boolean | CarouselAutoScrollOptions
@@ -122,7 +196,7 @@ interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onS
   /** Enable the Class Names plugin, which toggles `snapped` / `inView` classes on slides. */
   classNames?: boolean | CarouselClassNamesOptions
   /**
-   * Keyboard/ARIA plugin for the viewport. Set `false` to opt out.
+   * Slide semantics. `true` makes slides outside the viewport `inert` and labels each slide "n of m". An options object hands slides to Embla's Accessibility plugin instead, and `false` leaves them alone.
    * @default true
    */
   accessibility?: boolean | CarouselAccessibilityOptions
@@ -207,8 +281,8 @@ function Carousel({
 
   const plugins = React.useMemo<CarouselPlugin[]>(() => {
     const list: CarouselPlugin[] = []
-    if (accessibility !== false) {
-      list.push(Accessibility(typeof accessibility === 'object' ? accessibility : undefined))
+    if (typeof accessibility === 'object') {
+      list.push(Accessibility({ ...CAROUSEL_ACCESSIBILITY_VIEWPORT, ...accessibility }))
     }
     if (wheelGestures !== false) {
       list.push(WheelGesturesPlugin(typeof wheelGestures === 'object' ? wheelGestures : undefined))
@@ -270,6 +344,11 @@ function Carousel({
   ])
 
   const [viewportRef, emblaApi] = useEmblaCarousel(emblaOptions, plugins)
+  useSlideVisibility(emblaApi, accessibility === true)
+
+  const { ref: forwardedRef, ...rootProps } = rest as typeof rest & { ref?: React.Ref<HTMLDivElement> }
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  const composedRootRef = useComposedRefs(rootRef, forwardedRef)
 
   const setApiRef = React.useRef(setApi)
   const onReInitRef = React.useRef(onReInit)
@@ -346,7 +425,6 @@ function Carousel({
     const syncScroll = () => {
       notifyScroll()
     }
-    const syncInView = () => {}
 
     syncFull()
     setApiRef.current?.(emblaApi)
@@ -372,7 +450,6 @@ function Carousel({
     emblaApi.on('reinit', handleReInit)
     emblaApi.on('select', handleSelect)
     emblaApi.on('scroll', handleScroll)
-    emblaApi.on('slidesinview', syncInView)
     emblaApi.on('slideschanged', syncFull)
 
     const autoplayPlugin = emblaApi.plugins().autoplay
@@ -396,6 +473,21 @@ function Carousel({
       }, resumeAfter)
     }
 
+    const root = rootRef.current
+    let hovered = false
+    let focused = false
+    // Rotation that hover or focus stopped, owed a restart once both have left.
+    let held = false
+    const playAutoplay = () => {
+      if (hovered || focused) held = true
+      else emblaApi.plugins().autoplay?.play()
+    }
+    const interruptAutoplay = () => {
+      held = false
+      emblaApi.plugins().autoplay?.stop()
+      scheduleResume(playAutoplay)
+    }
+
     let cleanupAutoplay: (() => void) | undefined
     if (autoplayPlugin) {
       const rawDelay = autoplayPlugin.options.delay
@@ -406,6 +498,7 @@ function Carousel({
         isPlaying: autoplayPlugin.isPlaying(),
       })
       const onPlay = () => {
+        held = false
         clearResumeTimer()
         setAutoplayState((s) => (s ? { ...s, isPlaying: true } : s))
       }
@@ -413,26 +506,71 @@ function Carousel({
       const onTimerSet = () => setAutoplayState((s) => (s ? { ...s, cycleId: s.cycleId + 1, isPlaying: true } : s))
       const onTimerStopped = () => setAutoplayState((s) => (s ? { ...s, isPlaying: false } : s))
       const resetOnSelect = () => autoplayPlugin.reset()
+      const onUserStop = () => {
+        held = false
+      }
       const onInteraction = (_api: CarouselApi, event: { detail: { interaction: string } }) => {
         if (event.detail.interaction === 'pointerdown' || event.detail.interaction === 'slidefocus') {
-          autoplayPlugin.stop()
-          scheduleResume(() => emblaApi.plugins().autoplay?.play())
+          interruptAutoplay()
         }
+      }
+      const hold = () => {
+        if (!emblaApi.plugins().autoplay?.isPlaying()) return
+        held = true
+        emblaApi.plugins().autoplay?.stop()
+      }
+      const release = () => {
+        if (held) playAutoplay()
+      }
+      const onPointerEnter = () => {
+        hovered = true
+        hold()
+      }
+      const onPointerLeave = () => {
+        hovered = false
+        release()
+      }
+      const onFocusIn = () => {
+        focused = true
+        hold()
+      }
+      const onFocusOut = (event: FocusEvent) => {
+        if (event.relatedTarget instanceof Node && root?.contains(event.relatedTarget)) return
+        focused = false
+        release()
       }
       emblaApi.on('autoplay:play', onPlay)
       emblaApi.on('autoplay:stop', onStop)
       emblaApi.on('autoplay:timerset', onTimerSet)
       emblaApi.on('autoplay:timerstopped', onTimerStopped)
       emblaApi.on('select', resetOnSelect)
+      emblaApi.on('pointerdown', onUserStop)
+      emblaApi.on('slidefocus', onUserStop)
       if (resumeAfter > 0) emblaApi.on('autoplay:interaction', onInteraction)
-      if (autoplayEnabled) autoplayPlugin.play()
+      root?.addEventListener('pointerenter', onPointerEnter)
+      root?.addEventListener('pointerleave', onPointerLeave)
+      root?.addEventListener('focusin', onFocusIn)
+      root?.addEventListener('focusout', onFocusOut)
+      if (autoplayEnabled && !reducedMotion) {
+        hovered = !!root?.matches(':hover')
+        focused = !!root?.contains(document.activeElement)
+        playAutoplay()
+      } else {
+        autoplayPlugin.stop()
+      }
       cleanupAutoplay = () => {
         emblaApi.off('autoplay:play', onPlay)
         emblaApi.off('autoplay:stop', onStop)
         emblaApi.off('autoplay:timerset', onTimerSet)
         emblaApi.off('autoplay:timerstopped', onTimerStopped)
         emblaApi.off('select', resetOnSelect)
+        emblaApi.off('pointerdown', onUserStop)
+        emblaApi.off('slidefocus', onUserStop)
         if (resumeAfter > 0) emblaApi.off('autoplay:interaction', onInteraction)
+        root?.removeEventListener('pointerenter', onPointerEnter)
+        root?.removeEventListener('pointerleave', onPointerLeave)
+        root?.removeEventListener('focusin', onFocusIn)
+        root?.removeEventListener('focusout', onFocusOut)
       }
     } else {
       setAutoplayState(null)
@@ -461,9 +599,8 @@ function Carousel({
         const along = Math.abs(vertical ? event.deltaY : event.deltaX)
         const across = Math.abs(vertical ? event.deltaX : event.deltaY)
         if (along <= across) return
-        if (autoplayPlugin?.isPlaying()) {
-          autoplayPlugin.stop()
-          scheduleResume(() => emblaApi.plugins().autoplay?.play())
+        if (autoplayPlugin?.isPlaying() || held) {
+          interruptAutoplay()
         } else if (autoScrollPlugin?.isPlaying()) {
           autoScrollPlugin.stop()
           scheduleResume(() => emblaApi.plugins().autoScroll?.play())
@@ -477,14 +614,13 @@ function Carousel({
       emblaApi.off('reinit', handleReInit)
       emblaApi.off('select', handleSelect)
       emblaApi.off('scroll', handleScroll)
-      emblaApi.off('slidesinview', syncInView)
       emblaApi.off('slideschanged', syncFull)
       cleanupAutoplay?.()
       cleanupAutoScroll?.()
       cleanupWheel?.()
       clearResumeTimer()
     }
-  }, [emblaApi, autoplayEnabled, autoScrollEnabled, resumeAfterMs])
+  }, [emblaApi, autoplayEnabled, autoScrollEnabled, resumeAfterMs, reducedMotion])
 
   const scrollPrev = React.useCallback(() => emblaApi?.goToPrev(), [emblaApi])
   const scrollNext = React.useCallback(() => emblaApi?.goToNext(), [emblaApi])
@@ -536,11 +672,11 @@ function Carousel({
       <div
         data-slot="carousel"
         data-orientation={orientation}
-        role="region"
+        role={rootProps['aria-label'] || rootProps['aria-labelledby'] ? 'region' : 'group'}
         aria-roledescription="carousel"
-        aria-label="Carousel"
         className={cn('relative', className)}
-        {...rest}
+        {...rootProps}
+        ref={composedRootRef}
       >
         {children}
       </div>
@@ -732,6 +868,7 @@ function CarouselThumbs({
         // means the same thing on both carousels.
         containScroll="keepSnaps"
         options={CAROUSEL_THUMB_OPTIONS}
+        accessibility={false}
         setApi={setApi}
         light={light}
         role="group"
@@ -882,9 +1019,9 @@ function CarouselPrev({ className, position = 'inside', disabled: disabledProp, 
         type: 'button',
         'data-slot': 'carousel-prev',
         'data-disabled': disabled || undefined,
+        'aria-disabled': disabled || undefined,
         'aria-label': 'Previous slide',
-        disabled,
-        onClick: scrollPrev,
+        onClick: disabled ? undefined : scrollPrev,
         suppressHydrationWarning: true,
       } as unknown as React.ButtonHTMLAttributes<HTMLButtonElement>,
       props,
@@ -922,9 +1059,9 @@ function CarouselNext({ className, position = 'inside', disabled: disabledProp, 
         type: 'button',
         'data-slot': 'carousel-next',
         'data-disabled': disabled || undefined,
+        'aria-disabled': disabled || undefined,
         'aria-label': 'Next slide',
-        disabled,
-        onClick: scrollNext,
+        onClick: disabled ? undefined : scrollNext,
         suppressHydrationWarning: true,
       } as unknown as React.ButtonHTMLAttributes<HTMLButtonElement>,
       props,
@@ -1021,6 +1158,13 @@ function CarouselPagination({
   )
 }
 
+// The bar slides in under its parent's `overflow-hidden` instead of growing, so
+// the countdown never triggers layout.
+const AUTOPLAY_INDICATOR_TRAVEL: Record<CarouselOrientation, { start: string; end: string }> = {
+  horizontal: { start: '-translate-x-full rtl:translate-x-full', end: 'translate-x-0' },
+  vertical: { start: '-translate-y-full', end: 'translate-y-0' },
+}
+
 interface CarouselAutoplayIndicatorProps {
   delay: number
   isPlaying: boolean
@@ -1042,8 +1186,7 @@ function CarouselAutoplayIndicator({ delay, isPlaying, light, orientation }: Car
     }
   }, [])
 
-  const isHorizontal = orientation === 'horizontal'
-  const fillValue = armed && isPlaying ? '100%' : '0%'
+  const travel = AUTOPLAY_INDICATOR_TRAVEL[orientation]
 
   return (
     <span
@@ -1052,17 +1195,12 @@ function CarouselAutoplayIndicator({ delay, isPlaying, light, orientation }: Car
       data-orientation={orientation}
       data-playing={isPlaying || undefined}
       className={cn(
-        'absolute rounded-full',
-        isHorizontal ? 'inset-y-0 inset-s-0' : 'inset-x-0 top-0',
-        isHorizontal ? 'motion-safe:transition-[width]' : 'motion-safe:transition-[height]',
-        'motion-safe:ease-linear',
+        'absolute inset-0 rounded-full',
+        'motion-safe:transition-[translate] motion-safe:ease-linear',
+        armed && isPlaying ? travel.end : travel.start,
         light ? 'bg-white' : 'bg-primary',
       )}
-      style={{
-        transitionDuration: `${delay}ms`,
-        width: isHorizontal ? fillValue : undefined,
-        height: isHorizontal ? undefined : fillValue,
-      }}
+      style={{ transitionDuration: `${delay}ms` }}
     />
   )
 }

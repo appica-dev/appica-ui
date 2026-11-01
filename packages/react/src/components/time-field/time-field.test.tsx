@@ -1,7 +1,9 @@
+import * as React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
+import { Field, FieldDescription, FieldError, FieldLabel } from '../field/field'
 import { TimeField } from './time-field'
 
 function getSegments(name: 'hour' | 'minute' | 'second' | 'period') {
@@ -344,6 +346,68 @@ describe('TimeField', () => {
     const root = getRoot(container)
     expect(root).toHaveAttribute('data-invalid')
     expect(root).toHaveAttribute('data-disabled')
+  })
+
+  describe('inside a Field', () => {
+    function renderInField(props: React.ComponentProps<typeof TimeField> = {}, invalid = false) {
+      return render(
+        <Field invalid={invalid}>
+          <FieldLabel>Start time</FieldLabel>
+          <TimeField defaultValue="09:30" {...props} />
+          <FieldDescription>Local time.</FieldDescription>
+          <FieldError match>Enter a valid time.</FieldError>
+        </Field>,
+      )
+    }
+
+    it('takes its accessible name from the FieldLabel', () => {
+      renderInField()
+      const group = screen.getByRole('group', { name: 'Start time' })
+      expect(group).toHaveAttribute('data-slot', 'time-field')
+      expect(screen.getByText('Start time')).not.toHaveAttribute('for')
+    })
+
+    it('is described by the FieldDescription', () => {
+      renderInField()
+      const description = screen.getByText('Local time.')
+      expect(screen.getByRole('group', { name: 'Start time' })).toHaveAttribute(
+        'aria-describedby',
+        expect.stringContaining(description.id),
+      )
+    })
+
+    it('is described by the FieldError and marks every segment invalid', () => {
+      renderInField({ format: 'hh:mm a' }, true)
+      const group = screen.getByRole('group', { name: 'Start time' })
+      const error = screen.getByText('Enter a valid time.')
+      expect(group).toHaveAttribute('aria-describedby', expect.stringContaining(error.id))
+      expect(group).toHaveAttribute('aria-invalid', 'true')
+      const segments = screen.getAllByRole('spinbutton')
+      expect(segments).toHaveLength(3)
+      for (const segment of segments) {
+        expect(segment).toHaveAttribute('aria-invalid', 'true')
+      }
+    })
+
+    it('lets consumer aria-label and aria-describedby win over the Field wiring', () => {
+      renderInField({ 'aria-label': 'Departure', 'aria-describedby': 'custom-hint' })
+      const group = screen.getByRole('group', { name: 'Departure' })
+      expect(group).not.toHaveAttribute('aria-labelledby')
+      expect(group).toHaveAttribute('aria-describedby', 'custom-hint')
+    })
+
+    it('lets a consumer aria-invalid win on the group and segments', () => {
+      renderInField({ 'aria-invalid': false }, true)
+      expect(screen.getByRole('group', { name: 'Start time' })).toHaveAttribute('aria-invalid', 'false')
+      for (const segment of screen.getAllByRole('spinbutton')) {
+        expect(segment).toHaveAttribute('aria-invalid', 'false')
+      }
+    })
+
+    it('has no accessibility violations when labeled, described and invalid', async () => {
+      const { container } = renderInField({}, true)
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('renders startSlot and endSlot containers', () => {

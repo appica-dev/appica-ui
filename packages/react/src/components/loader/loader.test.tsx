@@ -4,14 +4,27 @@ import { axe } from 'vitest-axe'
 import { Loader } from './loader'
 
 describe('Loader', () => {
-  it('exposes a status region with a default accessible name', () => {
+  it('exposes a status region that reads "Loading" as text by default', () => {
     render(<Loader />)
-    expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Loading')
+    const status = screen.getByRole('status')
+    expect(status).toHaveTextContent('Loading')
+    expect(status).not.toHaveAttribute('aria-label')
   })
 
-  it('forwards a custom aria-label', () => {
+  it('renders a custom aria-label as the status text', () => {
     render(<Loader aria-label="Uploading attachment" />)
-    expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Uploading attachment')
+    const status = screen.getByRole('status')
+    expect(status).toHaveTextContent('Uploading attachment')
+    expect(status).not.toHaveAttribute('aria-label')
+  })
+
+  it('contributes its label to the name of a surrounding button', () => {
+    render(
+      <button type="button">
+        <Loader aria-label="Saving" currentColor />
+      </button>,
+    )
+    expect(screen.getByRole('button', { name: 'Saving' })).toBeInTheDocument()
   })
 
   it('renders the status region as a <span> so it nests inside <p> without invalid HTML', () => {

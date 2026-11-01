@@ -24,6 +24,35 @@ describe('CopyButton', () => {
     expect(screen.getByText('Copy SVG')).toBeInTheDocument()
   })
 
+  it('names the button from its visible children instead of an aria-label', () => {
+    render(
+      <CopyButton value="hello" label="Copy markup">
+        Copy SVG
+      </CopyButton>,
+    )
+    const button = screen.getByRole('button', { name: 'Copy SVG' })
+    expect(button).not.toHaveAttribute('aria-label')
+  })
+
+  it('keeps the aria-label on an icon-only button', () => {
+    render(<CopyButton value="hello" label="Copy code" />)
+    expect(screen.getByRole('button', { name: 'Copy code' })).toHaveAttribute('aria-label', 'Copy code')
+  })
+
+  it('treats empty children as icon-only', () => {
+    render(<CopyButton value="hello">{false}</CopyButton>)
+    expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Copy')
+  })
+
+  it('lets an explicit aria-label win', () => {
+    render(
+      <CopyButton value="hello" aria-label="Copy the install command">
+        Copy
+      </CopyButton>,
+    )
+    expect(screen.getByRole('button', { name: 'Copy the install command' })).toBeInTheDocument()
+  })
+
   it('swaps a string label to the copied label on success', async () => {
     const { user } = setup()
     render(
@@ -32,11 +61,39 @@ describe('CopyButton', () => {
       </CopyButton>,
     )
 
-    await user.click(screen.getByRole('button'))
+    const button = screen.getByRole('button')
+    await user.click(button)
 
     await waitFor(() => expect(screen.queryByText('Copy SVG')).not.toBeInTheDocument())
-    // Both the visible label and the sr-only status announce "Copied".
-    expect(screen.getAllByText('Copied').length).toBeGreaterThanOrEqual(1)
+    expect(button).toHaveAccessibleName('Copied')
+    expect(button).not.toHaveAttribute('aria-label')
+    expect(screen.getByRole('status')).toHaveTextContent('Copied')
+  })
+
+  it('renders the status region as a sibling of the button, not inside it', async () => {
+    const { user } = setup()
+    const { container } = render(
+      <div data-testid="parent">
+        <CopyButton value="hello" copiedLabel="Code copied" />
+      </div>,
+    )
+    const button = screen.getByRole('button')
+    const status = screen.getByRole('status')
+
+    expect(button.contains(status)).toBe(false)
+    expect(status.parentElement).toBe(button.parentElement)
+    expect(status.parentElement).toBe(screen.getByTestId('parent'))
+    expect(status).toBeEmptyDOMElement()
+    expect(container.querySelectorAll('[data-slot="copy-button"]')).toHaveLength(1)
+
+    await user.click(button)
+    await waitFor(() => expect(status).toHaveTextContent('Code copied'))
+  })
+
+  it('forwards the ref to the button', () => {
+    const ref = React.createRef<HTMLButtonElement>()
+    render(<CopyButton value="hello" ref={ref} />)
+    expect(ref.current).toBe(screen.getByRole('button'))
   })
 
   it('renders a custom resting icon in place of the copy glyph and still swaps to the check', async () => {
@@ -155,6 +212,14 @@ describe('CopyButton', () => {
 
   it('has no accessibility violations', async () => {
     const { container } = render(<CopyButton value="hello" />)
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('has no accessibility violations with a visible label in the copied state', async () => {
+    const { user } = setup()
+    const { container } = render(<CopyButton value="hello">Copy SVG</CopyButton>)
+    await user.click(screen.getByRole('button'))
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Copied'))
     expect(await axe(container)).toHaveNoViolations()
   })
 })

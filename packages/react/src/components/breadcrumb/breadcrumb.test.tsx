@@ -78,9 +78,43 @@ describe('Breadcrumb', () => {
     const active = screen.getByText('Breadcrumb')
     expect(active.tagName).toBe('SPAN')
     expect(active).toHaveAttribute('aria-current', 'page')
-    expect(active).toHaveAttribute('aria-disabled', 'true')
     expect(active).toHaveAttribute('data-active')
-    expect(active).toHaveAttribute('tabindex', '-1')
+    expect(active).not.toHaveAttribute('tabindex')
+  })
+
+  it('does not mark the active crumb as disabled', () => {
+    renderBasic()
+    const active = screen.getByText('Breadcrumb')
+    expect(active).not.toHaveAttribute('aria-disabled')
+    expect(active).not.toHaveAttribute('data-disabled')
+  })
+
+  it('skips the active crumb when tabbing', async () => {
+    const user = userEvent.setup()
+    renderBasic()
+    await user.tab()
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('link', { name: 'Components' })).toHaveFocus()
+    await user.tab()
+    expect(document.body).toHaveFocus()
+  })
+
+  it('keeps an active crumb rendered as a link reachable', () => {
+    render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink active render={<a href="/current" />}>
+              Current
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>,
+    )
+    const link = screen.getByRole('link', { name: 'Current', current: 'page' })
+    expect(link).not.toHaveAttribute('tabindex')
+    expect(link).not.toHaveAttribute('aria-disabled')
   })
 
   it('marks a disabled link with aria-disabled and data-disabled', () => {
@@ -98,6 +132,8 @@ describe('Breadcrumb', () => {
     const link = screen.getByRole('link', { name: 'Frozen' })
     expect(link).toHaveAttribute('aria-disabled', 'true')
     expect(link).toHaveAttribute('data-disabled')
+    expect(link).toHaveAttribute('tabindex', '-1')
+    expect(link).not.toHaveAttribute('aria-current')
   })
 
   it('forwards className to the link alongside default classes', () => {
@@ -169,6 +205,25 @@ describe('Breadcrumb', () => {
 
   it('has no accessibility violations', async () => {
     const { container } = renderBasic()
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('has no accessibility violations with a disabled crumb', async () => {
+    const { container } = render(
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/" disabled>
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink active>Current</BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>,
+    )
     expect(await axe(container)).toHaveNoViolations()
   })
 })

@@ -86,8 +86,8 @@ describe('Chip', () => {
 
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: /Red/ })).toBeNull()
+      expect(onDismiss).toHaveBeenCalledTimes(1)
     })
-    expect(onDismiss).toHaveBeenCalledTimes(1)
   })
 
   it('calls user onClick before dismissing and respects preventDefault', async () => {
@@ -215,11 +215,10 @@ describe('ChipGroup', () => {
       expect(screen.queryByRole('button', { name: /A/ })).toBeNull()
       expect(screen.queryByRole('button', { name: /B/ })).toBeNull()
       expect(screen.queryByRole('button', { name: /C/ })).toBeNull()
+      expect(onDismissA).toHaveBeenCalledTimes(1)
+      expect(onDismissB).toHaveBeenCalledTimes(1)
+      expect(onDismissC).toHaveBeenCalledTimes(1)
     })
-
-    expect(onDismissA).toHaveBeenCalledTimes(1)
-    expect(onDismissB).toHaveBeenCalledTimes(1)
-    expect(onDismissC).toHaveBeenCalledTimes(1)
   })
 
   it('clearAll() ignores non-dismissible chips', async () => {

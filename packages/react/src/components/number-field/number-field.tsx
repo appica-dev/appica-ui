@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { NumberField as BaseNumberField, type NumberFieldRoot } from '@base-ui/react/number-field'
+import { useLabelableContext } from '@base-ui/react/internals/labelable-provider'
 import { type VariantProps } from 'class-variance-authority'
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'motion/react'
 import { cn } from '../../internal/utils'
@@ -118,6 +119,8 @@ function NumberField({
   min,
   placeholder = ' ',
   inputProps,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   ...rootProps
 }: NumberFieldProps) {
   const resolvedVariant: NumberFieldVariant = variant
@@ -128,6 +131,10 @@ function NumberField({
 
   const ariaInvalid = rootProps['aria-invalid']
   const invalid = ariaInvalid === true || ariaInvalid === 'true'
+
+  const { labelId } = useLabelableContext()
+  const inputHasName = inputProps?.['aria-label'] != null || inputProps?.['aria-labelledby'] != null
+  const forwardedName = inputHasName || labelId ? {} : { 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy }
 
   const reduced = useReducedMotion()
 
@@ -238,6 +245,7 @@ function NumberField({
           <BaseNumberField.Input
             data-slot="number-field-input"
             placeholder={placeholder}
+            {...forwardedName}
             {...inputProps}
             onPointerDown={(e) => {
               inputProps?.onPointerDown?.(e)

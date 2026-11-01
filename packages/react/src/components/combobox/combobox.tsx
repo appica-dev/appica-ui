@@ -492,11 +492,7 @@ function ComboboxEmpty({ className, ...props }: ComboboxEmptyProps) {
   return (
     <BaseCombobox.Empty
       data-slot="combobox-empty"
-      className={cn(
-        'text-foreground-muted hidden text-center group-data-empty/combobox-content:block',
-        EMPTY_SIZE[size],
-        className,
-      )}
+      className={cn('text-foreground-muted text-center empty:p-0', EMPTY_SIZE[size], className)}
       {...props}
     />
   )

@@ -194,7 +194,7 @@ const VARIANT_COMPONENTS: Record<SpinnerVariant, React.ComponentType<VariantInne
 function Spinner({
   variant = 'circular',
   currentColor = false,
-  'aria-label': ariaLabel = 'Loading',
+  'aria-label': label = 'Loading',
   className,
   ...props
 }: SpinnerProps) {
@@ -208,7 +208,6 @@ function Spinner({
     <span
       data-slot="spinner"
       role="status"
-      aria-label={ariaLabel}
       className={cn('inline-flex shrink-0 items-center justify-center align-middle', SPINNER_SIZE, className)}
       {...props}
     >
@@ -219,6 +218,7 @@ function Spinner({
           {inner}
         </LazyMotion>
       )}
+      <span className="sr-only">{label}</span>
     </span>
   )
 }

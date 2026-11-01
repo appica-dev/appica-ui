@@ -43,7 +43,6 @@ function Pagination({ className, variant = 'outline', size = 'md', ...props }: P
   return (
     <PaginationContext.Provider value={ctx}>
       <nav
-        role="navigation"
         aria-label="pagination"
         data-slot="pagination"
         className={cn('data-disabled:opacity-disabled flex w-fit', className)}
@@ -103,7 +102,7 @@ function PaginationLink({ className, active = false, disabled = false, render, .
         'data-slot': 'pagination-link',
         'data-active': active || undefined,
         'aria-current': active ? 'page' : undefined,
-        ...focusableProps(disabled),
+        ...(active && !disabled ? {} : focusableProps(disabled)),
         className: cn(
           buttonVariants({ variant, size }),
           LINK_SIZE_OVERRIDES[size],

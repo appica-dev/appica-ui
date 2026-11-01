@@ -346,11 +346,7 @@ function AutocompleteEmpty({ className, ...props }: AutocompleteEmptyProps) {
   return (
     <BaseAutocomplete.Empty
       data-slot="autocomplete-empty"
-      className={cn(
-        'text-foreground-muted hidden text-center group-data-empty/autocomplete-content:block',
-        EMPTY_SIZE[size],
-        className,
-      )}
+      className={cn('text-foreground-muted text-center empty:p-0', EMPTY_SIZE[size], className)}
       {...props}
     />
   )

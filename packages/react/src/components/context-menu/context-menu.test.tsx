@@ -146,7 +146,8 @@ describe('ContextMenu', () => {
     const user = setupUser()
     render(<BasicMenu />)
     await user.pointer({ keys: '[MouseRight]', target: screen.getByTestId('trigger') })
-    await screen.findByRole('menuitem', { name: 'Profile' })
+    const menu = await screen.findByRole('menu')
+    await waitFor(() => expect(menu.contains(document.activeElement)).toBe(true))
     await user.keyboard('{ArrowDown}')
     await waitFor(() => {
       const profile = screen.getByRole('menuitem', { name: 'Profile' })

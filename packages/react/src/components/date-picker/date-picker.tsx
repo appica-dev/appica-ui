@@ -9,6 +9,7 @@ import { Input, inputVariants } from '../input'
 import { Popover, PopoverContent, PopoverTrigger, type PopoverContentProps } from '../popover/popover'
 import { buttonVariants } from '../button/button-variants'
 import { useFieldRootContext } from '@base-ui/react/internals/field-root-context'
+import { useLabelableContext } from '@base-ui/react/internals/labelable-provider'
 import { cn } from '../../internal/utils'
 
 type DatePickerSize = 'sm' | 'md' | 'lg'
@@ -144,6 +145,16 @@ type DatePickerBase = CalendarPassthrough & {
    * @default 'Open calendar'
    */
   triggerAriaLabel?: string
+  /**
+   * Accessible label for the start of a range (its date field, plus its time field with `showTime`).
+   * @default 'Start date'
+   */
+  startAriaLabel?: string
+  /**
+   * Accessible label for the end of a range (its date field, plus its time field with `showTime`).
+   * @default 'End date'
+   */
+  endAriaLabel?: string
 }
 
 type DatePickerProps =
@@ -226,6 +237,8 @@ function DatePicker(props: DatePickerProps) {
     rangeSeparator = '–',
     triggerIcon = DEFAULT_TRIGGER_ICON,
     triggerAriaLabel = 'Open calendar',
+    startAriaLabel = 'Start date',
+    endAriaLabel = 'End date',
     formatValue,
     'aria-invalid': _ariaInvalid,
     className,
@@ -241,6 +254,7 @@ function DatePicker(props: DatePickerProps) {
   }
 
   const field = useFieldRootContext(true)
+  const { labelId } = useLabelableContext()
   const disabled = disabledProp || field.disabled
   const name = nameProp ?? field.name
   const invalid = props['aria-invalid'] === true || field.invalid === true
@@ -442,12 +456,15 @@ function DatePicker(props: DatePickerProps) {
         startSlot={startSlot}
         endSlot={endSlot}
         trigger={triggerButton}
+        role="group"
+        ariaLabelledBy={labelId}
       >
         <DateField
           unstyled
           value={range?.from ?? null}
           onValueChange={handleRangeFromDateChange}
           format={dateFormat}
+          aria-label={startAriaLabel}
           {...sharedFieldProps}
         />
         {showTime && (
@@ -456,6 +473,7 @@ function DatePicker(props: DatePickerProps) {
             value={range?.from ? format(range.from, 'HH:mm:ss') : null}
             onValueChange={handleRangeFromTimeChange}
             format={timeFormat}
+            aria-label={startAriaLabel}
             {...sharedFieldProps}
           />
         )}
@@ -467,6 +485,7 @@ function DatePicker(props: DatePickerProps) {
           value={range?.to ?? null}
           onValueChange={handleRangeToDateChange}
           format={dateFormat}
+          aria-label={endAriaLabel}
           {...sharedFieldProps}
         />
         {showTime && (
@@ -475,6 +494,7 @@ function DatePicker(props: DatePickerProps) {
             value={range?.to ? format(range.to, 'HH:mm:ss') : null}
             onValueChange={handleRangeToTimeChange}
             format={timeFormat}
+            aria-label={endAriaLabel}
             {...sharedFieldProps}
           />
         )}
@@ -560,6 +580,8 @@ interface UnifiedWrapperProps {
   startSlot?: React.ReactNode
   endSlot?: React.ReactNode
   trigger: React.ReactNode
+  role?: 'group'
+  ariaLabelledBy?: string
   children: React.ReactNode
 }
 
@@ -572,6 +594,8 @@ function UnifiedWrapper({
   startSlot,
   endSlot,
   trigger,
+  role,
+  ariaLabelledBy,
   children,
 }: UnifiedWrapperProps) {
   return (
@@ -579,6 +603,8 @@ function UnifiedWrapper({
       data-slot="date-picker"
       data-disabled={disabled || undefined}
       data-invalid={ariaInvalid || undefined}
+      role={role}
+      aria-labelledby={ariaLabelledBy}
       className={cn(
         inputVariants({ variant, size, state: 'within' }),
         'flex w-full',

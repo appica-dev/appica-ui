@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import * as React from 'react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { axe } from 'vitest-axe'
@@ -65,7 +66,7 @@ vi.mock('embla-carousel-react', () => ({
 // Plugin factories: each mock factory inlines its stub so vitest hoisting
 // doesn't trip on a shared helper reference.
 vi.mock('embla-carousel-accessibility', () => ({
-  default: () => ({ name: 'accessibility', options: {}, init: () => {} }),
+  default: (options?: object) => ({ name: 'accessibility', options: options ?? {}, init: () => {} }),
 }))
 vi.mock('embla-carousel-autoplay', () => ({
   default: () => ({ name: 'autoplay', options: {}, init: () => {} }),
@@ -100,6 +101,7 @@ import {
   useCarousel,
   useLinkedCarousels,
   type CarouselApi,
+  type CarouselOptions,
   type CarouselProps,
   type CarouselThumbsProps,
 } from './carousel'
@@ -109,6 +111,51 @@ import useEmblaCarousel from 'embla-carousel-react'
 
 // eslint-disable-next-line import/first
 import { renderHook } from '@testing-library/react'
+
+// eslint-disable-next-line import/first
+import { Button } from '../button/button'
+
+// eslint-disable-next-line import/first
+import { ReducedMotionProvider } from '../../providers/reduced-motion-provider'
+
+/** Calls every handler still subscribed to an Embla event on the stub api. */
+function dispatch(event: string, payload?: unknown) {
+  const removed = new Set(stubApi.off.mock.calls.filter((c: unknown[]) => c[0] === event).map((c: unknown[]) => c[1]))
+  stubApi.on.mock.calls
+    .filter((c: unknown[]) => c[0] === event && !removed.has(c[1]))
+    .forEach((c: unknown[]) => (c[1] as (api: StubApi, payload?: unknown) => void)(stubApi, payload))
+}
+
+function emit(event: string, payload?: unknown) {
+  act(() => dispatch(event, payload))
+}
+
+function mockDomSlides() {
+  stubApi.slideNodes.mockImplementation(() =>
+    Array.from(document.querySelectorAll<HTMLElement>('[data-slot="carousel-slide"]')),
+  )
+}
+
+/** A stand-in for the Autoplay plugin that reports play and stop through the stub's events. */
+function mockAutoplay() {
+  let playing = false
+  const autoplay = {
+    options: { delay: 4000 },
+    isPlaying: vi.fn(() => playing),
+    play: vi.fn(() => {
+      playing = true
+      dispatch('autoplay:play')
+    }),
+    stop: vi.fn(() => {
+      if (!playing) return
+      playing = false
+      dispatch('autoplay:stop')
+    }),
+    reset: vi.fn(),
+  }
+  stubApi.plugins.mockReturnValue({ autoplay })
+  return autoplay
+}
 
 function Basic(props?: Partial<CarouselProps>) {
   return (
@@ -136,22 +183,63 @@ beforeEach(() => {
   stubApi.plugins.mockReturnValue({})
   stubApi.slideNodes.mockReturnValue([])
   stubApi.containerNode.mockReturnValue(undefined)
+  stubApi.rootNode.mockReturnValue(undefined)
+  stubApi.internalEngine.mockReturnValue({
+    options: { active: true, axis: 'x' },
+    scrollSnapList: { slidesBySnap: [[0], [1], [2], [3]] },
+  })
+  stubApi.on.mockClear()
+  stubApi.off.mockClear()
 })
 
 describe('Carousel', () => {
-  it('renders the root region with carousel data-slot and orientation', () => {
+  it('renders an unlabeled root as a carousel group with no default name', () => {
     const { container } = render(<Basic />)
     const root = container.querySelector('[data-slot="carousel"]') as HTMLElement
     expect(root).not.toBeNull()
     expect(root.getAttribute('data-orientation')).toBe('horizontal')
-    expect(root.getAttribute('role')).toBe('region')
+    expect(root.getAttribute('role')).toBe('group')
     expect(root.getAttribute('aria-roledescription')).toBe('carousel')
-    expect(root.getAttribute('aria-label')).toBe('Carousel')
+    expect(root.hasAttribute('aria-label')).toBe(false)
   })
 
-  it('uses a custom aria-label when provided', () => {
+  it('becomes a region when labeled with aria-label', () => {
+    render(<Basic aria-label="Gallery" />)
+    expect(screen.getByRole('region', { name: 'Gallery' })).toHaveAttribute('data-slot', 'carousel')
+  })
+
+  it('becomes a region when labeled with aria-labelledby', () => {
+    render(
+      <>
+        <h2 id="gallery-heading">New arrivals</h2>
+        <Basic aria-labelledby="gallery-heading" />
+      </>,
+    )
+    expect(screen.getByRole('region', { name: 'New arrivals' })).toHaveAttribute('data-slot', 'carousel')
+  })
+
+  it('lets a consumer role and roledescription win', () => {
+    const { container } = render(<Basic role="presentation" aria-roledescription="gallery" />)
+    const root = container.querySelector('[data-slot="carousel"]') as HTMLElement
+    expect(root.getAttribute('role')).toBe('presentation')
+    expect(root.getAttribute('aria-roledescription')).toBe('gallery')
+  })
+
+  it('merges a consumer ref with its own', () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const { container } = render(<Basic {...({ ref } as Partial<CarouselProps>)} />)
+    expect(ref.current).toBe(container.querySelector('[data-slot="carousel"]'))
+  })
+
+  it('leaves the viewport without a role or name, so each carousel is one landmark at most', () => {
     const { container } = render(<Basic aria-label="Gallery" />)
-    expect(container.querySelector('[data-slot="carousel"]')?.getAttribute('aria-label')).toBe('Gallery')
+    const viewport = container.querySelector('[data-slot="carousel-viewport"]') as HTMLElement
+    expect(viewport.hasAttribute('role')).toBe(false)
+    expect(viewport.hasAttribute('aria-label')).toBe(false)
+    const plugins = (useEmblaCarousel as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[1] as {
+      name: string
+    }[]
+    expect(plugins.map((plugin) => plugin.name)).not.toContain('accessibility')
   })
 
   it('renders viewport + content + slides with the expected data-slots and roles', () => {
@@ -205,6 +293,169 @@ describe('Carousel', () => {
     expect(container.querySelector('[data-slot="carousel-content"]')?.className).toContain('content-cls')
     expect(container.querySelector('[data-slot="carousel-slide"]')?.className).toContain('slide-cls')
     expect(container.querySelector('[data-slot="carousel-pagination"]')?.className).toContain('pagination-cls')
+  })
+})
+
+describe('Carousel slides', () => {
+  function slides(container: HTMLElement) {
+    return Array.from(container.querySelectorAll<HTMLElement>('[data-slot="carousel-slide"]'))
+  }
+
+  it('makes slides outside the viewport inert, and keeps the visible ones reachable', () => {
+    mockDomSlides()
+    stubApi.slidesInView.mockReturnValue([0, 1])
+    const { container } = render(<Basic />)
+    const [first, second, third, fourth] = slides(container)
+    expect(first).not.toHaveAttribute('inert')
+    expect(second).not.toHaveAttribute('inert')
+    expect(third).toHaveAttribute('inert')
+    expect(fourth).toHaveAttribute('inert')
+    slides(container).forEach((slide) => expect(slide).not.toHaveAttribute('aria-hidden'))
+  })
+
+  it('labels each slide with its position', () => {
+    mockDomSlides()
+    const { container } = render(<Basic />)
+    expect(slides(container).map((slide) => slide.getAttribute('aria-label'))).toEqual([
+      '1 of 4',
+      '2 of 4',
+      '3 of 4',
+      '4 of 4',
+    ])
+  })
+
+  it('keeps a slide label or labelledby of its own', () => {
+    mockDomSlides()
+    const { container } = render(
+      <Carousel>
+        <CarouselContent>
+          <CarouselSlide aria-label="Intro">A</CarouselSlide>
+          <CarouselSlide aria-labelledby="slide-2-title">
+            <h3 id="slide-2-title">Spring sale</h3>
+          </CarouselSlide>
+          <CarouselSlide>C</CarouselSlide>
+        </CarouselContent>
+      </Carousel>,
+    )
+    const [first, second, third] = slides(container)
+    expect(first).toHaveAttribute('aria-label', 'Intro')
+    expect(second).not.toHaveAttribute('aria-label')
+    expect(third).toHaveAttribute('aria-label', '3 of 3')
+  })
+
+  it('updates as slides scroll into view', () => {
+    mockDomSlides()
+    stubApi.slidesInView.mockReturnValue([0])
+    const { container } = render(<Basic />)
+    expect(slides(container)[1]).toHaveAttribute('inert')
+    stubApi.slidesInView.mockReturnValue([1, 2])
+    emit('slidesinview')
+    const [first, second, third] = slides(container)
+    expect(first).toHaveAttribute('inert')
+    expect(second).not.toHaveAttribute('inert')
+    expect(third).not.toHaveAttribute('inert')
+  })
+
+  it('falls back to the selected snap until the engine reports slides in view', () => {
+    mockDomSlides()
+    stubApi.slidesInView.mockReturnValue([])
+    stubApi.selectedSnap.mockReturnValue(2)
+    const { container } = render(<Basic />)
+    expect(slides(container).map((slide) => slide.hasAttribute('inert'))).toEqual([true, true, false, true])
+  })
+
+  it('follows the selected snap under fade, where every slide shares one place', () => {
+    mockDomSlides()
+    stubApi.plugins.mockReturnValue({ fade: {} })
+    stubApi.slidesInView.mockReturnValue([0, 1, 2, 3])
+    stubApi.selectedSnap.mockReturnValue(1)
+    const { container } = render(<Basic fade />)
+    expect(slides(container).map((slide) => slide.hasAttribute('inert'))).toEqual([true, false, true, true])
+  })
+
+  it('leaves every slide reachable while the engine is inactive', () => {
+    mockDomSlides()
+    stubApi.internalEngine.mockReturnValue({
+      options: { active: false },
+      scrollSnapList: { slidesBySnap: [[0], [1], [2], [3]] },
+    })
+    const { container } = render(<Basic active={false} />)
+    slides(container).forEach((slide) => expect(slide).not.toHaveAttribute('inert'))
+  })
+
+  it('never makes the slide holding focus inert, and re-checks once focus leaves', () => {
+    mockDomSlides()
+    stubApi.rootNode.mockImplementation(() => document.querySelector('[data-slot="carousel-viewport"]'))
+    stubApi.slidesInView.mockReturnValue([0, 1])
+    render(
+      <>
+        <Carousel>
+          <CarouselContent>
+            <CarouselSlide>A</CarouselSlide>
+            <CarouselSlide>
+              <button type="button">Shop now</button>
+            </CarouselSlide>
+            <CarouselSlide>C</CarouselSlide>
+          </CarouselContent>
+        </Carousel>
+        <button type="button">Outside</button>
+      </>,
+    )
+    const cta = screen.getByRole('button', { name: 'Shop now' })
+    const slide = cta.closest('[data-slot="carousel-slide"]') as HTMLElement
+    act(() => cta.focus())
+
+    stubApi.slidesInView.mockReturnValue([2])
+    emit('select')
+    expect(slide).not.toHaveAttribute('inert')
+    expect(document.activeElement).toBe(cta)
+
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+    expect(slide).toHaveAttribute('inert')
+  })
+
+  it('removes what it set on unmount', () => {
+    mockDomSlides()
+    stubApi.slidesInView.mockReturnValue([0])
+    const { container, unmount } = render(<Basic />)
+    const nodes = slides(container)
+    unmount()
+    nodes.forEach((slide) => {
+      expect(slide).not.toHaveAttribute('inert')
+      expect(slide).not.toHaveAttribute('aria-label')
+    })
+  })
+
+  it('leaves slides alone with accessibility={false}', () => {
+    mockDomSlides()
+    const { container } = render(<Basic accessibility={false} />)
+    slides(container).forEach((slide) => {
+      expect(slide).not.toHaveAttribute('inert')
+      expect(slide).not.toHaveAttribute('aria-label')
+    })
+  })
+
+  it('hands slides to the Embla plugin for an options object, still without naming the viewport', () => {
+    mockDomSlides()
+    const { container } = render(<Basic accessibility={{ slideRole: 'listitem', carouselAriaRoleDescription: 'x' }} />)
+    slides(container).forEach((slide) => expect(slide).not.toHaveAttribute('inert'))
+    const plugins = (useEmblaCarousel as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[1] as {
+      name: string
+      options: object
+    }[]
+    expect(plugins.find((plugin) => plugin.name === 'accessibility')?.options).toEqual({
+      carouselRole: '',
+      carouselAriaLabel: '',
+      carouselAriaRoleDescription: 'x',
+      slideRole: 'listitem',
+    })
+  })
+
+  it('has no accessibility violations with off-screen slides inert', async () => {
+    mockDomSlides()
+    stubApi.slidesInView.mockReturnValue([0])
+    const { container } = render(<Basic aria-label="Featured" />)
+    expect(await axe(container)).toHaveNoViolations()
   })
 })
 
@@ -271,14 +522,17 @@ describe('CarouselPrev / CarouselNext', () => {
     expect(link.getAttribute('href')).toBe('#prev')
   })
 
-  it('disables prev when canGoToPrev() reports false', () => {
+  it('marks prev aria-disabled, not natively disabled, when canGoToPrev() reports false', () => {
     render(<Basic />)
     const prev = screen.getByRole('button', { name: 'Previous slide' })
-    expect(prev).toBeDisabled()
+    expect(prev).toHaveAttribute('aria-disabled', 'true')
+    expect(prev).not.toHaveAttribute('disabled')
     expect(prev.getAttribute('data-disabled')).not.toBeNull()
   })
 
-  it('honors a consumer-supplied disabled prop on next', () => {
+  it('honors a consumer-supplied disabled prop on next', async () => {
+    const user = userEvent.setup()
+    stubApi.goToNext.mockClear()
     render(
       <Carousel>
         <CarouselContent>
@@ -288,7 +542,34 @@ describe('CarouselPrev / CarouselNext', () => {
       </Carousel>,
     )
     const next = screen.getByRole('button', { name: 'Next slide' })
-    expect(next).toBeDisabled()
+    expect(next).toHaveAttribute('aria-disabled', 'true')
+    await user.click(next)
+    expect(stubApi.goToNext).not.toHaveBeenCalled()
+  })
+
+  it('keeps focus on an arrow once it reaches the end', () => {
+    render(<Basic />)
+    const next = screen.getByRole('button', { name: 'Next slide' })
+    act(() => next.focus())
+    stubApi.canGoToNext.mockReturnValue(false)
+    emit('select')
+    expect(next).toHaveAttribute('aria-disabled', 'true')
+    expect(document.activeElement).toBe(next)
+  })
+
+  it('passes aria-disabled through a rendered Button without disabling it natively', () => {
+    render(
+      <Carousel>
+        <CarouselContent>
+          <CarouselSlide>1</CarouselSlide>
+        </CarouselContent>
+        <CarouselPrev render={<Button variant="outline" size="icon-md" />} />
+      </Carousel>,
+    )
+    const prev = screen.getByRole('button', { name: 'Previous slide' })
+    expect(prev).toHaveAttribute('aria-disabled', 'true')
+    expect(prev).toHaveAttribute('data-disabled')
+    expect(prev).not.toHaveAttribute('disabled')
   })
 
   it('calls api.goToNext when next is clicked', async () => {
@@ -348,6 +629,39 @@ describe('CarouselPagination', () => {
       .querySelectorAll('[data-slot="carousel-pagination-bullet"]')
     await user.click(bullets[2] as HTMLElement)
     expect(stubApi.goTo).toHaveBeenCalledWith(2)
+  })
+
+  it('slides the autoplay indicator in rather than resizing it', () => {
+    mockAutoplay()
+    const { container } = render(<Basic autoplay />)
+    const indicator = container.querySelector('[data-slot="carousel-pagination-indicator"]') as HTMLElement
+    expect(indicator).not.toBeNull()
+    expect(indicator.style.width).toBe('')
+    expect(indicator.style.height).toBe('')
+    expect(indicator.style.transitionDuration).toBe('4000ms')
+  })
+
+  it('slides the vertical autoplay indicator in rather than resizing it', () => {
+    mockAutoplay()
+    const { container } = render(
+      <Carousel autoplay>
+        <CarouselContent>
+          <CarouselSlide>1</CarouselSlide>
+          <CarouselSlide>2</CarouselSlide>
+          <CarouselSlide>3</CarouselSlide>
+        </CarouselContent>
+        <CarouselPagination orientation="vertical" />
+        <CarouselProgress source="autoplay" orientation="vertical" />
+      </Carousel>,
+    )
+    const indicators = container.querySelectorAll<HTMLElement>(
+      '[data-slot="carousel-pagination-indicator"][data-orientation="vertical"]',
+    )
+    expect(indicators).toHaveLength(2)
+    indicators.forEach((indicator) => {
+      expect(indicator.style.width).toBe('')
+      expect(indicator.style.height).toBe('')
+    })
   })
 
   it('renders nothing when there is only one snap', () => {
@@ -491,6 +805,34 @@ describe('CarouselThumbs / CarouselThumb', () => {
     expect(options.containScroll).toBe('keepSnaps')
   })
 
+  it('keeps thumbnails as plain buttons, outside any slide management', () => {
+    const mocked = vi.mocked(useEmblaCarousel)
+    const thumbsApi = {
+      ...stubApi,
+      slideNodes: vi.fn(() => Array.from(document.querySelectorAll<HTMLElement>('[data-slot="carousel-thumb"]'))),
+    }
+    mockDomSlides()
+    mocked.mockImplementation(((options?: CarouselOptions) => {
+      const api = options?.slides ? thumbsApi : stubApi
+      return [vi.fn(), api, api]
+    }) as unknown as typeof useEmblaCarousel)
+    try {
+      const { container } = render(<WithThumbs />)
+      const thumbs = Array.from(container.querySelectorAll<HTMLElement>('[data-slot="carousel-thumb"]'))
+      expect(thumbs).toHaveLength(3)
+      thumbs.forEach((thumb, index) => {
+        expect(screen.getByRole('button', { name: `Go to slide ${index + 1}` })).toBe(thumb)
+        expect(thumb).not.toHaveAttribute('aria-hidden')
+        expect(thumb).not.toHaveAttribute('aria-roledescription')
+        expect(thumb).not.toHaveAttribute('inert')
+      })
+      const railPlugins = mocked.mock.calls.findLast(([options]) => options?.slides)?.[1] ?? []
+      expect(railPlugins.map((plugin) => plugin.name)).not.toContain('accessibility')
+    } finally {
+      mocked.mockImplementation((() => [vi.fn(), stubApi, stubApi]) as unknown as typeof useEmblaCarousel)
+    }
+  })
+
   it('throws when a thumbnail is used outside CarouselThumbs', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(() => render(<CarouselThumb>Orphan</CarouselThumb>)).toThrow(/CarouselThumb/)
@@ -572,7 +914,10 @@ describe('useCarousel + lifecycle', () => {
     }
     stubApi.plugins.mockReturnValue({ wheelGestures: {}, autoplay })
     stubApi.rootNode.mockReturnValue(viewport)
-    stubApi.internalEngine.mockReturnValue({ options: { axis: 'x' } })
+    stubApi.internalEngine.mockReturnValue({
+      options: { active: true, axis: 'x' },
+      scrollSnapList: { slidesBySnap: [] },
+    })
     try {
       render(<Basic autoplay wheelGestures />)
       viewport.dispatchEvent(new WheelEvent('wheel', { deltaX: 2, deltaY: 40 }))
@@ -592,6 +937,146 @@ describe('useCarousel + lifecycle', () => {
 
     rerender(<Basic autoplay={{ delay: 3000 }} />)
     expect(stubApi.on.mock.calls.length).toBe(initialOnCalls)
+  })
+})
+
+describe('Carousel autoplay', () => {
+  function root(container: HTMLElement) {
+    return container.querySelector('[data-slot="carousel"]') as HTMLElement
+  }
+
+  it('starts rotation on mount', () => {
+    const autoplay = mockAutoplay()
+    render(<Basic autoplay />)
+    expect(autoplay.play).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays off under reduced motion', () => {
+    const autoplay = mockAutoplay()
+    render(
+      <ReducedMotionProvider disableAnimations>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.play).not.toHaveBeenCalled()
+  })
+
+  it('stops when reduced motion turns on, and starts again when it turns off', () => {
+    const autoplay = mockAutoplay()
+    const { rerender } = render(
+      <ReducedMotionProvider>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.isPlaying()).toBe(true)
+    rerender(
+      <ReducedMotionProvider disableAnimations>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.isPlaying()).toBe(false)
+    rerender(
+      <ReducedMotionProvider>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('pauses while hovered and resumes when the pointer leaves', () => {
+    const autoplay = mockAutoplay()
+    const { container } = render(<Basic autoplay />)
+    fireEvent.pointerEnter(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+    expect(container.querySelector('[data-slot="carousel-pagination-indicator"]')).toBeNull()
+    fireEvent.pointerLeave(root(container))
+    expect(autoplay.isPlaying()).toBe(true)
+    expect(autoplay.play).toHaveBeenCalledTimes(2)
+  })
+
+  it('pauses while focus is inside and resumes once it leaves the carousel', () => {
+    const autoplay = mockAutoplay()
+    render(
+      <>
+        <Basic autoplay />
+        <button type="button">Outside</button>
+      </>,
+    )
+    act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
+    expect(autoplay.isPlaying()).toBe(false)
+    act(() => screen.getByRole('button', { name: 'Previous slide' }).focus())
+    expect(autoplay.isPlaying()).toBe(false)
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('waits for both the pointer and focus to leave', () => {
+    const autoplay = mockAutoplay()
+    const { container } = render(
+      <>
+        <Basic autoplay />
+        <button type="button">Outside</button>
+      </>,
+    )
+    fireEvent.pointerEnter(root(container))
+    act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
+    fireEvent.pointerLeave(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('keeps a pointerdown stop after the pointer leaves, without resumeAfter', () => {
+    const autoplay = mockAutoplay()
+    const { container } = render(<Basic autoplay />)
+    fireEvent.pointerEnter(root(container))
+    emit('pointerdown')
+    fireEvent.pointerLeave(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+    expect(autoplay.play).toHaveBeenCalledTimes(1)
+  })
+
+  it('holds the resumeAfter restart while hovered or focused', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    try {
+      const autoplay = mockAutoplay()
+      const { container } = render(
+        <>
+          <Basic autoplay={{ resumeAfter: 1000 }} />
+          <button type="button">Outside</button>
+        </>,
+      )
+      fireEvent.pointerEnter(root(container))
+      emit('pointerdown')
+      emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
+      act(() => vi.advanceTimersByTime(1000))
+      expect(autoplay.isPlaying()).toBe(false)
+
+      act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
+      fireEvent.pointerLeave(root(container))
+      expect(autoplay.isPlaying()).toBe(false)
+
+      act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+      expect(autoplay.isPlaying()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('restarts after resumeAfter once nothing is inside', () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    try {
+      const autoplay = mockAutoplay()
+      render(<Basic autoplay={{ resumeAfter: 1000 }} />)
+      emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
+      expect(autoplay.isPlaying()).toBe(false)
+      act(() => vi.advanceTimersByTime(999))
+      expect(autoplay.isPlaying()).toBe(false)
+      act(() => vi.advanceTimersByTime(1))
+      expect(autoplay.isPlaying()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 
@@ -662,6 +1147,21 @@ describe('a11y', () => {
   it('has no accessibility violations', async () => {
     const { container } = render(<Basic />)
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('reports no landmark violations with several carousels on one page', async () => {
+    const { container } = render(
+      <main>
+        <Basic />
+        <Basic />
+        <Basic aria-label="New arrivals" />
+        <Basic aria-label="Best sellers" />
+      </main>,
+    )
+    const results = await axe(container, {
+      runOnly: ['landmark-unique', 'aria-allowed-role', 'aria-hidden-focus'],
+    })
+    expect(results).toHaveNoViolations()
   })
 
   it('has no accessibility violations with a thumbnail rail', async () => {

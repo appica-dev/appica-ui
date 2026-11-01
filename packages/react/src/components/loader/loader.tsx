@@ -138,7 +138,7 @@ const VARIANT_COMPONENTS: Record<LoaderVariant, React.ComponentType<VariantInner
 function Loader({
   variant = 'bar',
   currentColor = false,
-  'aria-label': ariaLabel = 'Loading',
+  'aria-label': label = 'Loading',
   className,
   ...props
 }: LoaderProps) {
@@ -152,7 +152,6 @@ function Loader({
     <span
       data-slot="loader"
       role="status"
-      aria-label={ariaLabel}
       className={cn('inline-flex shrink-0 items-center justify-center align-middle', LOADER_SIZE, className)}
       {...props}
     >
@@ -163,6 +162,7 @@ function Loader({
           {inner}
         </LazyMotion>
       )}
+      <span className="sr-only">{label}</span>
     </span>
   )
 }

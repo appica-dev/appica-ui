@@ -252,6 +252,39 @@ describe('Combobox', () => {
     expect(screen.queryByRole('button', { name: 'Toggle popup' })).toBeNull()
   })
 
+  it('keeps ComboboxEmpty in the accessibility tree as a status region while results show', async () => {
+    const user = setupUser()
+    renderSingle()
+    await user.click(screen.getByRole('combobox'))
+    await screen.findByRole('option', { name: 'Next.js' })
+
+    const empty = document.querySelector('[data-slot="combobox-empty"]')
+    expect(empty).toBeEmptyDOMElement()
+    expect(empty).not.toHaveClass('hidden')
+    expect(screen.getByRole('status')).toBe(empty)
+  })
+
+  it('renders the no-results text inside the status region', async () => {
+    const user = setupUser()
+    renderSingle()
+    const input = screen.getByRole('combobox')
+    await user.click(input)
+    await user.type(input, 'zzzzzz')
+    const status = await screen.findByRole('status')
+    expect(status).toHaveTextContent('No items found.')
+    expect(status).toHaveAttribute('data-slot', 'combobox-empty')
+  })
+
+  it('has no accessibility violations with the popup open and no matches', async () => {
+    const user = setupUser()
+    renderSingle()
+    const input = screen.getByRole('combobox')
+    await user.click(input)
+    await user.type(input, 'zzzzzz')
+    await screen.findByText('No items found.')
+    expect(await axe(document.body, { rules: { region: { enabled: false } } })).toHaveNoViolations()
+  })
+
   it('shows ComboboxEmpty when the filter has no matches', async () => {
     const user = setupUser()
     renderSingle()

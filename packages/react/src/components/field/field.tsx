@@ -41,6 +41,7 @@ type FieldErrorProps = React.ComponentProps<typeof BaseField.Error>
 function FieldError({ className, ...props }: FieldErrorProps) {
   return (
     <div
+      aria-live="polite"
       className={cn(
         'grid grid-rows-[0fr]',
         'has-[[data-slot=field-error]:not([data-starting-style]):not([data-ending-style])]:grid-rows-[1fr]',

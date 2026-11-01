@@ -74,7 +74,7 @@ function BreadcrumbLink({ className, active = false, disabled = false, render, .
         'data-slot': 'breadcrumb-link',
         'data-active': active || undefined,
         'aria-current': active ? 'page' : undefined,
-        ...focusableProps(active || disabled),
+        ...(active && !disabled ? {} : focusableProps(disabled)),
         className: cn(
           'inline-flex items-center gap-1.5 outline-ring',
           'transition duration-250 motion-reduce:transition-none',

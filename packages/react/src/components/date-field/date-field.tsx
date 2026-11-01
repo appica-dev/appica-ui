@@ -4,6 +4,7 @@ import * as React from 'react'
 import { format as formatDate, formatISO, getDaysInMonth, isValid } from 'date-fns'
 import { type VariantProps } from 'class-variance-authority'
 import { useFieldRootContext } from '@base-ui/react/internals/field-root-context'
+import { useLabelableContext, useLabelableId } from '@base-ui/react/internals/labelable-provider'
 import { cn } from '../../internal/utils'
 import { useDirection } from '../../hooks/use-direction'
 import { inputVariants } from '../input/input-variants'
@@ -223,6 +224,9 @@ function DateField({
   const name = nameProp ?? field.name
   const ariaInvalid = rest['aria-invalid']
   const invalid = ariaInvalid === true || ariaInvalid === 'true' || field.invalid === true
+  const resolvedAriaInvalid = ariaInvalid ?? (invalid || undefined)
+  const { labelId, getDescriptionProps } = useLabelableContext()
+  useLabelableId({ id: null })
 
   const nodes = React.useMemo(() => parseFormat(format), [format])
   const segmentCount = React.useMemo(() => nodes.reduce((n, x) => n + (x.kind === 'segment' ? 1 : 0), 0), [nodes])
@@ -462,6 +466,8 @@ function DateField({
       data-invalid={invalid || undefined}
       aria-invalid={invalid || undefined}
       aria-disabled={disabled || undefined}
+      aria-labelledby={rest['aria-label'] == null ? labelId : undefined}
+      aria-describedby={getDescriptionProps({})['aria-describedby']}
       role="group"
       ref={ref}
       className={cn(
@@ -512,6 +518,7 @@ function DateField({
               spellCheck={false}
               aria-label={node.type}
               aria-readonly={readOnly || undefined}
+              aria-invalid={resolvedAriaInvalid}
               aria-valuemin={range.min}
               aria-valuemax={range.max}
               aria-valuenow={partVal ?? undefined}

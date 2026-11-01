@@ -56,12 +56,12 @@ interface CopyButtonProps extends Omit<ButtonProps, 'value' | 'onCopy'> {
    */
   timeout?: number
   /**
-   * Accessible name (and tooltip via `title`) in the idle state.
+   * Accessible name of an icon-only button in the idle state. Visible children name the button instead.
    * @default 'Copy'
    */
   label?: string
   /**
-   * Accessible name after a successful copy; a string child also swaps to this.
+   * Announced after a successful copy, and names an icon-only button until it reverts; a string child also swaps to this.
    * @default 'Copied'
    */
   copiedLabel?: string
@@ -110,51 +110,57 @@ function CopyButton({
     resetRef.current = setTimeout(() => setCopied(false), timeout)
   }
 
+  const iconOnly = React.Children.toArray(children).length === 0
+
   return (
-    <Button
-      data-slot="copy-button"
-      data-copied={copied || undefined}
-      type="button"
-      variant={variant}
-      size={size}
-      aria-label={copied ? copiedLabel : label}
-      onClick={handleClick}
-      className={cn('group/copy', className)}
-      {...props}
-    >
-      <span data-icon={children != null ? 'start' : undefined} className="grid place-items-center *:[grid-area:1/1]">
-        <span
-          className={cn(
-            'grid place-items-center transition-[opacity,scale] delay-150 duration-150 ease-out group-data-copied/copy:delay-0',
-            'group-data-copied/copy:scale-50 group-data-copied/copy:opacity-0',
-            'motion-reduce:transition-none',
-          )}
-        >
-          {icon ?? (
-            <svg {...ICON_SVG_PROPS}>
-              <path d="M4.012 16.737c-.307-.175-.562-.427-.739-.732S3.001 15.353 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1M7 9.667c0-.707.281-1.386.781-1.886S8.96 7 9.667 7h8.666c.35 0 .697.069 1.021.203s.618.33.865.578.444.542.578.865A2.67 2.67 0 0 1 21 9.667v8.666a2.67 2.67 0 0 1-.781 1.886 2.67 2.67 0 0 1-1.886.781H9.667a2.67 2.67 0 0 1-1.021-.203c-.324-.134-.618-.331-.865-.578s-.444-.542-.578-.865S7 18.683 7 18.333V9.667z" />
-            </svg>
-          )}
-        </span>
-        <svg {...ICON_SVG_PROPS}>
-          <path
-            d={CHECK_PATH}
-            pathLength={1}
-            strokeDasharray="1 2"
-            className={cn(
-              '[stroke-dashoffset:1.02] group-data-copied/copy:[stroke-dashoffset:0]',
-              'transition-[stroke-dashoffset] duration-200 ease-in',
-              'group-data-copied/copy:delay-100 group-data-copied/copy:duration-350 group-data-copied/copy:ease-out',
-              'motion-reduce:transition-none',
-            )}
-          />
-        </svg>
-      </span>
-      {typeof children === 'string' && copied ? copiedLabel : children}
-      <span role="status" className="sr-only">
+    <>
+      {/* First, so last-child rules (`space-x-*`, `divide-*`) still see the button as last, and
+          `!important`, so a parent's `*:` utilities (ButtonGroup's `*:relative`) can't pull it into flow. */}
+      <span role="status" className="sr-only!">
         {copied ? copiedLabel : ''}
       </span>
-    </Button>
+      <Button
+        data-slot="copy-button"
+        data-copied={copied || undefined}
+        type="button"
+        variant={variant}
+        size={size}
+        aria-label={iconOnly ? (copied ? copiedLabel : label) : undefined}
+        onClick={handleClick}
+        className={cn('group/copy', className)}
+        {...props}
+      >
+        <span data-icon={children != null ? 'start' : undefined} className="grid place-items-center *:[grid-area:1/1]">
+          <span
+            className={cn(
+              'grid place-items-center transition-[opacity,scale] delay-150 duration-150 ease-out group-data-copied/copy:delay-0',
+              'group-data-copied/copy:scale-50 group-data-copied/copy:opacity-0',
+              'motion-reduce:transition-none',
+            )}
+          >
+            {icon ?? (
+              <svg {...ICON_SVG_PROPS}>
+                <path d="M4.012 16.737c-.307-.175-.562-.427-.739-.732S3.001 15.353 3 15V5c0-1.1.9-2 2-2h10c.75 0 1.158.385 1.5 1M7 9.667c0-.707.281-1.386.781-1.886S8.96 7 9.667 7h8.666c.35 0 .697.069 1.021.203s.618.33.865.578.444.542.578.865A2.67 2.67 0 0 1 21 9.667v8.666a2.67 2.67 0 0 1-.781 1.886 2.67 2.67 0 0 1-1.886.781H9.667a2.67 2.67 0 0 1-1.021-.203c-.324-.134-.618-.331-.865-.578s-.444-.542-.578-.865S7 18.683 7 18.333V9.667z" />
+              </svg>
+            )}
+          </span>
+          <svg {...ICON_SVG_PROPS}>
+            <path
+              d={CHECK_PATH}
+              pathLength={1}
+              strokeDasharray="1 2"
+              className={cn(
+                '[stroke-dashoffset:1.02] group-data-copied/copy:[stroke-dashoffset:0]',
+                'transition-[stroke-dashoffset] duration-200 ease-in',
+                'group-data-copied/copy:delay-100 group-data-copied/copy:duration-350 group-data-copied/copy:ease-out',
+                'motion-reduce:transition-none',
+              )}
+            />
+          </svg>
+        </span>
+        {typeof children === 'string' && copied ? copiedLabel : children}
+      </Button>
+    </>
   )
 }
 

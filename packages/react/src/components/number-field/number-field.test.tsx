@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
+import { Field, FieldLabel } from '../field/field'
 import { NumberField } from './number-field'
 
 function renderWithLabel(props: React.ComponentProps<typeof NumberField> = {}, labelText = 'Qty', id = 'qty') {
@@ -220,5 +221,63 @@ describe('NumberField', () => {
   it('has no accessibility violations', async () => {
     const { container } = renderWithLabel({}, 'Quantity', 'qty-a11y')
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  describe('accessible name', () => {
+    function getRoot(container: HTMLElement) {
+      return container.querySelector('[data-slot="number-field"]')
+    }
+
+    it('names the input from a root aria-label, not the root', () => {
+      const { container } = render(<NumberField defaultValue={1} aria-label="Quantity" />)
+      expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('data-slot', 'number-field-input')
+      expect(getRoot(container)).not.toHaveAttribute('aria-label')
+    })
+
+    it('names the input from a root aria-labelledby, not the root', () => {
+      const { container } = render(
+        <>
+          <span id="qty-label">Quantity</span>
+          <NumberField defaultValue={1} aria-labelledby="qty-label" />
+        </>,
+      )
+      expect(screen.getByRole('textbox', { name: 'Quantity' })).toHaveAttribute('aria-labelledby', 'qty-label')
+      expect(getRoot(container)).not.toHaveAttribute('aria-labelledby')
+    })
+
+    it('keeps the input label from inputProps over the root label', () => {
+      const { container } = render(
+        <NumberField defaultValue={1} aria-label="Root label" inputProps={{ 'aria-label': 'Seats' }} />,
+      )
+      expect(screen.getByRole('textbox', { name: 'Seats' })).toBeInTheDocument()
+      expect(getRoot(container)).not.toHaveAttribute('aria-label')
+    })
+
+    it('keeps the FieldLabel over the root label inside a Field', () => {
+      const { container } = render(
+        <Field>
+          <FieldLabel>Seats</FieldLabel>
+          <NumberField defaultValue={1} aria-label="Root label" />
+        </Field>,
+      )
+      const input = screen.getByRole('textbox', { name: 'Seats' })
+      expect(input).not.toHaveAttribute('aria-label')
+      expect(getRoot(container)).not.toHaveAttribute('aria-label')
+    })
+
+    it('has no accessibility violations when labeled by a root aria-label', async () => {
+      const { container } = render(<NumberField defaultValue={1} aria-label="Quantity" />)
+      expect(await axe(container)).toHaveNoViolations()
+    })
+
+    it('has no accessibility violations inside a Field', async () => {
+      const { container } = render(
+        <Field>
+          <FieldLabel>Seats</FieldLabel>
+          <NumberField defaultValue={1} />
+        </Field>,
+      )
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 })

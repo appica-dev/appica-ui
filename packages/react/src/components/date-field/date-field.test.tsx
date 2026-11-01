@@ -1,7 +1,9 @@
+import * as React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
+import { Field, FieldDescription, FieldError, FieldLabel } from '../field/field'
 import { DateField } from './date-field'
 
 function getSegment(name: 'day' | 'month' | 'year') {
@@ -347,6 +349,86 @@ describe('DateField', () => {
     const root = getRoot(container)
     expect(root).toHaveAttribute('data-invalid')
     expect(root).toHaveAttribute('data-disabled')
+  })
+
+  describe('inside a Field', () => {
+    function renderInField(props: React.ComponentProps<typeof DateField> = {}, invalid = false) {
+      return render(
+        <Field invalid={invalid}>
+          <FieldLabel>Date of birth</FieldLabel>
+          <DateField defaultValue={JUN_23} {...props} />
+          <FieldDescription>As shown on your passport.</FieldDescription>
+          <FieldError match>Enter a valid date.</FieldError>
+        </Field>,
+      )
+    }
+
+    it('takes its accessible name from the FieldLabel', () => {
+      renderInField()
+      const group = screen.getByRole('group', { name: 'Date of birth' })
+      expect(group).toHaveAttribute('data-slot', 'date-field')
+      expect(screen.getByText('Date of birth')).not.toHaveAttribute('for')
+    })
+
+    it('is described by the FieldDescription', () => {
+      renderInField()
+      const description = screen.getByText('As shown on your passport.')
+      expect(screen.getByRole('group', { name: 'Date of birth' })).toHaveAttribute(
+        'aria-describedby',
+        expect.stringContaining(description.id),
+      )
+    })
+
+    it('is described by the FieldError and marks every segment invalid', () => {
+      renderInField({}, true)
+      const group = screen.getByRole('group', { name: 'Date of birth' })
+      const error = screen.getByText('Enter a valid date.')
+      expect(group).toHaveAttribute('aria-describedby', expect.stringContaining(error.id))
+      expect(group).toHaveAttribute('aria-invalid', 'true')
+      for (const segment of screen.getAllByRole('spinbutton')) {
+        expect(segment).toHaveAttribute('aria-invalid', 'true')
+      }
+    })
+
+    it('lets consumer aria-label and aria-describedby win over the Field wiring', () => {
+      renderInField({ 'aria-label': 'Birthday', 'aria-describedby': 'custom-hint' })
+      const group = screen.getByRole('group', { name: 'Birthday' })
+      expect(group).not.toHaveAttribute('aria-labelledby')
+      expect(group).toHaveAttribute('aria-describedby', 'custom-hint')
+    })
+
+    it('lets a consumer aria-labelledby win over the FieldLabel', () => {
+      const { container } = render(
+        <Field>
+          <FieldLabel>Date of birth</FieldLabel>
+          <span id="custom-label">Birthday</span>
+          <DateField defaultValue={JUN_23} aria-labelledby="custom-label" />
+        </Field>,
+      )
+      expect(getRoot(container)).toHaveAttribute('aria-labelledby', 'custom-label')
+      expect(screen.getByRole('group', { name: 'Birthday' })).toBe(getRoot(container))
+    })
+
+    it('lets a consumer aria-invalid win on the group and segments', () => {
+      renderInField({ 'aria-invalid': false }, true)
+      const group = screen.getByRole('group', { name: 'Date of birth' })
+      expect(group).toHaveAttribute('aria-invalid', 'false')
+      for (const segment of screen.getAllByRole('spinbutton')) {
+        expect(segment).toHaveAttribute('aria-invalid', 'false')
+      }
+    })
+
+    it('does not mark segments invalid when the field is valid', () => {
+      renderInField()
+      for (const segment of screen.getAllByRole('spinbutton')) {
+        expect(segment).not.toHaveAttribute('aria-invalid')
+      }
+    })
+
+    it('has no accessibility violations when labeled, described and invalid', async () => {
+      const { container } = renderInField({}, true)
+      expect(await axe(container)).toHaveNoViolations()
+    })
   })
 
   it('renders startSlot and endSlot containers', () => {

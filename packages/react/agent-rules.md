@@ -34,6 +34,8 @@
 - Never write hue-based utilities (`bg-gray-100`, `text-slate-600`). The palette is organized by
   role, not hue.
 - Prefer v4 variant syntax (`*:`, `**:`, `data-*:`, `not-*:`) over `[&_...]` arbitrary selectors.
+- Never put `:has()` on `html`, `:root` or `body`, including variants like `in-[:root:has(...)]`. Beside the library's
+  own `:has()` rules, each check restyles the whole page. Derive page state from the route or React state instead.
 - For a link styled as a button, put `buttonVariants(...)` on the `<a>` - never `<Button render={<a/>}>`.
 - Put `className` overrides on the wrapper component, not on the JSX passed to `render`.
 - Do not hand-roll a component that exists in the library. Check the component list first:

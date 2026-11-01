@@ -7,6 +7,30 @@ version alongside the package.
 
 The library follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.1 - 2026-11-01
+
+Accessibility fixes for Carousel and form fields, and a lighter carousel progress bar.
+
+### Added
+
+- **[Date Picker range labels](https://appica.dev/ui/components/react/date-picker#date-range)** - `startAriaLabel` and `endAriaLabel` name the 2 fields of a range.
+
+### Improved
+
+- **[Carousel autoplay](https://appica.dev/ui/components/react/carousel#autoplay)** - Pauses while hovered or focused, and stays off with reduced motion.
+- **Carousel progress bar** - Animates its position instead of its width, so it no longer triggers layout every frame.
+- **Dependencies** - Motion 14.9.
+
+### Fixed
+
+- **[Carousel landmarks](https://appica.dev/ui/components/react/carousel#accessibility)** - 1 region per labeled carousel instead of 2 named "Carousel". An unlabeled carousel is a group.
+- **[Carousel slides](https://appica.dev/ui/components/react/carousel#accessibility)** - Off-screen slides are inert, and visible slides are no longer hidden from screen readers.
+- **Carousel thumbnails and arrows** - Thumbnails stay buttons, and an arrow at the end is `aria-disabled` so it keeps focus: style it with `data-disabled`, not `:disabled`.
+- **Date Field, Time Field and Date Picker** - Field labels, descriptions and errors reach the segments.
+- **Field, Number Field, Combobox and Autocomplete** - Errors and "No results" are announced, and a Number Field's `aria-label` names its input.
+- **[Copy Button](https://appica.dev/ui/components/react/copy-button#accessibility)** - Visible text names the button, and the "Copied" status now renders just before the `<button>` instead of inside it.
+- **Breadcrumb, Pagination, Spinner and Loader** - Correct names and states for screen readers, with no stray tab stops.
+
 ## 1.3.0 - 2026-10-12
 
 A new Compare Slider, type-to-filter Dropdown Menus, drag controls that work inside a Drawer, and Base UI 1.9.
