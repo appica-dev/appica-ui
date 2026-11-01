@@ -69,7 +69,7 @@ vi.mock('embla-carousel-accessibility', () => ({
   default: (options?: object) => ({ name: 'accessibility', options: options ?? {}, init: () => {} }),
 }))
 vi.mock('embla-carousel-autoplay', () => ({
-  default: () => ({ name: 'autoplay', options: {}, init: () => {} }),
+  default: (options?: object) => ({ name: 'autoplay', options: options ?? {}, init: () => {} }),
 }))
 vi.mock('embla-carousel-auto-scroll', () => ({
   default: () => ({ name: 'autoScroll', options: {}, init: () => {} }),
@@ -96,6 +96,7 @@ import {
   CarouselThumb,
   CarouselPrev,
   CarouselNext,
+  CarouselPlayToggle,
   CarouselPagination,
   CarouselProgress,
   useCarousel,
@@ -137,14 +138,17 @@ function mockDomSlides() {
 }
 
 /** A stand-in for the Autoplay plugin that reports play and stop through the stub's events. */
-function mockAutoplay() {
+function mockAutoplay(options: object = {}) {
   let playing = false
   const autoplay = {
-    options: { delay: 4000 },
+    options: { delay: 4000, ...options },
     isPlaying: vi.fn(() => playing),
     play: vi.fn(() => {
-      playing = true
-      dispatch('autoplay:play')
+      if (!playing) {
+        playing = true
+        dispatch('autoplay:play')
+      }
+      dispatch('autoplay:timerset')
     }),
     stop: vi.fn(() => {
       if (!playing) return
@@ -155,6 +159,27 @@ function mockAutoplay() {
   }
   stubApi.plugins.mockReturnValue({ autoplay })
   return autoplay
+}
+
+/** A stand-in for the Auto Scroll plugin, in the same shape as `mockAutoplay`. */
+function mockAutoScroll() {
+  let playing = false
+  const autoScroll = {
+    options: {},
+    isPlaying: vi.fn(() => playing),
+    play: vi.fn(() => {
+      if (playing) return
+      playing = true
+      dispatch('autoscroll:play')
+    }),
+    stop: vi.fn(() => {
+      if (!playing) return
+      playing = false
+      dispatch('autoscroll:stop')
+    }),
+  }
+  stubApi.plugins.mockReturnValue({ autoScroll })
+  return autoScroll
 }
 
 function Basic(props?: Partial<CarouselProps>) {
@@ -994,7 +1019,8 @@ describe('Carousel autoplay', () => {
     expect(autoplay.play).toHaveBeenCalledTimes(2)
   })
 
-  it('pauses while focus is inside and resumes once it leaves the carousel', () => {
+  it('pauses while keyboard focus is inside and resumes once it leaves the carousel', async () => {
+    const user = userEvent.setup()
     const autoplay = mockAutoplay()
     render(
       <>
@@ -1002,15 +1028,77 @@ describe('Carousel autoplay', () => {
         <button type="button">Outside</button>
       </>,
     )
-    act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Previous slide' })).toHaveFocus()
     expect(autoplay.isPlaying()).toBe(false)
-    act(() => screen.getByRole('button', { name: 'Previous slide' }).focus())
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Next slide' })).toHaveFocus()
     expect(autoplay.isPlaying()).toBe(false)
     act(() => screen.getByRole('button', { name: 'Outside' }).focus())
     expect(autoplay.isPlaying()).toBe(true)
   })
 
-  it('waits for both the pointer and focus to leave', () => {
+  it('keeps playing after a mouse click on an arrow, and pauses once Tab lands on it', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    render(
+      <>
+        <button type="button">Outside</button>
+        <Basic autoplay />
+      </>,
+    )
+    const next = screen.getByRole('button', { name: 'Next slide' })
+    await user.click(next)
+    expect(autoplay.isPlaying()).toBe(false)
+    await user.unhover(next)
+    expect(next).toHaveFocus()
+    expect(autoplay.isPlaying()).toBe(true)
+
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+    await user.tab()
+    await user.tab()
+    expect(next).toHaveFocus()
+    expect(autoplay.isPlaying()).toBe(false)
+  })
+
+  it('hands rotation back when a mouse click follows keyboard focus inside', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    render(<Basic autoplay={{ pauseOnHover: false }} />)
+    await user.tab()
+    expect(autoplay.isPlaying()).toBe(false)
+    await user.click(screen.getByRole('button', { name: 'Next slide' }))
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('starts again with mouse focus still inside when reduced motion turns off', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    const { rerender } = render(
+      <ReducedMotionProvider>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    const next = screen.getByRole('button', { name: 'Next slide' })
+    await user.click(next)
+    await user.unhover(next)
+    expect(next).toHaveFocus()
+    rerender(
+      <ReducedMotionProvider disableAnimations>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.isPlaying()).toBe(false)
+    rerender(
+      <ReducedMotionProvider>
+        <Basic autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('waits for both the pointer and focus to leave', async () => {
+    const user = userEvent.setup()
     const autoplay = mockAutoplay()
     const { container } = render(
       <>
@@ -1019,11 +1107,44 @@ describe('Carousel autoplay', () => {
       </>,
     )
     fireEvent.pointerEnter(root(container))
-    act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
+    await user.tab()
     fireEvent.pointerLeave(root(container))
     expect(autoplay.isPlaying()).toBe(false)
     act(() => screen.getByRole('button', { name: 'Outside' }).focus())
     expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('keeps playing while hovered with pauseOnHover: false', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    const { container } = render(<Basic autoplay={{ pauseOnHover: false }} />)
+    fireEvent.pointerEnter(root(container))
+    expect(autoplay.isPlaying()).toBe(true)
+    await user.tab()
+    expect(autoplay.isPlaying()).toBe(false)
+  })
+
+  it('keeps playing with keyboard focus inside with pauseOnFocus: false', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    const { container } = render(<Basic autoplay={{ pauseOnFocus: false }} />)
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Previous slide' })).toHaveFocus()
+    expect(autoplay.isPlaying()).toBe(true)
+    fireEvent.pointerEnter(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+  })
+
+  it('keeps pauseOnHover and pauseOnFocus away from the Embla plugin', () => {
+    render(<Basic autoplay={{ delay: 3000, resumeAfter: 1000, pauseOnHover: false, pauseOnFocus: false }} />)
+    const plugins = (useEmblaCarousel as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[1] as {
+      name: string
+      options: object
+    }[]
+    expect(plugins.find((plugin) => plugin.name === 'autoplay')?.options).toEqual({
+      delay: 3000,
+      defaultInteraction: false,
+    })
   })
 
   it('keeps a pointerdown stop after the pointer leaves, without resumeAfter', () => {
@@ -1036,23 +1157,24 @@ describe('Carousel autoplay', () => {
     expect(autoplay.play).toHaveBeenCalledTimes(1)
   })
 
-  it('holds the resumeAfter restart while hovered or focused', () => {
+  it('holds the resumeAfter restart while hovered or focused', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay({ defaultInteraction: false })
+    const { container } = render(
+      <>
+        <Basic autoplay={{ resumeAfter: 1000 }} />
+        <button type="button">Outside</button>
+      </>,
+    )
+    await user.tab()
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     try {
-      const autoplay = mockAutoplay()
-      const { container } = render(
-        <>
-          <Basic autoplay={{ resumeAfter: 1000 }} />
-          <button type="button">Outside</button>
-        </>,
-      )
       fireEvent.pointerEnter(root(container))
       emit('pointerdown')
       emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
       act(() => vi.advanceTimersByTime(1000))
       expect(autoplay.isPlaying()).toBe(false)
 
-      act(() => screen.getByRole('button', { name: 'Next slide' }).focus())
       fireEvent.pointerLeave(root(container))
       expect(autoplay.isPlaying()).toBe(false)
 
@@ -1063,10 +1185,29 @@ describe('Carousel autoplay', () => {
     }
   })
 
+  it('restarts after a drag with resumeAfter while the pointer and focus stay, with both pauses off', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay({ defaultInteraction: false })
+    const { container } = render(<Basic autoplay={{ resumeAfter: 1000, pauseOnHover: false, pauseOnFocus: false }} />)
+    fireEvent.pointerEnter(root(container))
+    await user.tab()
+    expect(autoplay.isPlaying()).toBe(true)
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    try {
+      emit('pointerdown')
+      emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
+      expect(autoplay.isPlaying()).toBe(false)
+      act(() => vi.advanceTimersByTime(1000))
+      expect(autoplay.isPlaying()).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('restarts after resumeAfter once nothing is inside', () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     try {
-      const autoplay = mockAutoplay()
+      const autoplay = mockAutoplay({ defaultInteraction: false })
       render(<Basic autoplay={{ resumeAfter: 1000 }} />)
       emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
       expect(autoplay.isPlaying()).toBe(false)
@@ -1077,6 +1218,250 @@ describe('Carousel autoplay', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+})
+
+describe('CarouselPlayToggle', () => {
+  function WithToggle({ children, ...props }: Partial<CarouselProps>) {
+    return (
+      <Carousel {...props}>
+        <CarouselPlayToggle>
+          <svg data-icon="pause" aria-hidden="true" className="in-data-paused:hidden" />
+          <svg data-icon="play" aria-hidden="true" className="not-in-data-paused:hidden" />
+        </CarouselPlayToggle>
+        <CarouselContent>
+          <CarouselSlide>Slide 1</CarouselSlide>
+          <CarouselSlide>Slide 2</CarouselSlide>
+          <CarouselSlide>Slide 3</CarouselSlide>
+        </CarouselContent>
+        <CarouselPrev />
+        <CarouselNext />
+        <CarouselPagination />
+        {children}
+      </Carousel>
+    )
+  }
+
+  function CycleProbe() {
+    const { autoplay } = useCarousel()
+    return <output data-testid="cycle">{autoplay?.cycleId}</output>
+  }
+
+  function root(container: HTMLElement) {
+    return container.querySelector('[data-slot="carousel"]') as HTMLElement
+  }
+
+  const toggle = () => screen.getByRole('button', { name: 'Pause slides' })
+
+  it('renders nothing without Autoplay or Auto Scroll', () => {
+    render(<WithToggle />)
+    expect(screen.queryByRole('button', { name: 'Pause slides' })).toBeNull()
+  })
+
+  it('renders nothing under reduced motion', () => {
+    mockAutoplay()
+    render(
+      <ReducedMotionProvider disableAnimations>
+        <WithToggle autoplay />
+      </ReducedMotionProvider>,
+    )
+    expect(screen.queryByRole('button', { name: 'Pause slides' })).toBeNull()
+  })
+
+  it('renders both icons as children and marks the pause with aria-pressed and data-paused', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    render(<WithToggle autoplay />)
+    const button = toggle()
+    expect(button).toHaveAttribute('data-slot', 'carousel-play-toggle')
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    expect(button).not.toHaveAttribute('data-paused')
+    expect(button.querySelector('[data-icon="pause"]')).not.toBeNull()
+    expect(button.querySelector('[data-icon="play"]')).not.toBeNull()
+
+    await user.click(button)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+    expect(toggle()).toHaveAttribute('data-paused')
+    expect(autoplay.isPlaying()).toBe(false)
+
+    await user.click(toggle())
+    expect(toggle()).toHaveAttribute('aria-pressed', 'false')
+    expect(toggle()).not.toHaveAttribute('data-paused')
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('passes paused to a render function', async () => {
+    const user = userEvent.setup()
+    mockAutoplay()
+    render(
+      <Carousel autoplay>
+        <CarouselPlayToggle render={(props, state) => <button {...props}>{state.paused ? 'Play' : 'Pause'}</button>} />
+        <CarouselContent>
+          <CarouselSlide>Slide 1</CarouselSlide>
+          <CarouselSlide>Slide 2</CarouselSlide>
+        </CarouselContent>
+      </Carousel>,
+    )
+    expect(toggle()).toHaveTextContent('Pause')
+    await user.click(toggle())
+    expect(toggle()).toHaveTextContent('Play')
+  })
+
+  it('keeps a pause through hover and focus leaving, resumeAfter, a drag, slide focus and the wheel', async () => {
+    const user = userEvent.setup()
+    const viewport = document.createElement('div')
+    const autoplay = mockAutoplay({ defaultInteraction: false })
+    stubApi.plugins.mockReturnValue({ autoplay, wheelGestures: {} })
+    stubApi.rootNode.mockReturnValue(viewport)
+    render(
+      <>
+        <WithToggle autoplay={{ resumeAfter: 1000 }} />
+        <button type="button">Outside</button>
+      </>,
+    )
+    await user.click(toggle())
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Previous slide' })).toHaveFocus()
+    await user.unhover(toggle())
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+    expect(autoplay.isPlaying()).toBe(false)
+
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    try {
+      emit('pointerdown')
+      emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
+      emit('slidefocus')
+      emit('autoplay:interaction', { detail: { interaction: 'slidefocus' } })
+      act(() => {
+        viewport.dispatchEvent(new WheelEvent('wheel', { deltaX: 40, deltaY: 2 }))
+      })
+      act(() => vi.advanceTimersByTime(1000))
+      expect(autoplay.isPlaying()).toBe(false)
+      expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('stays paused when paused during a hold, once the hold ends', () => {
+    const autoplay = mockAutoplay()
+    const { container } = render(<WithToggle autoplay />)
+    fireEvent.pointerEnter(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+    fireEvent.click(toggle())
+    fireEvent.pointerLeave(root(container))
+    expect(autoplay.isPlaying()).toBe(false)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('keeps the pause when new options restart the plugin wiring', () => {
+    const autoplay = mockAutoplay()
+    const { rerender } = render(<WithToggle autoplay />)
+    fireEvent.click(toggle())
+    rerender(<WithToggle autoplay={{ resumeAfter: 500, pauseOnHover: false }} />)
+    expect(autoplay.isPlaying()).toBe(false)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('starts a fresh cycle on play, even while hovered', () => {
+    const autoplay = mockAutoplay()
+    const { container } = render(
+      <WithToggle autoplay>
+        <CycleProbe />
+      </WithToggle>,
+    )
+    fireEvent.click(toggle())
+    fireEvent.pointerEnter(root(container))
+    const cycle = Number(screen.getByTestId('cycle').textContent)
+    autoplay.play.mockClear()
+    fireEvent.click(toggle())
+    expect(autoplay.play).toHaveBeenCalledTimes(1)
+    expect(Number(screen.getByTestId('cycle').textContent)).toBe(cycle + 1)
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('toggles with Enter and Space', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    render(<WithToggle autoplay />)
+    await user.tab()
+    expect(toggle()).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+    expect(autoplay.isPlaying()).toBe(false)
+    await user.keyboard(' ')
+    expect(toggle()).toHaveAttribute('aria-pressed', 'false')
+    expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('reads a drag that stops autoplay for good as a pause', () => {
+    mockAutoplay()
+    render(<WithToggle autoplay />)
+    emit('pointerdown')
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('stays unpressed after a drag when autoplay keeps running through it', () => {
+    mockAutoplay({ defaultInteraction: false })
+    render(<WithToggle autoplay={{ defaultInteraction: false }} />)
+    emit('pointerdown')
+    expect(toggle()).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('clears the pause when the plugin is played directly', () => {
+    const autoplay = mockAutoplay()
+    render(<WithToggle autoplay />)
+    fireEvent.click(toggle())
+    act(() => autoplay.play())
+    expect(toggle()).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('drives Auto Scroll, and resumeAfter leaves its pause alone', () => {
+    const autoScroll = mockAutoScroll()
+    render(<WithToggle autoScroll={{ resumeAfter: 1000 }} />)
+    expect(autoScroll.isPlaying()).toBe(true)
+    fireEvent.click(toggle())
+    expect(autoScroll.isPlaying()).toBe(false)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    try {
+      emit('autoscroll:interaction', { detail: { interaction: 'pointerdown' } })
+      act(() => vi.advanceTimersByTime(1000))
+      expect(autoScroll.isPlaying()).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+
+    fireEvent.click(toggle())
+    expect(autoScroll.isPlaying()).toBe(true)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('gives a custom control the same paused, pause and play through useCarousel()', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    function Custom() {
+      const { paused, pause, play } = useCarousel()
+      return (
+        <button type="button" onClick={paused ? play : pause}>
+          {paused ? 'Resume' : 'Hold'}
+        </button>
+      )
+    }
+    render(
+      <Carousel autoplay={{ pauseOnHover: false }}>
+        <Custom />
+        <CarouselContent>
+          <CarouselSlide>Slide 1</CarouselSlide>
+          <CarouselSlide>Slide 2</CarouselSlide>
+        </CarouselContent>
+      </Carousel>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Hold' }))
+    expect(autoplay.isPlaying()).toBe(false)
+    await user.click(screen.getByRole('button', { name: 'Resume' }))
+    expect(autoplay.isPlaying()).toBe(true)
   })
 })
 
@@ -1162,6 +1547,26 @@ describe('a11y', () => {
       runOnly: ['landmark-unique', 'aria-allowed-role', 'aria-hidden-focus'],
     })
     expect(results).toHaveNoViolations()
+  })
+
+  it('has no accessibility violations with a play toggle, playing or paused', async () => {
+    mockAutoplay()
+    const { container } = render(
+      <Carousel autoplay aria-label="Featured">
+        <CarouselPlayToggle>
+          <svg aria-hidden="true" />
+        </CarouselPlayToggle>
+        <CarouselContent>
+          <CarouselSlide>Slide 1</CarouselSlide>
+          <CarouselSlide>Slide 2</CarouselSlide>
+        </CarouselContent>
+        <CarouselPrev />
+        <CarouselNext />
+      </Carousel>,
+    )
+    expect(await axe(container)).toHaveNoViolations()
+    fireEvent.click(screen.getByRole('button', { name: 'Pause slides' }))
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('has no accessibility violations with a thumbnail rail', async () => {

@@ -7,6 +7,19 @@ version alongside the package.
 
 The library follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.4.0 - 2026-11-01
+
+A play and pause control for Carousel, options to keep autoplay running under the pointer or focus, and a mouse click that no longer pauses it.
+
+### Added
+
+- **[CarouselPlayToggle](https://appica.dev/ui/components/react/carousel#play-and-pause)** - A play and pause button for Autoplay and Auto Scroll. Once paused, the carousel stays paused until it's pressed again. For a custom control, use `paused`, `pause()` and `play()` from `useCarousel()`.
+- **[Carousel autoplay pause options](https://appica.dev/ui/components/react/carousel#autoplay)** - `pauseOnHover` and `pauseOnFocus` turn off either pause, for a timer that is part of the design. A carousel without the pause needs a `CarouselPlayToggle`.
+
+### Fixed
+
+- **[Carousel autoplay focus pause](https://appica.dev/ui/components/react/carousel#accessibility)** - Only keyboard focus pauses autoplay. A mouse click on an arrow or a pagination dot leaves it running.
+
 ## 1.3.1 - 2026-11-01
 
 Accessibility fixes for Carousel and form fields, and a lighter carousel progress bar.

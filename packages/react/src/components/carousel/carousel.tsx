@@ -22,7 +22,19 @@ type CarouselApi = EmblaCarouselType
 type CarouselOptions = EmblaOptionsType
 type CarouselPlugin = EmblaPluginType
 
-type CarouselAutoplayOptions = AutoplayOptionsType & { resumeAfter?: number }
+type CarouselAutoplayOptions = AutoplayOptionsType & {
+  resumeAfter?: number
+  /**
+   * Pause while the pointer is over the carousel. Turn it off only beside a `CarouselPlayToggle`.
+   * @default true
+   */
+  pauseOnHover?: boolean
+  /**
+   * Pause while keyboard focus is inside the carousel. Turn it off only beside a `CarouselPlayToggle`.
+   * @default true
+   */
+  pauseOnFocus?: boolean
+}
 type CarouselAutoScrollOptions = AutoScrollOptionsType & { resumeAfter?: number }
 type CarouselAutoHeightOptions = AutoHeightOptionsType
 type CarouselFadeOptions = FadeOptionsType
@@ -52,12 +64,19 @@ interface CarouselContextValue {
   subscribeScrollProgress: (onChange: () => void) => () => void
   getScrollProgress: () => number
   autoplay: CarouselAutoplayState | null
+  /** Whether Autoplay or Auto Scroll stays stopped until `play()`: paused by the user, or stopped for good by a drag. */
+  paused: boolean
+  /** Stop Autoplay or Auto Scroll until `play()`. Hover, focus, `resumeAfter`, drags and the wheel don't restart it. */
+  pause: () => void
+  /** Restart Autoplay or Auto Scroll on a fresh timer, even while hovered or focused. */
+  play: () => void
   scrollPrev: () => void
   scrollNext: () => void
   scrollTo: (index: number) => void
 }
 
 const CarouselContext = React.createContext<CarouselContextValue | null>(null)
+const CarouselRotationContext = React.createContext(false)
 
 function useCarousel(): CarouselContextValue {
   const ctx = React.useContext(CarouselContext)
@@ -73,6 +92,11 @@ const CAROUSEL_ACCESSIBILITY_VIEWPORT: CarouselAccessibilityOptions = {
   carouselRole: '',
   carouselAriaLabel: '',
   carouselAriaRoleDescription: '',
+}
+
+// Browsers match :focus-visible for keyboard focus, not for focus from a mouse or touch press.
+function hasKeyboardFocus(node: EventTarget | null): boolean {
+  return node instanceof Element && node.matches(':focus-visible')
 }
 
 function getShownSlides(api: CarouselApi): Set<number> {
@@ -185,7 +209,7 @@ interface CarouselProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onS
   duration?: number
   /** Escape hatch: a raw Embla options object, merged last so it wins over the flat props. */
   options?: CarouselOptions
-  /** Enable the Autoplay plugin. It pauses while hovered or focused and stays off under reduced motion. `resumeAfter` (ms) restarts the timer after user interaction. */
+  /** Enable the Autoplay plugin. It pauses while hovered or while keyboard focus is inside, unless `pauseOnHover` or `pauseOnFocus` is `false`, and stays off under reduced motion. `resumeAfter` (ms) restarts the timer after user interaction. */
   autoplay?: boolean | CarouselAutoplayOptions
   /** Enable continuous Auto Scroll. Mutually exclusive with `autoplay`; paused under reduced motion. */
   autoScroll?: boolean | CarouselAutoScrollOptions
@@ -278,6 +302,8 @@ function Carousel({
     (typeof autoplay === 'object' && typeof autoplay.resumeAfter === 'number' && autoplay.resumeAfter) ||
     (typeof autoScroll === 'object' && typeof autoScroll.resumeAfter === 'number' && autoScroll.resumeAfter) ||
     0
+  const pauseOnHover = typeof autoplay !== 'object' || autoplay.pauseOnHover !== false
+  const pauseOnFocus = typeof autoplay !== 'object' || autoplay.pauseOnFocus !== false
 
   const plugins = React.useMemo<CarouselPlugin[]>(() => {
     const list: CarouselPlugin[] = []
@@ -289,7 +315,7 @@ function Carousel({
     }
     if (autoplay) {
       const opts = typeof autoplay === 'object' ? autoplay : undefined
-      const { resumeAfter, ...emblaOpts } = opts ?? {}
+      const { resumeAfter, pauseOnHover: _pauseOnHover, pauseOnFocus: _pauseOnFocus, ...emblaOpts } = opts ?? {}
       const autoResume = typeof resumeAfter === 'number' && resumeAfter > 0
       list.push(Autoplay(autoResume ? { ...emblaOpts, defaultInteraction: false } : emblaOpts))
     } else if (autoScroll && !reducedMotion) {
@@ -387,6 +413,21 @@ function Carousel({
     canScrollNext: false,
   })
   const [autoplayState, setAutoplayState] = React.useState<CarouselAutoplayState | null>(null)
+  const [paused, setPausedState] = React.useState(false)
+  const pausedRef = React.useRef(false)
+  const setPaused = React.useCallback((next: boolean) => {
+    pausedRef.current = next
+    setPausedState(next)
+  }, [])
+  const rotationRef = React.useRef<{ pause: () => void; play: () => void } | null>(null)
+  const pause = React.useCallback(() => {
+    setPaused(true)
+    rotationRef.current?.pause()
+  }, [setPaused])
+  const play = React.useCallback(() => {
+    setPaused(false)
+    rotationRef.current?.play()
+  }, [setPaused])
 
   const scrollProgressRef = React.useRef(0)
   const scrollListenersRef = React.useRef<Set<() => void>>(new Set())
@@ -464,12 +505,11 @@ function Carousel({
         resumeTimer = undefined
       }
     }
-    const scheduleResume = (play: () => void) => {
-      if (resumeAfter <= 0) return
+    const scheduleResume = (restart: () => void) => {
       clearResumeTimer()
       resumeTimer = setTimeout(() => {
         resumeTimer = undefined
-        play()
+        restart()
       }, resumeAfter)
     }
 
@@ -479,13 +519,23 @@ function Carousel({
     // Rotation that hover or focus stopped, owed a restart once both have left.
     let held = false
     const playAutoplay = () => {
+      if (pausedRef.current) return
       if (hovered || focused) held = true
       else emblaApi.plugins().autoplay?.play()
     }
     const interruptAutoplay = () => {
       held = false
       emblaApi.plugins().autoplay?.stop()
-      scheduleResume(playAutoplay)
+      if (resumeAfter > 0) scheduleResume(playAutoplay)
+      else setPaused(true)
+    }
+    const playAutoScroll = () => {
+      if (!pausedRef.current) emblaApi.plugins().autoScroll?.play()
+    }
+    const interruptAutoScroll = () => {
+      emblaApi.plugins().autoScroll?.stop()
+      if (resumeAfter > 0) scheduleResume(playAutoScroll)
+      else setPaused(true)
     }
 
     let cleanupAutoplay: (() => void) | undefined
@@ -500,14 +550,17 @@ function Carousel({
       const onPlay = () => {
         held = false
         clearResumeTimer()
+        if (pausedRef.current) setPaused(false)
         setAutoplayState((s) => (s ? { ...s, isPlaying: true } : s))
       }
       const onStop = () => setAutoplayState((s) => (s ? { ...s, isPlaying: false } : s))
       const onTimerSet = () => setAutoplayState((s) => (s ? { ...s, cycleId: s.cycleId + 1, isPlaying: true } : s))
       const onTimerStopped = () => setAutoplayState((s) => (s ? { ...s, isPlaying: false } : s))
       const resetOnSelect = () => autoplayPlugin.reset()
+      const stopsOnPress = autoplayPlugin.options.defaultInteraction !== false
       const onUserStop = () => {
         held = false
+        if (stopsOnPress && !reducedMotion) setPaused(true)
       }
       const onInteraction = (_api: CarouselApi, event: { detail: { interaction: string } }) => {
         if (event.detail.interaction === 'pointerdown' || event.detail.interaction === 'slidefocus') {
@@ -530,9 +583,10 @@ function Carousel({
         hovered = false
         release()
       }
-      const onFocusIn = () => {
-        focused = true
-        hold()
+      const onFocusIn = (event: FocusEvent) => {
+        focused = hasKeyboardFocus(event.target)
+        if (focused) hold()
+        else release()
       }
       const onFocusOut = (event: FocusEvent) => {
         if (event.relatedTarget instanceof Node && root?.contains(event.relatedTarget)) return
@@ -547,16 +601,32 @@ function Carousel({
       emblaApi.on('pointerdown', onUserStop)
       emblaApi.on('slidefocus', onUserStop)
       if (resumeAfter > 0) emblaApi.on('autoplay:interaction', onInteraction)
-      root?.addEventListener('pointerenter', onPointerEnter)
-      root?.addEventListener('pointerleave', onPointerLeave)
-      root?.addEventListener('focusin', onFocusIn)
-      root?.addEventListener('focusout', onFocusOut)
+      if (pauseOnHover) {
+        root?.addEventListener('pointerenter', onPointerEnter)
+        root?.addEventListener('pointerleave', onPointerLeave)
+      }
+      if (pauseOnFocus) {
+        root?.addEventListener('focusin', onFocusIn)
+        root?.addEventListener('focusout', onFocusOut)
+      }
       if (autoplayEnabled && !reducedMotion) {
-        hovered = !!root?.matches(':hover')
-        focused = !!root?.contains(document.activeElement)
+        hovered = pauseOnHover && !!root?.matches(':hover')
+        focused = pauseOnFocus && !!root?.contains(document.activeElement) && hasKeyboardFocus(document.activeElement)
         playAutoplay()
       } else {
         autoplayPlugin.stop()
+      }
+      rotationRef.current = {
+        pause: () => {
+          held = false
+          clearResumeTimer()
+          emblaApi.plugins().autoplay?.stop()
+        },
+        play: () => {
+          held = false
+          clearResumeTimer()
+          if (!reducedMotion) emblaApi.plugins().autoplay?.play()
+        },
       }
       cleanupAutoplay = () => {
         emblaApi.off('autoplay:play', onPlay)
@@ -578,16 +648,38 @@ function Carousel({
 
     let cleanupAutoScroll: (() => void) | undefined
     if (autoScrollPlugin && autoScrollEnabled && !autoplayEnabled) {
-      autoScrollPlugin.play()
+      playAutoScroll()
+      const onPlay = () => {
+        if (pausedRef.current) setPaused(false)
+      }
+      const stopsOnPress = autoScrollPlugin.options.defaultInteraction !== false
+      const onUserStop = () => {
+        if (stopsOnPress) setPaused(true)
+      }
       const onInteraction = (_api: CarouselApi, event: { detail: { interaction: string } }) => {
         if (event.detail.interaction === 'pointerdown' || event.detail.interaction === 'slidefocus') {
-          autoScrollPlugin.stop()
-          scheduleResume(() => emblaApi.plugins().autoScroll?.play())
+          interruptAutoScroll()
         }
       }
-      if (resumeAfter > 0) {
-        emblaApi.on('autoscroll:interaction', onInteraction)
-        cleanupAutoScroll = () => emblaApi.off('autoscroll:interaction', onInteraction)
+      emblaApi.on('autoscroll:play', onPlay)
+      emblaApi.on('pointerdown', onUserStop)
+      emblaApi.on('slidefocus', onUserStop)
+      if (resumeAfter > 0) emblaApi.on('autoscroll:interaction', onInteraction)
+      rotationRef.current = {
+        pause: () => {
+          clearResumeTimer()
+          emblaApi.plugins().autoScroll?.stop()
+        },
+        play: () => {
+          clearResumeTimer()
+          emblaApi.plugins().autoScroll?.play()
+        },
+      }
+      cleanupAutoScroll = () => {
+        emblaApi.off('autoscroll:play', onPlay)
+        emblaApi.off('pointerdown', onUserStop)
+        emblaApi.off('slidefocus', onUserStop)
+        if (resumeAfter > 0) emblaApi.off('autoscroll:interaction', onInteraction)
       }
     }
 
@@ -602,8 +694,7 @@ function Carousel({
         if (autoplayPlugin?.isPlaying() || held) {
           interruptAutoplay()
         } else if (autoScrollPlugin?.isPlaying()) {
-          autoScrollPlugin.stop()
-          scheduleResume(() => emblaApi.plugins().autoScroll?.play())
+          interruptAutoScroll()
         }
       }
       viewport.addEventListener('wheel', onWheel, { passive: true })
@@ -619,8 +710,18 @@ function Carousel({
       cleanupAutoScroll?.()
       cleanupWheel?.()
       clearResumeTimer()
+      rotationRef.current = null
     }
-  }, [emblaApi, autoplayEnabled, autoScrollEnabled, resumeAfterMs, reducedMotion])
+  }, [
+    emblaApi,
+    autoplayEnabled,
+    autoScrollEnabled,
+    resumeAfterMs,
+    reducedMotion,
+    pauseOnHover,
+    pauseOnFocus,
+    setPaused,
+  ])
 
   const scrollPrev = React.useCallback(() => emblaApi?.goToPrev(), [emblaApi])
   const scrollNext = React.useCallback(() => emblaApi?.goToNext(), [emblaApi])
@@ -644,6 +745,9 @@ function Carousel({
       subscribeScrollProgress,
       getScrollProgress,
       autoplay: autoplayState,
+      paused,
+      pause,
+      play,
       scrollPrev,
       scrollNext,
       scrollTo,
@@ -661,6 +765,9 @@ function Carousel({
       subscribeScrollProgress,
       getScrollProgress,
       autoplayState,
+      paused,
+      pause,
+      play,
       scrollPrev,
       scrollNext,
       scrollTo,
@@ -669,17 +776,19 @@ function Carousel({
 
   return (
     <CarouselContext.Provider value={contextValue}>
-      <div
-        data-slot="carousel"
-        data-orientation={orientation}
-        role={rootProps['aria-label'] || rootProps['aria-labelledby'] ? 'region' : 'group'}
-        aria-roledescription="carousel"
-        className={cn('relative', className)}
-        {...rootProps}
-        ref={composedRootRef}
-      >
-        {children}
-      </div>
+      <CarouselRotationContext.Provider value={autoplayEnabled || autoScrollEnabled}>
+        <div
+          data-slot="carousel"
+          data-orientation={orientation}
+          role={rootProps['aria-label'] || rootProps['aria-labelledby'] ? 'region' : 'group'}
+          aria-roledescription="carousel"
+          className={cn('relative', className)}
+          {...rootProps}
+          ref={composedRootRef}
+        >
+          {children}
+        </div>
+      </CarouselRotationContext.Provider>
     </CarouselContext.Provider>
   )
 }
@@ -1080,6 +1189,41 @@ function CarouselNext({ className, position = 'inside', disabled: disabledProp, 
   )
 }
 
+type CarouselPlayToggleState = { paused: boolean }
+
+type CarouselPlayToggleProps = useRender.ComponentProps<'button', CarouselPlayToggleState>
+
+function CarouselPlayToggle({ className, render, ...props }: CarouselPlayToggleProps) {
+  const { reducedMotion, paused, pause, play } = useCarousel()
+  const rotates = React.useContext(CarouselRotationContext)
+  const state: CarouselPlayToggleState = { paused }
+
+  const trigger = useRender({
+    defaultTagName: 'button',
+    render,
+    state,
+    props: mergeProps<'button'>(
+      {
+        type: 'button',
+        'data-slot': 'carousel-play-toggle',
+        'data-paused': paused || undefined,
+        'aria-pressed': paused,
+        'aria-label': 'Pause slides',
+        onClick: paused ? play : pause,
+      } as unknown as React.ButtonHTMLAttributes<HTMLButtonElement>,
+      props,
+    ),
+  })
+
+  if (!rotates || reducedMotion) return null
+
+  return (
+    <div data-slot="carousel-play-toggle-positioner" className={cn('motion-reduce:hidden', className)}>
+      {trigger}
+    </div>
+  )
+}
+
 interface CarouselPaginationProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
    * Lay the bullets out in a row or a column.
@@ -1429,6 +1573,7 @@ export {
   CarouselThumb,
   CarouselPrev,
   CarouselNext,
+  CarouselPlayToggle,
   CarouselPagination,
   CarouselProgress,
   useCarousel,
@@ -1442,6 +1587,7 @@ export type {
   CarouselThumbProps,
   CarouselPrevProps,
   CarouselNextProps,
+  CarouselPlayToggleProps,
   CarouselPaginationProps,
   CarouselProgressProps,
   CarouselApi,

@@ -38,6 +38,7 @@
   own `:has()` rules, each check restyles the whole page. Derive page state from the route or React state instead.
 - For a link styled as a button, put `buttonVariants(...)` on the `<a>` - never `<Button render={<a/>}>`.
 - Put `className` overrides on the wrapper component, not on the JSX passed to `render`.
+- A carousel with `pauseOnHover: false` or `pauseOnFocus: false` takes a `CarouselPlayToggle`.
 - Do not hand-roll a component that exists in the library. Check the component list first:
   https://appica.dev/ui/react/llms.txt
 - Every documentation page is served as clean markdown at `<url>.md` - fetch that, not the HTML.
