@@ -1,6 +1,6 @@
 {
   "name": "motion",
-  "description": "Production-ready setup for Motion (formerly Framer Motion) - the most popular React animation library with 30,200+ GitHub stars. Motion provides declarative animations, gesture controls, scroll-based effects, spring physics, layout animations, and SVG manipulation. This skill should be used when building UIs that need complex animations beyond simple list transitions: gesture controls (drag, hover, tap), scroll-linked animations, parallax effects, shared element transitions, SVG path morphing, s",
+  "description": "Build React animations with Motion (Framer Motion) - gestures (drag, hover, tap), scroll effects, spring physics, layout animations, SVG. Bundle: 2.3 KB (mini) to 34 KB (full). Use when: drag-and-drop, scroll animations, modals, carousels, parallax. Troubleshoot: AnimatePresence exit, list performance, Tailwind conflicts, Next.js use client.",
   "version": "1.0.0",
   "author": {
     "name": "Jeremy Dawes",

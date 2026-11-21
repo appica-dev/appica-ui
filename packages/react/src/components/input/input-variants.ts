@@ -24,7 +24,7 @@ const inputVariants = cva(
           'data-invalid:focus-visible:border-transparent data-invalid:focus-visible:ring-ring-error data-invalid:focus-visible:bg-background',
           'data-invalid:data-popup-open:border-transparent data-invalid:data-popup-open:ring-ring-error data-invalid:data-popup-open:bg-background',
           'data-invalid:data-pressed:border-transparent data-invalid:data-pressed:ring-ring-error data-invalid:data-pressed:bg-background',
-          'data-disabled:border-border-strong! data-disabled:bg-background-subtle! data-disabled:cursor-not-allowed data-disabled:border-dashed data-disabled:opacity-disabled',
+          'data-disabled:border-border-strong! data-disabled:bg-background-subtle! data-disabled:backdrop-blur-md data-disabled:cursor-not-allowed data-disabled:border-dashed data-disabled:opacity-disabled',
         ),
         within: cn(
           'flex items-center',
@@ -37,7 +37,7 @@ const inputVariants = cva(
           'has-data-invalid:bg-error-subtle has-data-invalid:border-error has-data-invalid:has-focus:border-transparent has-data-invalid:has-focus:ring-ring-error has-data-invalid:has-focus:bg-background',
           'has-data-invalid:has-data-popup-open:border-transparent has-data-invalid:has-data-popup-open:ring-ring-error has-data-invalid:has-data-popup-open:bg-background',
           'has-data-invalid:has-data-pressed:border-transparent has-data-invalid:has-data-pressed:ring-ring-error has-data-invalid:has-data-pressed:bg-background',
-          'has-[input:disabled]:border-border-strong! has-[input:disabled]:bg-background-subtle! has-[input:disabled]:cursor-not-allowed has-[input:disabled]:border-dashed has-[input:disabled]:opacity-disabled',
+          'has-[input:disabled]:border-border-strong! has-[input:disabled]:bg-background-subtle! has-[input:disabled]:backdrop-blur-md has-[input:disabled]:cursor-not-allowed has-[input:disabled]:border-dashed has-[input:disabled]:opacity-disabled',
         ),
       },
     },

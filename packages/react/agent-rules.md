@@ -7,11 +7,14 @@
   contributor guide, written for someone editing this library. This file must
   never tell a reader to modify the library.
 
-  Two consumers read this text, and neither should ever restate it:
+  Three consumers read this text, and none should ever restate it:
     - the docs site, which inlines it into https://appica.dev/ui/react/llms.txt and into
       the "Set up your coding agent" page (it reads this file out of
       node_modules at build time);
-    - README.md's "For AI agents" section, which links here.
+    - README.md's "For AI agents" section, which links here;
+    - the agent skill, whose SKILL.md carries a generated copy between its
+      agent-rules markers (`pnpm sync:skill` at the repo root writes it, and
+      `pnpm release` fails while it is stale).
 
   Three copies of the `@source` instruction is exactly how that directive ended
   up contradicting itself in three places. Keep one copy: this one.
@@ -31,6 +34,9 @@
 - Never write hex colors, px radii, or duration literals. Use the role-based tokens:
   `bg-background-muted`, `text-foreground-intense`, `border-border-strong`, `var(--radius-md)`.
   Full list: https://appica.dev/ui/docs/react/colors.md
+- `bg-background-soft` is translucent in light and dark mode, and `bg-background-subtle` in dark mode. Where content
+  shows through either, pair it with a `backdrop-blur-*` on the same element and state. Where it must hide what's
+  behind, use an opaque token (`bg-background`, `bg-background-muted`).
 - Never write hue-based utilities (`bg-gray-100`, `text-slate-600`). The palette is organized by
   role, not hue.
 - Prefer v4 variant syntax (`*:`, `**:`, `data-*:`, `not-*:`) over `[&_...]` arbitrary selectors.

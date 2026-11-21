@@ -608,7 +608,7 @@ function UnifiedWrapper({
       className={cn(
         inputVariants({ variant, size, state: 'within' }),
         'flex w-full',
-        'data-disabled:border-border-strong! data-disabled:bg-background-subtle! data-disabled:opacity-disabled data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-dashed',
+        'data-disabled:border-border-strong! data-disabled:bg-background-subtle! data-disabled:opacity-disabled data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:border-dashed data-disabled:backdrop-blur-md',
         className,
       )}
     >

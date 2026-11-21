@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue)](https://www.typescriptlang.org/)
 [![Figma](https://img.shields.io/badge/Figma-design_file-F24E1E?logo=figma&logoColor=white)](https://www.figma.com/community/file/1657080448204231925)
 
-A modern React component library - 70+ accessible, themeable components built on [Base UI](https://base-ui.com) primitives, animated with [Motion](https://motion.dev), and styled with Tailwind CSS v4 design tokens.
+A modern React component library - 75+ accessible, themeable components built on [Base UI](https://base-ui.com) primitives, animated with [Motion](https://motion.dev), and styled with Tailwind CSS v4 design tokens.
 
 **[Documentation](https://appica.dev/ui) · [Installation guide](https://appica.dev/ui/docs/react/installation) · [Components](https://appica.dev/ui/components/react/button)**
 
@@ -112,7 +112,13 @@ If you are a coding agent reading this from `node_modules`, the rules for writin
 
 Every documentation page is served as clean markdown at `<url>.md` - fetch `https://appica.dev/ui/components/react/button.md`, not the HTML page. The full index, with an instruction block, is at [`https://appica.dev/ui/react/llms.txt`](https://appica.dev/ui/react/llms.txt).
 
-If you are a human setting up a project: paste those rules into your own `AGENTS.md` so your agent loads them every session. See [Set up your coding agent](https://appica.dev/ui/docs/react/agents) for a copy-paste block.
+If you are a human setting up a project: paste those rules into your own `AGENTS.md` so your agent loads them every session, or, with Claude Code, import them from your `CLAUDE.md` with `@node_modules/@appica/ui-react/agent-rules.md` so they follow your installed version. See [Set up your coding agent](https://appica.dev/ui/docs/react/agents) for a copy-paste block.
+
+For the part a task needs, add the [agent skill](https://appica.dev/ui/docs/react/skill): a component catalog, composition and theming guides, and a script that checks the setup and the code your agent wrote.
+
+```bash
+npx skills add appica-dev/appica-ui --skill appica-ui-react
+```
 
 ## Changelog
 

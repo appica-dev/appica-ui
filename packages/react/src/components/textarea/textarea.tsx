@@ -115,7 +115,7 @@ function Textarea({
         'h-(--textarea-h) resize-y items-start overflow-hidden',
         sizeMinHeight[inputSize],
         sizePaddingY[inputSize],
-        'has-[textarea:disabled]:border-border-strong! has-[textarea:disabled]:bg-background-subtle! has-[textarea:disabled]:opacity-disabled has-[textarea:disabled]:cursor-not-allowed has-[textarea:disabled]:border-dashed',
+        'has-[textarea:disabled]:border-border-strong! has-[textarea:disabled]:bg-background-subtle! has-[textarea:disabled]:opacity-disabled has-[textarea:disabled]:cursor-not-allowed has-[textarea:disabled]:border-dashed has-[textarea:disabled]:backdrop-blur-md',
         className,
       )}
     >

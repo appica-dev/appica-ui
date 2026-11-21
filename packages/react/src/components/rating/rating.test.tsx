@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import { DirectionProvider } from '../../providers/direction-provider'
+import { cssValue } from '../../test/css'
 import { Rating } from './rating'
 
 describe('Rating', () => {
@@ -114,7 +115,9 @@ describe('Rating', () => {
     const clips = [...container.querySelectorAll<HTMLElement>('[data-slot=rating-item-fill]')].map(
       (el) => el.style.clipPath,
     )
-    expect(clips).toEqual(['inset(0 0 0% 0)', 'inset(0 0 0% 0)', 'inset(0 0 100% 0)'])
+    expect(clips).toEqual(
+      ['inset(0 0 0% 0)', 'inset(0 0 0% 0)', 'inset(0 0 100% 0)'].map((v) => cssValue('clip-path', v)),
+    )
 
     vi.spyOn(root, 'getBoundingClientRect').mockReturnValue({ top: 0, height: 300 } as DOMRect)
     fireEvent.pointerMove(root, { clientY: 250 })
@@ -181,7 +184,9 @@ describe('Rating', () => {
       const clips = [...container.querySelectorAll<HTMLElement>('[data-slot=rating-item-fill]')].map(
         (el) => el.style.clipPath,
       )
-      expect(clips).toEqual(['inset(0 0% 0 0)', 'inset(0 0% 0 0)', 'inset(0 100% 0 0)'])
+      expect(clips).toEqual(
+        ['inset(0 0% 0 0)', 'inset(0 0% 0 0)', 'inset(0 100% 0 0)'].map((v) => cssValue('clip-path', v)),
+      )
     })
   })
 
@@ -215,7 +220,9 @@ describe('Rating', () => {
     const clips = [...container.querySelectorAll<HTMLElement>('[data-slot=rating-item-fill]')].map(
       (el) => el.style.clipPath,
     )
-    expect(clips).toEqual(['inset(0 0% 0 0)', 'inset(0 0% 0 0)', 'inset(0 60% 0 0)'])
+    expect(clips).toEqual(
+      ['inset(0 0% 0 0)', 'inset(0 0% 0 0)', 'inset(0 60% 0 0)'].map((v) => cssValue('clip-path', v)),
+    )
   })
 
   it('sizes the icons from a number of pixels or any CSS length', () => {

@@ -1,15 +1,12 @@
 ---
 name: motion
 description: |
-  Production-ready setup for Motion (formerly Framer Motion) - the most popular React animation library with 30,200+ GitHub stars. Motion provides declarative animations, gesture controls, scroll-based effects, spring physics, layout animations, and SVG manipulation.
+  Build React animations with Motion (Framer Motion) - gestures (drag, hover, tap), scroll effects, spring physics, layout animations, SVG. Bundle: 2.3 KB (mini) to 34 KB (full).
 
-  This skill should be used when building UIs that need complex animations beyond simple list transitions: gesture controls (drag, hover, tap), scroll-linked animations, parallax effects, shared element transitions, SVG path morphing, spring physics, or orchestrated animation sequences.
-
-  Use when: Adding drag-and-drop interactions, creating scroll-triggered animations, implementing modal dialogs with sophisticated transitions, building carousels with momentum, animating page/route transitions, creating hero sections with parallax, implementing accordion components with smooth expand/collapse, or optimizing animation bundle size with LazyMotion.
-
-  **Important**: For simple list add/remove/sort animations, use the `auto-animate` skill instead (3.28 KB vs 34 KB bundle). Motion is designed for complex interactive animations that require fine-grained control.
-
-license: MIT
+  Use when: drag-and-drop, scroll animations, modals, carousels, parallax. Troubleshoot: AnimatePresence exit, list performance, Tailwind conflicts, Next.js "use client".
+user-invocable: true
+metadata:
+  internal: true
 ---
 
 # Motion Animation Library
@@ -27,7 +24,7 @@ Motion (package: `motion`, formerly `framer-motion`) is the industry-standard Re
 - **Exit Animations**: AnimatePresence for unmounting transitions
 - **Performance**: Hardware-accelerated, ScrollTimeline API, bundle optimization (2.3 KB - 34 KB)
 
-**Production Tested**: React 19, Next.js 16, Vite 7, Tailwind v4
+**Production Tested**: React 19.2, Next.js 16.1, Vite 7.3, Tailwind v4
 
 ---
 
@@ -103,7 +100,7 @@ npm install motion
 yarn add motion
 ```
 
-**Current Version**: 12.23.24 (verified 2025-11-09)
+**Current Version**: 12.27.5 (verified 2026-01-21)
 
 **Note for Cloudflare Workers**:
 ```bash
@@ -127,78 +124,7 @@ pnpm add framer-motion  # Same version, same API
 
 ## Core Concepts
 
-### 1. The `motion` Component
-
-Transform any HTML/SVG element into an animatable component:
-
-```tsx
-import { motion } from "motion/react"
-
-// Basic animation
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5 }}
->
-  Content fades in and slides up
-</motion.div>
-
-// Gesture controls
-<motion.button
-  whileHover={{ scale: 1.1 }}
-  whileTap={{ scale: 0.95 }}
->
-  Click me
-</motion.button>
-```
-
-**Props:**
-- `initial`: Starting state (object or variant name)
-- `animate`: Target state (object or variant name)
-- `exit`: Unmounting state (requires AnimatePresence)
-- `transition`: Timing/easing configuration
-- `whileHover`, `whileTap`, `whileFocus`: Gesture states
-- `whileInView`: Viewport-triggered animation
-- `drag`: Enable dragging ("x", "y", or true for both)
-- `layout`: Enable FLIP layout animations
-
-### 2. Variants (Animation Orchestration)
-
-Named animation states that propagate through component tree:
-
-```tsx
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1, // Delay between each child
-      delayChildren: 0.2,   // Initial delay before children
-    }
-  }
-}
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-}
-
-<motion.ul variants={container} initial="hidden" animate="show">
-  {items.map(item => (
-    <motion.li key={item.id} variants={item}>
-      {item.text}
-    </motion.li>
-  ))}
-</motion.ul>
-```
-
-**Benefits:**
-- Clean, declarative API
-- Automatic choreography (stagger, delay, sequence)
-- Reusable animation states
-- Reduced prop drilling
-
-### 3. AnimatePresence (Exit Animations)
+### 1. AnimatePresence (Exit Animations)
 
 Enables animations when components unmount:
 
@@ -239,9 +165,13 @@ import { AnimatePresence } from "motion/react"
 </AnimatePresence>
 ```
 
-### 4. Layout Animations (FLIP)
+### 2. Layout Animations
 
-Automatically animate layout changes:
+**Special Props:**
+- `layout`: Enable FLIP layout animations
+- `layoutId`: Connect separate elements for shared transitions
+- `layoutScroll`: Fix animations in scrollable containers (see Issue #5)
+- `layoutRoot`: Fix animations in fixed-position elements (see Issue #7)
 
 ```tsx
 <motion.div layout>
@@ -249,18 +179,7 @@ Automatically animate layout changes:
 </motion.div>
 ```
 
-**How it works:**
-- Calculates **F**irst position before change
-- Applies change immediately (**L**ast position)
-- **I**nverts transform to match first position
-- **P**lays animation to last position
-
-**Special Props:**
-- `layoutId`: Connect separate elements for shared transitions
-- `layoutScroll`: Fix animations in scrollable containers
-- `layoutRoot`: Fix animations in fixed-position elements
-
-### 5. Scroll Animations
+### 3. Scroll Animations
 
 #### Viewport-Triggered (whileInView)
 ```tsx
@@ -287,83 +206,17 @@ const y = useTransform(scrollYProgress, [0, 1], [0, -300])
 
 **Performance**: Uses native ScrollTimeline API when available for hardware acceleration.
 
-### 6. Gestures
-
-```tsx
-<motion.div
-  drag="x"
-  dragConstraints={{ left: -200, right: 200 }}
-  dragElastic={0.2}
-  dragMomentum={false}
-  onDragEnd={(event, info) => console.log(info.offset.x)}
->
-  Drag me horizontally
-</motion.div>
-```
-
-**Available Gestures:**
-- `whileHover`: Mouse enter/leave (fixes sticky :hover on touch)
-- `whileTap`: Pointer down (works on touch and mouse)
-- `whileFocus`: Keyboard focus
-- `whileDrag`: While dragging
-- `whileInView`: While in viewport
-- `drag`: Enable dragging with constraints and momentum
-
-### 7. Spring Physics
-
-Natural, physics-based easing:
-
-```tsx
-<motion.div
-  animate={{ x: 100 }}
-  transition={{
-    type: "spring",
-    stiffness: 100,  // Higher = more sudden
-    damping: 10,     // Higher = less oscillation (0 = infinite)
-    mass: 1,         // Higher = more lethargic
-  }}
-/>
-```
-
-**Presets:**
-- Default: `{ stiffness: 100, damping: 10 }`
-- Bouncy: `{ stiffness: 300, damping: 10 }`
-- Smooth: `{ stiffness: 100, damping: 20 }`
-
 ---
 
 ## Integration Guides
 
 ### Vite + React + TypeScript
 
-**Installation:**
 ```bash
-pnpm create vite my-app --template react-ts
-cd my-app
 pnpm add motion
 ```
 
-**Import:**
-```tsx
-import { motion } from "motion/react"
-```
-
-**Example Component:**
-```tsx
-import { motion } from "motion/react"
-
-export function AnimatedButton() {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-blue-600 text-white rounded"
-    >
-      Hover and click me
-    </motion.button>
-  )
-}
-```
+Import: `import { motion } from "motion/react"`
 
 **No Vite configuration needed** - works out of the box.
 
@@ -412,10 +265,11 @@ export function AnimatedCard() {
 }
 ```
 
-**Known Issues (Next.js 15 + React 19)**:
-- Most compatibility issues marked COMPLETED (update to latest)
+**Known Issues (Next.js 15+ + React 19)**:
+- React 19 fully supported as of December 2025 (see Issue #11 for one StrictMode edge case)
+- Most compatibility issues resolved in Motion 12.27.5
 - AnimatePresence may fail with soft navigation
-- Reorder component incompatible with Next.js routing
+- Reorder component incompatible with Next.js routing and page-level scrolling (see Issue #10)
 
 ### Next.js Pages Router
 
@@ -580,13 +434,6 @@ Automatically animates layout changes without JavaScript calculation:
 
 ### Respect `prefers-reduced-motion`
 
-**User Settings Locations:**
-- macOS: System Settings → Accessibility → Display → Reduce motion
-- Windows: Settings → Ease of Access → Display → Show animations
-- iOS: Settings → Accessibility → Motion
-- Android 9+: Settings → Accessibility → Remove animations
-
-**Implementation:**
 ```tsx
 import { MotionConfig } from "motion/react"
 
@@ -595,188 +442,25 @@ import { MotionConfig } from "motion/react"
 </MotionConfig>
 ```
 
-**What it does:**
-- When user enables reduced motion, Motion uses instant transitions
-- `reducedMotion` value is `"user"` (respects OS setting)
-- Can override with `"always"` (force instant) or `"never"` (ignore setting)
+**Options:**
+- `"user"`: Respects OS setting (recommended)
+- `"always"`: Force instant transitions
+- `"never"`: Ignore user preference
 
-**Note**: The `reducedMotion` setting now works correctly with AnimatePresence (GitHub issue #1567 fixed in Jan 2023). If you need fine-grained control, you can still manually check the user preference:
-
-```tsx
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-<AnimatePresence>
-  {isVisible && (
-    <motion.div
-      initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: prefersReducedMotion ? 1 : 0 }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
-    >
-      Content
-    </motion.div>
-  )}
-</AnimatePresence>
-```
-
-### Keyboard Support
-
-Motion gestures work with keyboard:
-```tsx
-<motion.button
-  whileFocus={{ scale: 1.1 }}
-  whileTap={{ scale: 0.95 }}
-  tabIndex={0}
->
-  Keyboard accessible
-</motion.button>
-```
-
-**Focus states:**
-- `whileFocus`: Triggered by Tab key or programmatic focus
-- Works with screen readers
-- Respects browser focus ring
+**Note**: ✅ Fixed in Jan 2023 (GitHub #1567) - MotionConfig now works correctly with AnimatePresence.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Modal Dialog
+**5 Production-Ready Patterns:**
+1. **Modal Dialog** - AnimatePresence with backdrop + dialog exit animations
+2. **Accordion** - Animate height with `height: "auto"`
+3. **Drag Carousel** - `drag="x"` with `dragConstraints`
+4. **Scroll Reveal** - `whileInView` with viewport margin
+5. **Parallax Hero** - `useScroll` + `useTransform` for layered effects
 
-```tsx
-import { motion, AnimatePresence } from "motion/react"
-
-function Modal({ isOpen, onClose, children }) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
-          />
-
-          {/* Dialog */}
-          <motion.dialog
-            key="dialog"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-0 m-auto w-96 h-64 bg-white rounded-lg shadow-xl z-50"
-          >
-            {children}
-          </motion.dialog>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-```
-
-### Pattern 2: Accordion
-
-```tsx
-import { motion } from "motion/react"
-import { useState } from "react"
-
-function Accordion({ title, children }) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  return (
-    <div>
-      <button onClick={() => setIsOpen(!isOpen)}>{title}</button>
-      <motion.div
-        initial={false}
-        animate={{ height: isOpen ? "auto" : 0 }}
-        style={{ overflow: "hidden" }}
-      >
-        <div className="p-4">{children}</div>
-      </motion.div>
-    </div>
-  )
-}
-```
-
-### Pattern 3: Drag-and-Drop Carousel
-
-```tsx
-import { motion } from "motion/react"
-import { useRef } from "react"
-
-function Carousel({ images }) {
-  const constraintsRef = useRef(null)
-
-  return (
-    <div ref={constraintsRef} className="overflow-hidden">
-      <motion.div
-        drag="x"
-        dragConstraints={constraintsRef}
-        dragElastic={0.1}
-        className="flex gap-4"
-      >
-        {images.map(img => (
-          <motion.img
-            key={img.id}
-            src={img.url}
-            className="w-64 h-64 object-cover rounded-lg"
-            whileHover={{ scale: 1.05 }}
-          />
-        ))}
-      </motion.div>
-    </div>
-  )
-}
-```
-
-### Pattern 4: Scroll-Triggered Reveal
-
-```tsx
-import { motion } from "motion/react"
-
-function FadeInSection({ children }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.5 }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-```
-
-### Pattern 5: Parallax Hero
-
-```tsx
-import { useScroll, useTransform, motion } from "motion/react"
-
-function ParallaxHero() {
-  const { scrollYProgress } = useScroll()
-
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -300])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -150])
-
-  return (
-    <div className="relative h-screen overflow-hidden">
-      <motion.div style={{ y: y1 }} className="absolute inset-0">
-        <img src="/background.jpg" className="w-full h-full object-cover" />
-      </motion.div>
-      <motion.div style={{ y: y2 }} className="relative z-10">
-        <h1>Hero Title</h1>
-      </motion.div>
-    </div>
-  )
-}
-```
-
-See `references/common-patterns.md` for 10+ more patterns with full code.
+See `references/common-patterns.md` for full code (15+ patterns).
 
 ---
 
@@ -784,23 +468,50 @@ See `references/common-patterns.md` for 10+ more patterns with full code.
 
 ### Issue 1: AnimatePresence Exit Not Working
 
-**Symptom**: Components disappear instantly without exit animation.
+**Error**: Exit animations don't play, components disappear instantly
+**Source**: [GitHub Issue #3078](https://github.com/motiondivision/motion/issues/3078)
 
-**Cause**: AnimatePresence wrapped in conditional or missing `key` props.
+**Why It Happens**: AnimatePresence wrapped in conditional or missing `key` props. Defining `exit` props on staggered children inside modals can also prevent modal from unmounting (backdrop remains visible).
 
 **Solution**:
 ```tsx
-// ❌ Wrong
+// ❌ Wrong - AnimatePresence wrapped in conditional
 {isVisible && (
   <AnimatePresence>
     <motion.div>Content</motion.div>
   </AnimatePresence>
 )}
 
-// ✅ Correct
+// ✅ Correct - AnimatePresence stays mounted
 <AnimatePresence>
   {isVisible && <motion.div key="unique">Content</motion.div>}
 </AnimatePresence>
+
+// ❌ Wrong - Staggered children with exit prevent modal removal
+<AnimatePresence>
+  {isOpen && (
+    <Modal>
+      <motion.ul>
+        {items.map(item => (
+          <motion.li
+            key={item.id}
+            exit={{ opacity: 1, scale: 1 }}  // ← Prevents modal unmount
+          >
+            {item.content}
+          </motion.li>
+        ))}
+      </motion.ul>
+    </Modal>
+  )}
+</AnimatePresence>
+
+// ✅ Fix for modal - Remove exit from children or set duration: 0
+<motion.li
+  key={item.id}
+  exit={{ opacity: 0, scale: 0.5, transition: { duration: 0 } }}
+>
+  {item.content}
+</motion.li>
 ```
 
 ### Issue 2: Large List Performance
@@ -918,15 +629,113 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 
 GitHub issue: #1567 (closed as completed Jan 13, 2023)
 
-### Issue 10: Reorder Component in Next.js
+### Issue 10: Reorder Component Limitations
 
-**Symptom**: Reorder component doesn't work with Next.js routing, random stuck states.
+**Error**: Reorder auto-scroll fails, doesn't work with Next.js routing
+**Source**: [GitHub Issue #3469](https://github.com/motiondivision/motion/issues/3469), #2183, #2101
 
-**Solution**: Use alternative drag-to-reorder implementations or avoid Reorder in Next.js.
+**Why It Happens**:
+- **Page-level scrolling**: Reorder auto-scroll only works when `Reorder.Group` is inside element with `overflow: auto/scroll`, NOT when document itself is scrollable
+- **Next.js routing**: Incompatible with Next.js routing system, causes random stuck states
 
-GitHub issues: #2183, #2101
+**Prevention**:
+```tsx
+// ❌ Wrong - Page-level scrolling (auto-scroll fails)
+<body style={{ height: "200vh" }}>
+  <Reorder.Group values={items} onReorder={setItems}>
+    {/* Auto-scroll doesn't trigger at viewport edges */}
+  </Reorder.Group>
+</body>
+
+// ✅ Correct - Container with overflow
+<div style={{ height: "300px", overflow: "auto" }}>
+  <Reorder.Group values={items} onReorder={setItems}>
+    {items.map(item => (
+      <Reorder.Item key={item.id} value={item}>
+        {item.content}
+      </Reorder.Item>
+    ))}
+  </Reorder.Group>
+</div>
+
+// ✅ Alternative - Use DnD Kit for complex cases
+// Motion docs officially recommend DnD Kit for:
+// - Multi-row reordering
+// - Dragging between columns
+// - Page-level scrollable containers
+// - Complex drag-and-drop interactions
+
+// Install: pnpm add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
+```
 
 See `references/nextjs-integration.md` for full Next.js troubleshooting guide.
+
+### Issue 11: React 19 StrictMode Drag Bug
+
+**Error**: Drag gestures break when dragging from top to bottom in file trees
+**Source**: [GitHub Issue #3169](https://github.com/motiondivision/motion/issues/3169)
+
+**Why It Happens**: Only occurs with React 19 + StrictMode enabled + Ant Design components. Dragged element position breaks and appears offset. Does NOT occur in React 18 or React 19 without StrictMode. Only affects top-to-bottom drag (bottom-to-top works fine).
+
+**Prevention**: Temporarily disable StrictMode for React 19 projects using drag gestures, or use React 18 if StrictMode is critical. Awaiting official fix from Motion team.
+
+### Issue 12: Layout Animations in Scaled Containers
+
+**Error**: Layout animations start from incorrect positions in scaled parent containers
+**Source**: [GitHub Issue #3356](https://github.com/motiondivision/motion/issues/3356)
+
+**Why It Happens**: Layout animation system uses scaled coordinates as if they were unscaled. Motion's layout animations work in pixels, while parent scale affects visual coordinates. The mismatch causes position calculation errors.
+
+**Prevention (Community Workaround)**:
+```tsx
+// Use transformTemplate to correct for parent scale
+const scale = 2; // Parent's transform scale value
+
+<div style={{ transform: `scale(${scale})` }}>
+  <motion.div
+    layout
+    transformTemplate={(latest, generated) => {
+      const match = /translate3d\((.+)px,\s?(.+)px,\s?(.+)px\)/.exec(generated);
+      if (match) {
+        const [, x, y, z] = match;
+        return `translate3d(${Number(x) / scale}px, ${Number(y) / scale}px, ${Number(z) / scale}px)`;
+      }
+      return generated;
+    }}
+  >
+    Content
+  </motion.div>
+</div>
+```
+
+**Limitations**: Only works for layout animations only, doesn't fix other transforms, requires knowing parent scale value.
+
+### Issue 13: AnimatePresence Exit Gets Stuck on Unmount
+
+**Error**: Exit state stuck when child unmounts during exit animation
+**Source**: [GitHub Issue #3243](https://github.com/motiondivision/motion/issues/3243)
+
+**Why It Happens**: When child component inside AnimatePresence unmounts immediately after exit animation triggers, exit state gets stuck. Component incorrectly remains in "exit" state.
+
+**Prevention**: Don't unmount motion components while AnimatePresence is handling their exit. Ensure motion.div stays mounted until exit completes. Use conditional rendering only on parent AnimatePresence children.
+
+### Issue 14: Percentage Values Break Layout Animations in Flex Containers
+
+**Error**: Layout animations teleport instantly instead of animating smoothly
+**Source**: [GitHub Issue #3401](https://github.com/motiondivision/motion/issues/3401)
+
+**Why It Happens**: Using percentage-based x values in initial prop breaks layout animations when container uses display flex with justify-content center. Motion's layout animations work in pixels, while CSS percentage transforms are resolved relative to element/parent. The coordinate system mismatch causes position recalculation mid-frame.
+
+**Prevention**: Convert percentage to pixels before animation. Calculate container width and use pixel values instead of percentage strings.
+
+### Issue 15: Sub-Pixel Precision Loss in popLayout Mode
+
+**Error**: 1px layout shift just before exit transition starts
+**Source**: [GitHub Issue #3260](https://github.com/motiondivision/motion/issues/3260)
+
+**Why It Happens**: When using AnimatePresence with mode popLayout, exiting element dimensions are captured and reapplied as inline styles. Sub-pixel values from getBoundingClientRect are rounded to nearest integer, causing visible layout shift. Can cause text wrapping changes.
+
+**Prevention**: Use whole pixel values only for dimensions, or avoid popLayout for sub-pixel-sensitive layouts. No perfect workaround exists.
 
 ---
 
@@ -1016,19 +825,19 @@ See `references/motion-vs-auto-animate.md` for detailed comparison.
 | **With This Skill** | ~5,000 | 0 ✅ | ~20-30 min |
 | **Savings** | **~83%** | **100%** | **~85%** |
 
-**Errors Prevented**: 29+ documented errors = 100% prevention rate
+**Errors Prevented**: 35 documented errors = 100% prevention rate
 
 ---
 
-## Package Versions (Verified 2025-11-09)
+## Package Versions (Verified 2026-01-21)
 
 | Package | Version | Status |
 |---------|---------|--------|
-| motion | 12.23.24 | ✅ Latest stable |
-| framer-motion | 12.23.24 | ✅ Same version as motion |
-| react | 19.2.0 | ✅ Latest stable |
-| next | 16.0.1 | ✅ Latest stable |
-| vite | 7.2.2 | ✅ Latest stable |
+| motion | 12.27.5 | ✅ Latest stable |
+| framer-motion | 12.27.5 | ✅ Same version as motion |
+| react | 19.2.3 | ✅ Latest stable |
+| next | 16.1.1 | ✅ Latest stable |
+| vite | 7.3.1 | ✅ Latest stable |
 
 ---
 
@@ -1040,9 +849,9 @@ Found an issue or have a suggestion?
 
 ---
 
-**Production Tested**: ✅ React 19 + Next.js 16 + Vite 7 + Tailwind v4
+**Production Tested**: ✅ React 19.2 + Next.js 16.1 + Vite 7.3 + Tailwind v4
 **Token Savings**: ~83%
-**Error Prevention**: 100% (29+ documented errors prevented)
+**Error Prevention**: 100% (35 documented errors prevented)
 **Bundle Size**: 2.3 KB (mini) - 34 KB (full), optimizable to 4.6 KB with LazyMotion
 **Accessibility**: MotionConfig reducedMotion support
-**Ready to use!** Install with `./scripts/install-skill.sh motion`
+**Last verified**: 2026-01-21 | **Skill version**: 3.1.0 | **Changes**: Added 5 new React 19/layout animation issues, updated to Motion 12.27.5

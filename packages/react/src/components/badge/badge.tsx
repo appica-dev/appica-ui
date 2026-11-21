@@ -54,7 +54,7 @@ const badgeVariants = cva(
         ),
         outline: cn(
           backgroundLayer,
-          'bg-background text-foreground-intense before:bg-background before:border-border before:border outline-ring',
+          'bg-background text-foreground-intense before:bg-background before:border-border before:border before:backdrop-blur-md outline-ring',
           'data-[slot=breadcrumb-link]:not-data-active:text-foreground-muted data-[slot=breadcrumb-link]:hover:text-foreground-intense',
           '[a,button]:hover:before:bg-background-subtle [a,button]:hover:before:border-border-strong',
           '[a,button]:data-pressed:before:bg-background-subtle [a,button]:data-pressed:before:border-border-strong',

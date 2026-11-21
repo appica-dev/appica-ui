@@ -170,6 +170,21 @@ describe('Toc', () => {
     expect(list.style.getPropertyValue('--toc-indicator-height')).toBe('56px')
   })
 
+  it('tracks the same links with highlight on, without passing the prop to the DOM', async () => {
+    const { container } = renderToc({ highlight: true })
+    const links = screen.getAllByRole('link')
+    Object.defineProperty(links[0], 'offsetTop', { value: 8 })
+    Object.defineProperty(links[0], 'offsetHeight', { value: 24 })
+
+    lastObserver().trigger([entry('intro', true)])
+
+    expect(screen.getByRole('navigation')).not.toHaveAttribute('highlight')
+    expect(links[0]).toHaveAttribute('data-active')
+    expect(links[0]).toHaveAttribute('aria-current', 'location')
+    expect(screen.getByRole('list').style.getPropertyValue('--toc-indicator-height')).toBe('24px')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('supports the render prop on TocLink', () => {
     render(
       <>

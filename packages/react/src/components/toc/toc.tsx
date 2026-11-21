@@ -8,6 +8,7 @@ import { cn } from '../../internal/utils'
 type TocContextValue = {
   activeIds: readonly string[]
   currentId: string | null
+  highlight: boolean
   register: (id: string, element: HTMLElement) => () => void
   getLinkElement: (id: string) => HTMLElement | undefined
 }
@@ -47,9 +48,14 @@ interface TocProps extends React.ComponentPropsWithoutRef<'nav'> {
    * @default '0px'
    */
   rootMargin?: string
+  /**
+   * Tints the area behind the active links, with the indicator line along its edge.
+   * @default false
+   */
+  highlight?: boolean
 }
 
-function Toc({ className, rootMargin = '0px', ...props }: TocProps) {
+function Toc({ className, rootMargin = '0px', highlight = false, ...props }: TocProps) {
   const [ids, setIds] = React.useState<readonly string[]>([])
   const [activeIds, setActiveIds] = React.useState<readonly string[]>([])
   const linkElementsRef = React.useRef(new Map<string, HTMLElement>())
@@ -95,8 +101,8 @@ function Toc({ className, rootMargin = '0px', ...props }: TocProps) {
   }, [ids, rootMargin])
 
   const ctx = React.useMemo<TocContextValue>(
-    () => ({ activeIds, currentId: activeIds[0] ?? null, register, getLinkElement }),
-    [activeIds, register, getLinkElement],
+    () => ({ activeIds, currentId: activeIds[0] ?? null, highlight, register, getLinkElement }),
+    [activeIds, highlight, register, getLinkElement],
   )
 
   return (
@@ -108,8 +114,16 @@ function Toc({ className, rootMargin = '0px', ...props }: TocProps) {
 
 type TocListProps = React.ComponentPropsWithoutRef<'ul'>
 
+const INDICATOR_VARIANTS: Record<'line' | 'highlight', string> = {
+  line: 'before:w-0.5 before:bg-foreground-intense',
+  highlight: cn(
+    'isolate before:-z-1 before:inset-e-0 before:rounded-e-2xs',
+    'before:border-s-2 before:border-foreground-intense before:bg-background-soft before:backdrop-blur-md',
+  ),
+}
+
 function TocList({ className, style, ...props }: TocListProps) {
-  const { activeIds, getLinkElement } = useTocContext('TocList')
+  const { activeIds, highlight, getLinkElement } = useTocContext('TocList')
   const listRef = React.useRef<HTMLUListElement>(null)
   const [indicator, setIndicator] = React.useState({ top: 0, height: 0, visible: false })
   const [animate, setAnimate] = React.useState(false)
@@ -152,9 +166,9 @@ function TocList({ className, style, ...props }: TocListProps) {
       role="list"
       className={cn(
         'border-border relative flex flex-col border-s',
-        'before:pointer-events-none before:absolute before:-inset-s-px before:w-0.5',
+        'before:pointer-events-none before:absolute before:-inset-s-px',
         'before:top-(--toc-indicator-top) before:h-(--toc-indicator-height)',
-        'before:bg-foreground-intense',
+        INDICATOR_VARIANTS[highlight ? 'highlight' : 'line'],
         'before:transition-opacity before:duration-300 before:ease-out',
         animate && 'before:transition-[top,height,opacity]',
         'motion-reduce:before:transition-none',
@@ -202,7 +216,7 @@ interface TocLinkProps extends useRender.ComponentProps<'a', TocLinkState> {
 }
 
 function TocLink({ className, depth = 2, href, render, ref, ...props }: TocLinkProps) {
-  const { activeIds, currentId, register } = useTocContext('TocLink')
+  const { activeIds, currentId, highlight, register } = useTocContext('TocLink')
   const id = href.startsWith('#') ? href.slice(1) : null
   const linkRef = React.useRef<HTMLAnchorElement>(null)
 
@@ -231,6 +245,7 @@ function TocLink({ className, depth = 2, href, render, ref, ...props }: TocLinkP
           'active:scale-[0.98] active:translate-y-px active:duration-100 active:ease-in-out',
           "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='stroke-'])]:stroke-[1.85] [&_svg:not([class*='size-'])]:size-4.5",
           DEPTH_INDENT[Math.min(Math.max(Math.trunc(depth), 2), 6)],
+          highlight && 'pe-3',
           className,
         ),
       } as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>,

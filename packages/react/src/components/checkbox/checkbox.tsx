@@ -140,7 +140,7 @@ function Checkbox({ className, ...props }: CheckboxProps) {
           'focus-visible:border-transparent!',
           'data-checked:bg-primary data-checked:outline-ring-primary data-checked:border-transparent',
           'data-indeterminate:bg-primary data-indeterminate:outline-ring-primary data-indeterminate:border-transparent',
-          'data-disabled:not-data-checked:not-data-indeterminate:bg-background-subtle data-disabled:data-checked:opacity-disabled data-disabled:data-indeterminate:opacity-disabled data-disabled:cursor-not-allowed data-disabled:not-data-checked:not-data-indeterminate:border-dashed',
+          'data-disabled:not-data-checked:not-data-indeterminate:bg-background-subtle data-disabled:data-checked:opacity-disabled data-disabled:data-indeterminate:opacity-disabled data-disabled:cursor-not-allowed data-disabled:not-data-checked:not-data-indeterminate:border-dashed data-disabled:not-data-checked:not-data-indeterminate:backdrop-blur-md',
           'data-invalid:border-error data-invalid:not-data-checked:not-data-indeterminate:bg-error-subtle data-invalid:outline-ring-error',
           className,
         )}

@@ -26,3 +26,6 @@ CLAUDE.md
 
 # Claude Code skills & config
 .claude
+
+# Published agent skill (hand-authored markdown, same reason)
+skills/**/*.md

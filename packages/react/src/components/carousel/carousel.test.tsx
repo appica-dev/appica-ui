@@ -119,6 +119,9 @@ import { Button } from '../button/button'
 // eslint-disable-next-line import/first
 import { ReducedMotionProvider } from '../../providers/reduced-motion-provider'
 
+// eslint-disable-next-line import/first
+import { cssValue } from '../../test/css'
+
 /** Calls every handler still subscribed to an Embla event on the stub api. */
 function dispatch(event: string, payload?: unknown) {
   const removed = new Set(stubApi.off.mock.calls.filter((c: unknown[]) => c[0] === event).map((c: unknown[]) => c[1]))
@@ -820,7 +823,7 @@ describe('CarouselThumbs / CarouselThumb', () => {
 
     const indicator = container.querySelector('[data-slot="carousel-thumbs-indicator"]') as HTMLElement
     expect(indicator).not.toBeNull()
-    expect(indicator.style.translate).toBe('0px 0px')
+    expect(indicator.style.translate).toBe(cssValue('translate', '0px 0px'))
   })
 
   it('excludes the indicator from the rail snap count', () => {
@@ -1219,6 +1222,118 @@ describe('Carousel autoplay', () => {
       vi.useRealTimers()
     }
   })
+
+  describe('after a re-init', () => {
+    // Embla destroys the plugin on a re-init (a resize, a slide added or removed), which stops it.
+    function reInit(plugin: { stop: () => void }) {
+      act(() => {
+        plugin.stop()
+        dispatch('reinit')
+      })
+    }
+
+    function PlayingProbe() {
+      const { autoplay } = useCarousel()
+      return <output data-testid="playing">{String(autoplay?.isPlaying)}</output>
+    }
+
+    it('plays again when it was playing', () => {
+      const autoplay = mockAutoplay()
+      render(
+        <Carousel autoplay>
+          <CarouselContent>
+            <CarouselSlide>Slide 1</CarouselSlide>
+            <CarouselSlide>Slide 2</CarouselSlide>
+          </CarouselContent>
+          <PlayingProbe />
+        </Carousel>,
+      )
+      reInit(autoplay)
+      expect(autoplay.play).toHaveBeenCalledTimes(2)
+      expect(autoplay.isPlaying()).toBe(true)
+      expect(screen.getByTestId('playing')).toHaveTextContent('true')
+    })
+
+    it('stays held while hovered and plays once the pointer leaves', () => {
+      const autoplay = mockAutoplay()
+      const { container } = render(<Basic autoplay />)
+      fireEvent.pointerEnter(root(container))
+      reInit(autoplay)
+      expect(autoplay.isPlaying()).toBe(false)
+      fireEvent.pointerLeave(root(container))
+      expect(autoplay.isPlaying()).toBe(true)
+    })
+
+    it('stays held with keyboard focus inside and plays once it leaves', async () => {
+      const user = userEvent.setup()
+      const autoplay = mockAutoplay()
+      render(
+        <>
+          <Basic autoplay />
+          <button type="button">Outside</button>
+        </>,
+      )
+      await user.tab()
+      reInit(autoplay)
+      expect(autoplay.isPlaying()).toBe(false)
+      act(() => screen.getByRole('button', { name: 'Outside' }).focus())
+      expect(autoplay.isPlaying()).toBe(true)
+    })
+
+    it('stays stopped after a drag stopped it for good', () => {
+      const autoplay = mockAutoplay()
+      render(<Basic autoplay />)
+      act(() => {
+        dispatch('pointerdown')
+        autoplay.stop()
+      })
+      reInit(autoplay)
+      expect(autoplay.isPlaying()).toBe(false)
+      expect(autoplay.play).toHaveBeenCalledTimes(1)
+    })
+
+    it('leaves a pending resumeAfter restart to its timer', () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+      try {
+        const autoplay = mockAutoplay({ defaultInteraction: false })
+        render(<Basic autoplay={{ resumeAfter: 1000 }} />)
+        emit('autoplay:interaction', { detail: { interaction: 'pointerdown' } })
+        reInit(autoplay)
+        expect(autoplay.isPlaying()).toBe(false)
+        act(() => vi.advanceTimersByTime(1000))
+        expect(autoplay.isPlaying()).toBe(true)
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    it('stays off under reduced motion', () => {
+      const autoplay = mockAutoplay()
+      render(
+        <ReducedMotionProvider disableAnimations>
+          <Basic autoplay />
+        </ReducedMotionProvider>,
+      )
+      reInit(autoplay)
+      expect(autoplay.play).not.toHaveBeenCalled()
+    })
+
+    it('stays stopped on the last snap with stopOnLastSnap', () => {
+      const autoplay = mockAutoplay({ stopOnLastSnap: true })
+      render(<Basic autoplay={{ stopOnLastSnap: true }} />)
+      stubApi.canGoToNext.mockReturnValue(false)
+      reInit(autoplay)
+      expect(autoplay.isPlaying()).toBe(false)
+    })
+
+    it('plays Auto Scroll again when it was playing', () => {
+      const autoScroll = mockAutoScroll()
+      render(<Basic autoScroll />)
+      reInit(autoScroll)
+      expect(autoScroll.play).toHaveBeenCalledTimes(2)
+      expect(autoScroll.isPlaying()).toBe(true)
+    })
+  })
 })
 
 describe('CarouselPlayToggle', () => {
@@ -1288,6 +1403,24 @@ describe('CarouselPlayToggle', () => {
     expect(toggle()).toHaveAttribute('aria-pressed', 'false')
     expect(toggle()).not.toHaveAttribute('data-paused')
     expect(autoplay.isPlaying()).toBe(true)
+  })
+
+  it('keeps a pause through a re-init, for Autoplay and Auto Scroll', async () => {
+    const user = userEvent.setup()
+    const autoplay = mockAutoplay()
+    const { unmount } = render(<WithToggle autoplay />)
+    await user.click(toggle())
+    act(() => dispatch('reinit'))
+    expect(autoplay.isPlaying()).toBe(false)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+    unmount()
+
+    const autoScroll = mockAutoScroll()
+    render(<WithToggle autoScroll />)
+    await user.click(toggle())
+    act(() => dispatch('reinit'))
+    expect(autoScroll.isPlaying()).toBe(false)
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('passes paused to a render function', async () => {

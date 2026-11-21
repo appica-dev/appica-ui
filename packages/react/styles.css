@@ -39,6 +39,7 @@
 
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
+  --color-background-soft: var(--background-soft);
   --color-background-muted: var(--background-muted);
   --color-background-strong: var(--background-strong);
   --color-background-inverse: var(--background-inverse);
@@ -190,6 +191,7 @@
 
   --background: oklch(1 0 0);
   --background-subtle: oklch(0.985 0.002 247.839);
+  --background-soft: oklch(0.967 0.003 264.542 / 60%);
   --background-muted: oklch(0.967 0.003 264.542);
   --background-strong: oklch(0.928 0.006 264.531);
   --background-inverse: oklch(0.13 0.028 261.692);
@@ -302,6 +304,7 @@
 
   --background: oklch(0.13 0.028 261.692);
   --background-subtle: oklch(0.551 0.027 264.364 / 8%);
+  --background-soft: oklch(0.551 0.027 264.364 / 10%);
   --background-muted: oklch(0.21 0.034 264.665);
   --background-strong: oklch(0.278 0.033 256.848);
   --background-inverse: oklch(1 0 0);

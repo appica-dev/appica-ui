@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import { CompareSlider, type CompareSliderProps } from './compare-slider'
 import { DirectionProvider } from '../../providers/direction-provider'
+import { cssValue } from '../../test/css'
 
 const RECT = { x: 0, y: 0, top: 0, left: 0, right: 200, bottom: 100, width: 200, height: 100 }
 
@@ -62,8 +63,8 @@ describe('CompareSlider', () => {
   it('clips each layer to its side of the divider, starting at defaultValue', () => {
     renderSlider({ defaultValue: 30 })
     expect(slider()).toHaveValue('30')
-    expect(layer('before').style.clipPath).toBe('inset(0 70% 0 0)')
-    expect(layer('after').style.clipPath).toBe('inset(0 0 0 30%)')
+    expect(layer('before').style.clipPath).toBe(cssValue('clip-path', 'inset(0 70% 0 0)'))
+    expect(layer('after').style.clipPath).toBe(cssValue('clip-path', 'inset(0 0 0 30%)'))
   })
 
   it('puts before on the right in a right-to-left layout', () => {
@@ -72,16 +73,16 @@ describe('CompareSlider', () => {
         <CompareSlider data-testid="root" aria-label="Compare" defaultValue={30} before="Before" after="After" />
       </DirectionProvider>,
     )
-    expect(layer('before').style.clipPath).toBe('inset(0 0 0 70%)')
-    expect(layer('after').style.clipPath).toBe('inset(0 30% 0 0)')
+    expect(layer('before').style.clipPath).toBe(cssValue('clip-path', 'inset(0 0 0 70%)'))
+    expect(layer('after').style.clipPath).toBe(cssValue('clip-path', 'inset(0 30% 0 0)'))
   })
 
   it('stacks before above after when vertical', () => {
     renderSlider({ orientation: 'vertical', defaultValue: 30 })
     expect(root()).toHaveAttribute('data-orientation', 'vertical')
     expect(slider()).toHaveAttribute('aria-orientation', 'vertical')
-    expect(layer('before').style.clipPath).toBe('inset(0 0 70% 0)')
-    expect(layer('after').style.clipPath).toBe('inset(30% 0 0 0)')
+    expect(layer('before').style.clipPath).toBe(cssValue('clip-path', 'inset(0 0 70% 0)'))
+    expect(layer('after').style.clipPath).toBe(cssValue('clip-path', 'inset(30% 0 0 0)'))
   })
 
   it('moves the divider to a mouse press, follows the drag and commits on release', async () => {
@@ -222,7 +223,7 @@ describe('CompareSlider', () => {
     vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
     renderSlider({ reveal: true, defaultValue: 40 })
     expect(slider()).toHaveValue('100')
-    expect(layer('after').style.clipPath).toBe('inset(0 0 0 100%)')
+    expect(layer('after').style.clipPath).toBe(cssValue('clip-path', 'inset(0 0 0 100%)'))
 
     act(() => {
       MockIntersectionObserver.instances[0]!.callback(

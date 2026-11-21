@@ -7,6 +7,26 @@ version alongside the package.
 
 The library follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.5.0 - 2026-11-21
+
+New Command Palette and Splitter components, a Toc highlight, a translucent `background-soft` token, and a Carousel autoplay fix.
+
+### Added
+
+- **[Command Palette](https://appica.dev/ui/components/react/command-palette)** - A searchable list of commands and pages in a dialog, opened with a click or a keyboard shortcut.
+- **[Splitter](https://appica.dev/ui/components/react/splitter)** - Resizable panels split by a handle you can drag or move with the keyboard.
+- **[Toc highlight](https://appica.dev/ui/components/react/toc#highlight)** - `highlight` tints the area behind the active links.
+- **[background-soft token](https://appica.dev/ui/docs/react/colors#background-surfaces)** - A translucent surface for frames and panels over a pattern or an image, with a `bg-background-soft` utility.
+- **[Agent skill](https://appica.dev/ui/docs/react/skill)** - `npx skills add appica-dev/appica-ui --skill appica-ui-react` gives your coding agent a component catalog, composition and theming guides, and a script that checks the setup.
+
+### Improved
+
+- **Dependencies** - Motion 14.14.
+
+### Fixed
+
+- **[Carousel autoplay after a resize](https://appica.dev/ui/components/react/carousel#autoplay)** - Autoplay and Auto Scroll keep running after the carousel resizes.
+
 ## 1.4.0 - 2026-11-01
 
 A play and pause control for Carousel, options to keep autoplay running under the pointer or focus, and a mouse click that no longer pauses it.

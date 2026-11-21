@@ -472,12 +472,8 @@ function Carousel({
     onReInitRef.current?.(emblaApi)
 
     const handleReInit = () => {
-      const autoplayWasPlaying = emblaApi.plugins().autoplay?.isPlaying()
-      const autoScrollWasPlaying = emblaApi.plugins().autoScroll?.isPlaying()
       syncFull()
       onReInitRef.current?.(emblaApi)
-      if (autoplayEnabled && autoplayWasPlaying) emblaApi.plugins().autoplay?.play()
-      else if (autoScrollEnabled && autoScrollWasPlaying) emblaApi.plugins().autoScroll?.play()
     }
     const handleSelect = () => {
       syncSelection()
@@ -575,6 +571,12 @@ function Carousel({
       const release = () => {
         if (held) playAutoplay()
       }
+      // A re-init destroys the plugin, which stops it, so restart from the carousel's own state.
+      const onReInit = () => {
+        if (!autoplayEnabled || reducedMotion || resumeTimer !== undefined) return
+        if (emblaApi.plugins().autoplay?.options.stopOnLastSnap && !emblaApi.canGoToNext()) return
+        playAutoplay()
+      }
       const onPointerEnter = () => {
         hovered = true
         hold()
@@ -600,6 +602,7 @@ function Carousel({
       emblaApi.on('select', resetOnSelect)
       emblaApi.on('pointerdown', onUserStop)
       emblaApi.on('slidefocus', onUserStop)
+      emblaApi.on('reinit', onReInit)
       if (resumeAfter > 0) emblaApi.on('autoplay:interaction', onInteraction)
       if (pauseOnHover) {
         root?.addEventListener('pointerenter', onPointerEnter)
@@ -636,6 +639,7 @@ function Carousel({
         emblaApi.off('select', resetOnSelect)
         emblaApi.off('pointerdown', onUserStop)
         emblaApi.off('slidefocus', onUserStop)
+        emblaApi.off('reinit', onReInit)
         if (resumeAfter > 0) emblaApi.off('autoplay:interaction', onInteraction)
         root?.removeEventListener('pointerenter', onPointerEnter)
         root?.removeEventListener('pointerleave', onPointerLeave)
@@ -661,9 +665,13 @@ function Carousel({
           interruptAutoScroll()
         }
       }
+      const onReInit = () => {
+        if (resumeTimer === undefined) playAutoScroll()
+      }
       emblaApi.on('autoscroll:play', onPlay)
       emblaApi.on('pointerdown', onUserStop)
       emblaApi.on('slidefocus', onUserStop)
+      emblaApi.on('reinit', onReInit)
       if (resumeAfter > 0) emblaApi.on('autoscroll:interaction', onInteraction)
       rotationRef.current = {
         pause: () => {
@@ -679,6 +687,7 @@ function Carousel({
         emblaApi.off('autoscroll:play', onPlay)
         emblaApi.off('pointerdown', onUserStop)
         emblaApi.off('slidefocus', onUserStop)
+        emblaApi.off('reinit', onReInit)
         if (resumeAfter > 0) emblaApi.off('autoscroll:interaction', onInteraction)
       }
     }

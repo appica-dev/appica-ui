@@ -80,7 +80,7 @@ function Radio({ className, ...props }: RadioProps) {
           'transition-[background-color,border-color,box-shadow] duration-200 motion-reduce:transition-none',
           'hover:not-data-checked:not-data-disabled:not-data-invalid:border-border-emphasis',
           'data-checked:bg-primary data-checked:outline-ring-primary data-checked:border-transparent',
-          'data-disabled:not-data-checked:bg-background-subtle data-disabled:data-checked:opacity-disabled data-disabled:cursor-not-allowed data-disabled:not-data-checked:border-dashed',
+          'data-disabled:not-data-checked:bg-background-subtle data-disabled:data-checked:opacity-disabled data-disabled:cursor-not-allowed data-disabled:not-data-checked:border-dashed data-disabled:not-data-checked:backdrop-blur-md',
           'data-invalid:border-error data-invalid:not-data-checked:bg-error-subtle data-invalid:outline-ring-error',
           className,
         )}

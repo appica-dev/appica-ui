@@ -35,7 +35,7 @@ const buttonVariants = cva(
         ),
         outline: cn(
           backgroundLayer,
-          'bg-background text-foreground-emphasis hover:text-foreground-intense before:bg-background before:border-border hover:before:bg-background-subtle hover:before:border-border-strong data-popup-open:text-foreground-intense data-pressed:text-foreground-intense data-popup-open:before:bg-background-subtle data-pressed:before:bg-background-subtle data-popup-open:before:border-border-strong data-pressed:before:border-border-strong outline-ring before:border',
+          'bg-background text-foreground-emphasis hover:text-foreground-intense before:bg-background before:border-border hover:before:bg-background-subtle hover:before:border-border-strong data-popup-open:text-foreground-intense data-pressed:text-foreground-intense data-popup-open:before:bg-background-subtle data-pressed:before:bg-background-subtle data-popup-open:before:border-border-strong data-pressed:before:border-border-strong outline-ring before:border before:backdrop-blur-md',
         ),
         ghost: cn(
           backgroundLayer,

@@ -1,6 +1,6 @@
 [![Appica UI](.github/assets/appica-ui-root.jpg)](https://appica.dev/ui)
 
-Beautiful, accessible UI designed by humans for the modern web - 70+ themeable components for AI-powered apps, SaaS dashboards, e-commerce sites, and scalable design systems. Polished interactions, dark mode, and full theming out of the box.
+Beautiful, accessible UI designed by humans for the modern web - 75+ themeable components for AI-powered apps, SaaS dashboards, e-commerce sites, and scalable design systems. Polished interactions, dark mode, and full theming out of the box.
 
 This monorepo contains framework-specific packages living under `packages/`. Each package is published to npm independently.
 
@@ -13,6 +13,19 @@ This monorepo contains framework-specific packages living under `packages/`. Eac
 ## Documentation
 
 Full documentation, component demos, and theming guides live at [appica.dev/ui](https://appica.dev/ui).
+
+## For AI agents
+
+Coding agents write Appica UI correctly once they know its rules and its components. 2 things to add to a project that uses the library:
+
+- **The rules**, about 25 lines for your `AGENTS.md` or `CLAUDE.md`. They ship in the package as `agent-rules.md`. See [Set up your coding agent](https://appica.dev/ui/docs/react/agents).
+- **The agent skill**, loaded only when a task involves the interface: a component catalog, composition and theming guides, and a script that checks the setup and the code your agent wrote. See [Agent skill](https://appica.dev/ui/docs/react/skill).
+
+```bash
+npx skills add appica-dev/appica-ui --skill appica-ui-react
+```
+
+The skill's source is in [skills/appica-ui-react](skills/appica-ui-react).
 
 ## Figma design file
 

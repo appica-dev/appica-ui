@@ -18,17 +18,20 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "sync-exports:check": "pnpm --filter @appica/ui-react exec node scripts/sync-exports.mjs --check",
-    "release": "pnpm --filter @appica/ui-react publish"
+    "sync:skill": "node scripts/sync-skill.mjs",
+    "sync:skill:check": "node scripts/sync-skill.mjs --check",
+    "test:skill": "node --test scripts/skill-check.test.mjs",
+    "release": "pnpm sync:skill:check && pnpm --filter @appica/ui-react publish"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.13.0",
-    "prettier": "^3.9.10",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "^8.73.0"
   }
 }
